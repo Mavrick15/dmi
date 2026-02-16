@@ -1,0 +1,238 @@
+[
+  {
+    "name": "patient_view",
+    "category": "Patients",
+    "description": "Accès en lecture seule aux dossiers"
+  },
+  {
+    "name": "patient_edit",
+    "category": "Patients",
+    "description": "Mise à jour des informations"
+  },
+  {
+    "name": "patient_create",
+    "category": "Patients",
+    "description": "Ajout de nouveaux patients"
+  },
+  {
+    "name": "patient_delete",
+    "category": "Patients",
+    "description": "Archivage et suppression définitive"
+  },
+  {
+    "name": "clinical_view",
+    "category": "Clinique",
+    "description": "Accès à la console clinique, consultations, constantes"
+  },
+  {
+    "name": "clinical_write",
+    "category": "Clinique",
+    "description": "Ajouter des observations et notes"
+  },
+  {
+    "name": "prescription_create",
+    "category": "Clinique",
+    "description": "Création d'ordonnances"
+  },
+  {
+    "name": "prescription_view",
+    "category": "Clinique",
+    "description": "Consultation des ordonnances"
+  },
+  {
+    "name": "consultation_create",
+    "category": "Clinique",
+    "description": "Création de nouvelles consultations"
+  },
+  {
+    "name": "consultation_edit",
+    "category": "Clinique",
+    "description": "Modification des consultations"
+  },
+  {
+    "name": "analyses_view",
+    "category": "Analyses Labo",
+    "description": "Consultation des analyses médicales"
+  },
+  {
+    "name": "analyses_create",
+    "category": "Analyses Labo",
+    "description": "Prescription d'analyses médicales"
+  },
+  {
+    "name": "analyses_edit",
+    "category": "Analyses Labo",
+    "description": "Modification des prescriptions d'analyses"
+  },
+  {
+    "name": "analyses_cancel",
+    "category": "Analyses Labo",
+    "description": "Annulation d'analyses prescrites"
+  },
+  {
+    "name": "analyses_delete",
+    "category": "Analyses Labo",
+    "description": "Suppression définitive d'analyses"
+  },
+  {
+    "name": "resultats_view",
+    "category": "Analyses Labo",
+    "description": "Consultation des résultats d'analyses"
+  },
+  {
+    "name": "resultats_create",
+    "category": "Analyses Labo",
+    "description": "Enregistrement des résultats d'analyses"
+  },
+  {
+    "name": "resultats_edit",
+    "category": "Analyses Labo",
+    "description": "Modification des résultats d'analyses"
+  },
+  {
+    "name": "resultats_validate",
+    "category": "Analyses Labo",
+    "description": "Validation des résultats d'analyses"
+  },
+  {
+    "name": "appointment_view",
+    "category": "Rendez-vous",
+    "description": "Consultation du planning (API rendez-vous)"
+  },
+  {
+    "name": "agenda_view",
+    "category": "Rendez-vous",
+    "description": "Accès à la page Agenda (planning global)"
+  },
+  {
+    "name": "appointment_create",
+    "category": "Rendez-vous",
+    "description": "Prise de rendez-vous"
+  },
+  {
+    "name": "appointment_edit",
+    "category": "Rendez-vous",
+    "description": "Modification des rendez-vous"
+  },
+  {
+    "name": "appointment_delete",
+    "category": "Rendez-vous",
+    "description": "Annulation de rendez-vous"
+  },
+  {
+    "name": "document_view",
+    "category": "Documents",
+    "description": "Consultation des documents"
+  },
+  {
+    "name": "document_upload",
+    "category": "Documents",
+    "description": "Ajout de documents"
+  },
+  {
+    "name": "document_delete",
+    "category": "Documents",
+    "description": "Suppression de documents"
+  },
+  {
+    "name": "billing_view",
+    "category": "Finance",
+    "description": "Accès à l'historique financier"
+  },
+  {
+    "name": "billing_create",
+    "category": "Finance",
+    "description": "Création de nouvelles factures"
+  },
+  {
+    "name": "payment_process",
+    "category": "Finance",
+    "description": "Traitement des paiements"
+  },
+  {
+    "name": "finance_manage",
+    "category": "Finance",
+    "description": "Gestion complète des finances"
+  },
+  {
+    "name": "inventory_view",
+    "category": "Pharmacie",
+    "description": "Consultation du stock"
+  },
+  {
+    "name": "inventory_manage",
+    "category": "Pharmacie",
+    "description": "Gestion du stock"
+  },
+  {
+    "name": "medication_create",
+    "category": "Pharmacie",
+    "description": "Ajout de médicaments"
+  },
+  {
+    "name": "medication_edit",
+    "category": "Pharmacie",
+    "description": "Modification des médicaments"
+  },
+  {
+    "name": "medication_delete",
+    "category": "Pharmacie",
+    "description": "Suppression de médicaments"
+  },
+  {
+    "name": "order_create",
+    "category": "Pharmacie",
+    "description": "Création de commandes fournisseurs"
+  },
+  {
+    "name": "order_receive",
+    "category": "Pharmacie",
+    "description": "Réception de commandes"
+  },
+  {
+    "name": "user_manage",
+    "category": "Admin",
+    "description": "Création de comptes staff"
+  },
+  {
+    "name": "user_view",
+    "category": "Admin",
+    "description": "Consultation des utilisateurs"
+  },
+  {
+    "name": "user_create",
+    "category": "Admin",
+    "description": "Création de nouveaux utilisateurs"
+  },
+  {
+    "name": "user_edit",
+    "category": "Admin",
+    "description": "Modification des utilisateurs"
+  },
+  {
+    "name": "user_delete",
+    "category": "Admin",
+    "description": "Suppression d'utilisateurs"
+  },
+  {
+    "name": "dashboard_view",
+    "category": "Admin",
+    "description": "Accès au tableau de bord principal"
+  },
+  {
+    "name": "audit_view",
+    "category": "Admin",
+    "description": "Consultation des logs d'audit"
+  },
+  {
+    "name": "permission_manage",
+    "category": "Admin",
+    "description": "Modification des permissions"
+  },
+  {
+    "name": "settings_manage",
+    "category": "Admin",
+    "description": "Modification des paramètres système"
+  }
+]
+

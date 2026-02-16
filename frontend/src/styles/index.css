@@ -1,0 +1,107 @@
+/* Import de la police Inter en local */
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/inter/800.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    /* Application des couleurs de fond et de texte globales (Light & Dark) */
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-50 antialiased;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    /* Amélioration du rendu du texte */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Assure que l'application prend toute la hauteur */
+  #root {
+    @apply min-h-screen flex flex-col;
+    /* Important pour les transitions de page absolues */
+    position: relative;
+    overflow-x: hidden;
+  }
+}
+
+/* --- Scrollbar Premium --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full border-2 border-transparent bg-clip-content hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
+}
+
+/* --- Reset Global --- */
+* {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+/* 
+   ==========================================================================
+   OPTIMISATIONS DE PERFORMANCE & ANTI-SCINTILLEMENT
+   ==========================================================================
+   Ces règles forcent le navigateur à utiliser la carte graphique (GPU)
+   au lieu du processeur pour les animations, ce qui règle les problèmes
+   de fluidité sur Safari et Firefox.
+*/
+
+.page-transition,
+.framer-motion-container,
+div[class*="motion"] {
+  /* Force la création d'un calque composite */
+  transform: translateZ(0); 
+  -webkit-transform: translate3d(0, 0, 0);
+  
+  /* Évite le clignotement arrière-plan */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  
+  /* Donne de la profondeur pour les transformations 3D */
+  perspective: 1000px;
+  
+  /* Indique au navigateur d'optimiser ces propriétés à l'avance */
+  will-change: transform, opacity, filter;
+}
+
+/* 
+   Optimisation pour les machines plus lentes ou préférences utilisateur.
+   Désactive les effets de flou coûteux si "mouvement réduit" est activé.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-blur-md, 
+  .backdrop-blur-xl, 
+  .backdrop-blur-sm,
+  .backdrop-blur {
+    backdrop-filter: none !important;
+    background-color: rgba(255, 255, 255, 0.95); /* Fond opaque en remplacement */
+  }
+  
+  .dark .backdrop-blur-md, 
+  .dark .backdrop-blur-xl, 
+  .dark .backdrop-blur-sm,
+  .dark .backdrop-blur {
+    background-color: rgba(15, 23, 42, 0.95);
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

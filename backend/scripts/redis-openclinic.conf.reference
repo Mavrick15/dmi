@@ -1,0 +1,13 @@
+# Référence Redis/Valkey pour OpenClinic
+# À copier dans /etc/valkey/valkey.conf ou /etc/redis/redis.conf
+# (ou ajouter/recopier les lignes ci-dessous dans la config existante)
+#
+# Correspond au .env :
+#   REDIS_HOST=127.0.0.1
+#   REDIS_PORT=6379
+#   REDIS_PASSWORD=ben123
+#   REDIS_DB=0
+
+bind 127.0.0.1
+port 6379
+requirepass ben123

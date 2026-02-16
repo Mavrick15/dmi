@@ -1,0 +1,422 @@
+import '#start/validator'
+import router from '@adonisjs/core/services/router'
+import { middleware } from '#start/kernel'
+import transmit from '@adonisjs/transmit/services/main'
+
+// --- IMPORTS DES CONTRÔLEURS ---
+const AuthController = () => import('#controllers/auth_controller')
+const DashboardController = () => import('#controllers/dashboard_controller')
+const PatientsController = () => import('#controllers/patients_controller')
+const PharmacyController = () => import('#controllers/pharmacy_controller')
+const FinanceController = () => import('#controllers/finance_controller')
+const SuppliersController = () => import('#controllers/suppliers_controller')
+const UsersController = () => import('#controllers/users_controller')
+const RendezVousController = () => import('#controllers/rendez_vous_controller')
+const EtablissementsController = () => import('#controllers/etablissements_controller')
+const DocumentsController = () => import('#controllers/documents_controller')
+const ConsultationController = () => import('#controllers/consultation_controller')
+const AuditLogsController = () => import('#controllers/audit_logs_controller')
+const PermissionsController = () => import('#controllers/permissions_controller')
+const AdminStatsController = () => import('#controllers/admin_stats_controller')
+const OmnisearchController = () => import('#controllers/omnisearch_controller')
+const StatsController = () => import('#controllers/stats_controller')
+const ExportController = () => import('#controllers/export_controller')
+const WebhookController = () => import('#controllers/webhook_controller')
+const NotificationsController = () => import('#controllers/notifications_controller')
+const ClinicalTemplatesController = () => import('#controllers/clinical_templates_controller')
+const QuickNotesController = () => import('#controllers/quick_notes_controller')
+const Cim10Controller = () => import('#controllers/cim10_controller')
+
+// --- ACTIVATION DU TEMPS RÉEL (SSE) ---
+transmit.registerRoutes()
+
+// --- API V1 ---
+router.group(() => {
+
+  // --- AUTHENTIFICATION (Public) ---
+  router.group(() => {
+    router.post('/register', [AuthController, 'register'])
+      .use(middleware.rateLimit({ maxRequests: 5, windowMs: 15 * 60 * 1000 })) // 5 tentatives / 15 min
+    router.post('/login', [AuthController, 'login'])
+      .use(middleware.rateLimit({ maxRequests: 10, windowMs: 15 * 60 * 1000 })) // 10 tentatives / 15 min
+    router.post('/forgot-password', [AuthController, 'forgotPassword'])
+      .use(middleware.rateLimit({ maxRequests: 3, windowMs: 60 * 60 * 1000 })) // 3 tentatives / heure
+    router.post('/reset-password', [AuthController, 'resetPassword'])
+      .use(middleware.rateLimit({ maxRequests: 5, windowMs: 60 * 60 * 1000 })) // 5 tentatives / heure
+  }).prefix('auth')
+
+  // --- ROUTES PROTÉGÉES ---
+  router.group(() => {
+    
+    // Auth & Profil
+    router.post('/auth/logout', [AuthController, 'logout'])
+    router.get('/auth/me', [AuthController, 'me'])
+    
+    // Dashboard & Recherche Globale
+    router.get('/dashboard', [DashboardController, 'index'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien']))
+      .use(middleware.rateLimit({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
+    router.get('/search/global', [OmnisearchController, 'globalSearch'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min (recherche fréquente)
+    router.get('/search/autocomplete', [OmnisearchController, 'autocomplete'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min (autocomplete très fréquent)
+
+    // --- PATIENTS ---
+    router.get('/patients', [PatientsController, 'index'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/patients/stats', [PatientsController, 'stats'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.get('/patients/:id', [PatientsController, 'show'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min (consultation fréquente)
+    
+    router.post('/patients', [PatientsController, 'store'])
+      .use(middleware.permission(['patient_create']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.put('/patients/:id', [PatientsController, 'update'])
+      .use(middleware.permission(['patient_edit']))
+      .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+    router.delete('/patients/:id', [PatientsController, 'destroy'])
+      .use(middleware.permission(['patient_delete']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+
+    // --- DOCUMENTS ---
+    router.get('/documents', [DocumentsController, 'indexAll'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/documents/stats', [DocumentsController, 'stats'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.get('/documents/search', [DocumentsController, 'searchFullText'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/patients/:patientId/documents', [DocumentsController, 'index'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min
+    router.post('/documents', [DocumentsController, 'store'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.get('/documents/:id/preview', [DocumentsController, 'preview'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min
+    router.get('/documents/:id/download', [DocumentsController, 'download'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.post('/documents/:id/sign', [DocumentsController, 'sign'])
+      .use(middleware.role(['admin', 'docteur']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.delete('/documents/:id', [DocumentsController, 'destroy'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    
+    // Nouvelles routes Phase 1-3
+    router.get('/documents/:id/versions', [DocumentsController, 'getVersions'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.post('/documents/:id/versions/restore', [DocumentsController, 'restoreVersion'])
+      .use(middleware.role(['admin', 'docteur', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.patch('/documents/:id/tags', [DocumentsController, 'updateTags'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.post('/documents/:id/share', [DocumentsController, 'share'])
+      .use(middleware.role(['admin', 'docteur', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.post('/documents/:id/comments', [DocumentsController, 'addComment'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+    router.get('/documents/:id/comments', [DocumentsController, 'getComments'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.post('/documents/:id/approvals', [DocumentsController, 'createApprovalWorkflow'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.post('/documents/:id/approvals/process', [DocumentsController, 'processApproval'])
+      .use(middleware.role(['admin', 'docteur', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.post('/documents/:id/archive', [DocumentsController, 'toggleArchive'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.post('/documents/:id/watermark', [DocumentsController, 'addWatermark'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.post('/documents/export', [DocumentsController, 'exportBulk'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 10, windowMs: 60 * 1000 })) // 10 req/min (export lourd)
+    router.post('/documents/:id/view', [DocumentsController, 'trackView'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 200, windowMs: 60 * 1000 })) // 200 req/min (tracking fréquent)
+
+    // --- RENDEZ-VOUS ---
+    router.get('/appointments', [RendezVousController, 'index'])
+      .use(middleware.permission(['appointment_view']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/appointments/:id', [RendezVousController, 'show'])
+      .use(middleware.permission(['appointment_view']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min
+    router.post('/appointments', [RendezVousController, 'store'])
+      .use(middleware.permission(['appointment_create']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.patch('/appointments/:id/status', [RendezVousController, 'updateStatus'])
+      .use(middleware.permission(['appointment_edit']))
+      .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+    router.delete('/appointments/:id', [RendezVousController, 'destroy'])
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+      .use(middleware.permission(['appointment_delete']))
+    router.get('/doctors', [RendezVousController, 'medecins'])
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire']))
+
+    // --- CONSULTATIONS ---
+    router.group(() => {
+      router.get('/', [ConsultationController, 'index'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.post('/', [ConsultationController, 'store'])
+        .use(middleware.role(['docteur']))
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      router.put('/:id', [ConsultationController, 'update'])
+        .use(middleware.role(['docteur']))
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    }).prefix('consultations')
+
+    // --- CLINICAL TOOLS ---
+    router.group(() => {
+      // Templates de consultation
+      router.get('/templates', [ClinicalTemplatesController, 'index'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.post('/templates', [ClinicalTemplatesController, 'store'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+      router.put('/templates/:id', [ClinicalTemplatesController, 'update'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      router.delete('/templates/:id', [ClinicalTemplatesController, 'destroy'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+
+      // Notes rapides
+      router.get('/quick-notes', [QuickNotesController, 'index'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.post('/quick-notes', [QuickNotesController, 'store'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+      router.post('/quick-notes/:id/use', [QuickNotesController, 'use'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 200, windowMs: 60 * 1000 })) // 200 req/min (utilisation fréquente)
+      router.put('/quick-notes/:id', [QuickNotesController, 'update'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      router.delete('/quick-notes/:id', [QuickNotesController, 'destroy'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+
+      // Codes CIM-10
+      router.get('/cim10', [Cim10Controller, 'search'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min (recherche fréquente)
+      router.get('/cim10/categories', [Cim10Controller, 'categories'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/cim10/:id', [Cim10Controller, 'show'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.post('/cim10/:id/use', [Cim10Controller, 'use'])
+        .use(middleware.role(['docteur', 'infirmiere']))
+        .use(middleware.rateLimit({ maxRequests: 200, windowMs: 60 * 1000 })) // 200 req/min (utilisation fréquente)
+    }).prefix('clinical')
+
+    // --- PHARMACIE (Routes reorganisées) ---
+    router.group(() => {
+      // 1. Lecture (Accessible au staff médical pour vérifier les stocks)
+      router.get('/stats', [PharmacyController, 'stats'])
+        .use(middleware.rateLimit({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
+      router.get('/inventory', [PharmacyController, 'inventory'])
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.get('/medications/:id/details', [PharmacyController, 'details'])
+        .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min
+      router.get('/alerts', [PharmacyController, 'alerts'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/search', [PharmacyController, 'search'])
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.get('/analytics', [PharmacyController, 'predictiveAnalysis'])
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      router.get('/orders/pending', [PharmacyController, 'pendingOrders'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/orders/recent', [PharmacyController, 'recentOrders'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/orders/:id', [PharmacyController, 'showOrder'])
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+
+      // 2. Écriture / Gestion Stocks (Admin & Pharmacien uniquement)
+      router.group(() => {
+        // Médicaments CRUD
+        router.post('/medications', [PharmacyController, 'store'])
+          .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+        router.put('/medications/:id', [PharmacyController, 'update'])
+          .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+        router.delete('/medications/:id', [PharmacyController, 'destroy'])
+          .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+        
+        // Commandes & Mouvements (Routes ajoutées)
+        router.post('/orders', [PharmacyController, 'createOrder'])
+          .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+        router.post('/orders/:id/receive', [PharmacyController, 'receiveOrder'])
+          .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+        router.post('/inventory/adjust', [PharmacyController, 'adjustStock'])
+          .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      }).use(middleware.role(['admin', 'pharmacien']))
+
+    }).prefix('pharmacy').use(middleware.role(['admin', 'pharmacien', 'docteur', 'infirmiere']))
+    
+    // --- FOURNISSEURS ---
+    router.group(() => {
+        router.get('/', [SuppliersController, 'index'])
+          .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+        router.get('/:id', [SuppliersController, 'show'])
+          .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+        router.post('/', [SuppliersController, 'store'])
+          .use(middleware.role(['admin', 'pharmacien']))
+          .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+        router.put('/:id', [SuppliersController, 'update'])
+          .use(middleware.role(['admin', 'pharmacien']))
+          .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+        router.delete('/:id', [SuppliersController, 'destroy'])
+          .use(middleware.role(['admin', 'pharmacien']))
+          .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    }).prefix('suppliers')
+
+    // --- FINANCE ---
+    router.group(() => {
+      router.get('/overview', [FinanceController, 'overview'])
+        .use(middleware.rateLimit({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
+      router.get('/invoices', [FinanceController, 'invoices'])
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.post('/invoices', [FinanceController, 'store'])
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+      router.put('/invoices/:id', [FinanceController, 'update'])
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+      router.get('/outstanding', [FinanceController, 'outstanding'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/chart', [FinanceController, 'chart'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.get('/history', [FinanceController, 'history'])
+        .use(middleware.rateLimit({ maxRequests: 50, windowMs: 60 * 1000 })) // 50 req/min
+      router.post('/invoices/:id/payment', [FinanceController, 'recordPayment'])
+        .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    }).prefix('finance').use(middleware.role(['admin', 'gestionnaire']))
+
+    // --- ADMINISTRATION & USERS ---
+    router.get('/users', [UsersController, 'index'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/users/:id', [UsersController, 'show'])
+      .use(middleware.role(['admin', 'gestionnaire']))
+      .use(middleware.rateLimit({ maxRequests: 150, windowMs: 60 * 1000 })) // 150 req/min
+    
+    // Actions Admin strictes
+    router.post('/users', [UsersController, 'store'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.put('/users/:id', [UsersController, 'update'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.delete('/users/:id', [UsersController, 'destroy'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    
+    router.get('/establishments', [EtablissementsController, 'index'])
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.get('/establishments/stats', [EtablissementsController, 'stats'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.get('/establishments/:id', [EtablissementsController, 'show'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    router.post('/establishments', [EtablissementsController, 'store'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    router.put('/establishments/:id', [EtablissementsController, 'update'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.delete('/establishments/:id', [EtablissementsController, 'destroy'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    
+    router.get('/admin/stats', [AdminStatsController, 'overview'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
+    router.get('/audit', [AuditLogsController, 'index'])
+      .use(middleware.role(['admin']))
+      .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+    
+    // --- PERMISSIONS ---
+    // Route publique pour que chaque utilisateur récupère ses propres permissions
+    router.get('/permissions/me', [PermissionsController, 'getMyPermissions'])
+      .use(middleware.auth())
+    
+    // Routes admin uniquement
+    router.group(() => {
+      router.get('/available', [PermissionsController, 'availablePermissions'])
+      router.get('/roles/:role', [PermissionsController, 'getRolePermissions'])
+      router.put('/roles/:role', [PermissionsController, 'updateRolePermissions'])
+      router.get('/all', [PermissionsController, 'getAllRolePermissions'])
+    }).prefix('permissions').use(middleware.role(['admin']))
+
+    // --- STATISTIQUES AVANCÉES ---
+    router.group(() => {
+      router.get('/overview', [StatsController, 'overview'])
+      router.get('/period', [StatsController, 'period'])
+      router.get('/top-doctors', [StatsController, 'topDoctors'])
+      router.get('/revenue', [StatsController, 'revenue'])
+    }).prefix('stats').use(middleware.role(['admin', 'gestionnaire']))
+
+    // --- EXPORTS ---
+    router.group(() => {
+      router.get('/patients', [ExportController, 'exportPatients'])
+      router.get('/consultations', [ExportController, 'exportConsultations'])
+      router.get('/invoices', [ExportController, 'exportInvoices'])
+      router.get('/users', [ExportController, 'exportUsers']).use(middleware.role(['admin']))
+      router.get('/establishments', [ExportController, 'exportEstablishments']).use(middleware.role(['admin']))
+      router.get('/audit', [ExportController, 'exportAudit']).use(middleware.role(['admin']))
+    }).prefix('export').use(middleware.role(['admin', 'gestionnaire', 'docteur']))
+
+    // --- WEBHOOKS ---
+    router.group(() => {
+      router.post('/', [WebhookController, 'register'])
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+      router.get('/', [WebhookController, 'index'])
+        .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+      router.delete('/', [WebhookController, 'delete'])
+        .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
+    }).prefix('webhooks').use(middleware.role(['admin']))
+
+    // --- NOTIFICATIONS ---
+    router.group(() => {
+      router.get('/', [NotificationsController, 'index'])
+      router.get('/unread-count', [NotificationsController, 'unreadCount'])
+      router.patch('/:id/read', [NotificationsController, 'markAsRead'])
+      router.patch('/read-all', [NotificationsController, 'markAllAsRead'])
+      router.patch('/mark-multiple', [NotificationsController, 'markMultipleAsRead'])
+      router.delete('/archive-read', [NotificationsController, 'archiveAllRead']) // Archiver toutes les notifications lues
+      router.delete('/:id', [NotificationsController, 'archive'])
+      router.post('/test', [NotificationsController, 'createTestNotifications']) // Route de test pour créer des notifications
+        .use(middleware.role(['admin'])) // Seuls les admins peuvent créer des notifications de test
+    }).prefix('notifications')
+      .use(middleware.role(['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien'])) // Tous les utilisateurs authentifiés peuvent voir leurs notifications
+
+  }).use(middleware.auth())
+
+}).prefix('api/v1')
+
+// --- HEALTH CHECKS (Public) ---
+const HealthController = () => import('#controllers/health_controller')
+router.get('/', [HealthController, 'index'])
+router.get('/health', [HealthController, 'detailed'])
+router.get('/health/live', [HealthController, 'liveness'])
+router.get('/health/ready', [HealthController, 'readiness'])

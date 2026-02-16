@@ -1,0 +1,646 @@
+/* Import de la police Inter en local */
+@import '@fontsource/inter/300.css';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/inter/800.css';
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Palette Médicale Professionnelle - Couleurs de base */
+    --color-background: #FAFBFC; /* Blanc médical doux */
+    --color-foreground: #1A202C; /* Charcoal professionnel */
+    --color-border: #E2E8F0; /* Bordures subtiles */
+    --color-input: #F7FAFC; /* Champs de saisie */
+    --color-ring: #3B82F6; /* Focus bleu médical */
+    
+    /* Surfaces et Cartes */
+    --color-card: #FFFFFF; /* Blanc pur pour cartes */
+    --color-card-foreground: #1A202C; /* Texte sur cartes */
+    --color-popover: #FFFFFF; /* Popovers et menus */
+    --color-popover-foreground: #1A202C; /* Texte sur popovers */
+    
+    /* Couleurs atténuées pour contenu secondaire */
+    --color-muted: #F1F5F9; /* Arrière-plans atténués */
+    --color-muted-foreground: #64748B; /* Texte secondaire */
+    
+    /* Bleu Autorité Médicale - Couleur principale */
+    --color-primary: #3B82F6; /* Bleu confiance médical */
+    --color-primary-foreground: #FFFFFF; /* Texte sur primaire */
+    
+    /* Gris Professionnel - Couleur secondaire */
+    --color-secondary: #64748B; /* Gris neutre professionnel */
+    --color-secondary-foreground: #FFFFFF; /* Texte sur secondaire */
+    
+    /* Vert Menthe - Accent positif */
+    --color-accent: #10B981; /* Vert menthe médical */
+    --color-accent-foreground: #FFFFFF; /* Texte sur accent */
+    
+    /* Vert Succès - Confirmations positives */
+    --color-success: #10B981; /* Vert succès médical */
+    --color-success-foreground: #FFFFFF; /* Texte sur succès */
+    
+    /* Orange Avertissement - Alertes sans alarme */
+    --color-warning: #F59E0B; /* Orange avertissement */
+    --color-warning-foreground: #FFFFFF; /* Texte sur avertissement */
+    
+    /* Rouge Erreur - Préoccupations claires */
+    --color-error: #DC2626; /* Rouge médical d'urgence */
+    --color-error-foreground: #FFFFFF; /* Texte sur erreur */
+    
+    /* Actions destructives */
+    --color-destructive: #DC2626; /* Rouge destructif */
+    --color-destructive-foreground: #FFFFFF; /* Texte sur destructif */
+    
+    /* Typographie médicale de qualité */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    
+    /* Système d'espacement clinique */
+    --radius: 0.75rem; /* 12px - Coins arrondis médicaux */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(59, 130, 246, 0.1);
+    --shadow-lg: 0 12px 48px rgba(59, 130, 246, 0.12);
+    --shadow-xl: 0 24px 64px rgba(59, 130, 246, 0.15);
+    
+    /* Z-index pour interface médicale */
+    --z-medical-header: 50;
+    --z-medical-sidebar: 40;
+    --z-medical-modal: 60;
+    --z-medical-tooltip: 70;
+    
+    /* Durées d'animation médicales */
+    --duration-fast: 150ms;
+    --duration-normal: 300ms;
+    --duration-slow: 500ms;
+  }
+
+  /* Mode sombre pour interface médicale */
+  .dark {
+    --color-background: #0F172A; /* Bleu nuit médical */
+    --color-foreground: #F8FAFC; /* Blanc sur sombre */
+    --color-border: #334155; /* Bordures sombres */
+    --color-input: #1E293B; /* Champs sombres */
+    --color-ring: #60A5FA; /* Focus bleu clair */
+    
+    --color-card: #1E293B; /* Cartes sombres */
+    --color-card-foreground: #F8FAFC; /* Texte clair sur cartes */
+    --color-popover: #1E293B; /* Popovers sombres */
+    --color-popover-foreground: #F8FAFC; /* Texte clair sur popovers */
+    
+    --color-muted: #334155; /* Arrière-plans atténués sombres */
+    --color-muted-foreground: #94A3B8; /* Texte secondaire clair */
+    
+    --color-primary: #60A5FA; /* Bleu primaire plus clair */
+    --color-secondary: #475569; /* Gris secondaire plus clair */
+    
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Hiérarchie typographique médicale professionnelle */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+    color: var(--color-foreground);
+  }
+  
+  h1 {
+    @apply text-4xl font-bold tracking-tight lg:text-5xl;
+  }
+  
+  h2 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+  
+  h3 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  
+  h4 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+  
+  h5 {
+    @apply text-lg font-semibold;
+  }
+  
+  h6 {
+    @apply text-base font-semibold;
+  }
+  
+  p {
+    line-height: 1.7;
+    color: var(--color-foreground);
+  }
+  
+  /* Affichage de code clinique */
+  code {
+    font-family: var(--font-mono);
+    @apply bg-muted px-2 py-1 rounded-md text-sm font-medium;
+  }
+  
+  pre {
+    font-family: var(--font-mono);
+    @apply bg-muted p-4 rounded-lg overflow-x-auto border;
+  }
+  
+  /* États de focus médicaux appropriés */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+  
+  /* Transitions cliniques fluides */
+  * {
+    transition: color var(--duration-fast) ease-out, 
+                background-color var(--duration-fast) ease-out, 
+                border-color var(--duration-fast) ease-out,
+                box-shadow var(--duration-fast) ease-out, 
+                transform var(--duration-fast) ease-out, 
+                opacity var(--duration-fast) ease-out;
+  }
+  
+  /* Scrollbar médicale personnalisée */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-muted);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-muted-foreground);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+  }
+}
+
+@layer components {
+  /* Styles de boutons médicaux professionnels */
+  .btn-medical {
+    @apply inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply h-11 px-6 py-3;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:scale-105;
+    box-shadow: var(--shadow-md);
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:scale-105;
+  }
+  
+  .btn-success {
+    @apply bg-success text-success-foreground hover:scale-105;
+  }
+  
+  .btn-warning {
+    @apply bg-warning text-warning-foreground hover:scale-105;
+  }
+  
+  .btn-error {
+    @apply bg-error text-error-foreground hover:scale-105;
+  }
+  
+  .btn-ghost {
+    @apply hover:bg-accent hover:text-accent-foreground hover:scale-105;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground hover:scale-105;
+  }
+  
+  /* Composants de carte médicale */
+  .card-medical {
+    @apply rounded-2xl border bg-card text-card-foreground backdrop-blur-sm;
+    box-shadow: var(--shadow-md);
+    transition: all var(--duration-normal) ease-out;
+  }
+  
+  .card-elevated {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+  
+  .card-critical {
+    box-shadow: var(--shadow-xl);
+    @apply ring-2;
+  }
+  
+  .card-interactive {
+    @apply cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300;
+  }
+  
+  /* Tableaux de données cliniques */
+  .table-medical {
+    @apply w-full border-collapse rounded-lg overflow-hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .table-medical th {
+    @apply border-b border-border px-6 py-4 text-left font-semibold text-foreground;
+  }
+  
+  .table-medical td {
+    @apply border-b border-border px-6 py-4 text-foreground;
+  }
+.table-medical tr:hover  {
+    
+  }
+  
+  /* Indicateurs de statut médicaux */
+  .status-indicator {
+    @apply inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold tracking-wide uppercase;
+  }
+.status-success  {
+    @apply text-success border;
+  }
+.status-warning  {
+    @apply text-warning border;
+  }
+.status-error  {
+    @apply text-error border;
+  }
+.status-info  {
+    @apply text-primary border;
+  }
+  
+  /* Éléments de formulaire médicaux */
+  .form-medical {
+    @apply space-y-6;
+  }
+  
+  .form-group {
+    @apply space-y-3;
+  }
+  
+  .form-label {
+    @apply text-sm font-semibold leading-none text-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70;
+  }
+  
+  .form-input {
+    @apply flex h-12 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm font-medium;
+    @apply ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium;
+    @apply placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2;
+    @apply focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    @apply transition-all duration-200;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .form-input:focus {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  
+  .form-textarea {
+    @apply min-h-[120px] resize-y;
+  }
+  
+  /* Navigation clinique */
+  .nav-medical {
+    @apply flex items-center space-x-2;
+  }
+  
+  .nav-item {
+    @apply inline-flex items-center justify-center rounded-xl text-sm font-medium transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring;
+    @apply h-10 px-4 py-2 hover:bg-accent hover:text-accent-foreground hover:scale-105;
+  }
+  
+  .nav-item-active {
+    @apply bg-primary text-primary-foreground shadow-md;
+  }
+  
+  /* Badges et étiquettes */
+  .badge-medical {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold;
+  }
+  
+  .badge-primary {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .badge-secondary {
+    @apply bg-secondary text-secondary-foreground;
+  }
+  
+  .badge-success {
+    @apply bg-success text-success-foreground;
+  }
+  
+  .badge-warning {
+    @apply bg-warning text-warning-foreground;
+  }
+  
+  .badge-error {
+    @apply bg-error text-error-foreground;
+  }
+  
+  /* Alertes médicales */
+  .alert-medical {
+    @apply relative w-full rounded-xl border p-4;
+  }
+.alert-info  {
+    @apply text-primary;
+  }
+.alert-success  {
+    @apply text-success;
+  }
+.alert-warning  {
+    @apply text-warning;
+  }
+.alert-error  {
+    @apply text-error;
+  }
+}
+
+@layer utilities {
+  /* Animations de qualité médicale */
+  .animate-fade-in {
+    animation: fadeIn var(--duration-normal) ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp var(--duration-slow) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-slide-down {
+    animation: slideDown var(--duration-normal) ease-out;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn var(--duration-fast) ease-out;
+  }
+  
+  .animate-pulse-medical {
+    animation: pulseMedical 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideDown {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes pulseMedical {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  
+  /* Effets de survol cliniques */
+  .hover-lift {
+    @apply transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .hover-glow {
+    @apply transition-all duration-200 ease-out;
+  }
+  
+  .hover-glow:hover {
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 ease-out hover:scale-105;
+  }
+  
+  /* Espacement médical de qualité */
+  .clinical-spacing {
+    @apply space-y-8;
+  }
+  
+  .clinical-padding {
+    @apply p-8;
+  }
+  
+  .clinical-margin {
+    @apply m-8;
+  }
+  
+  /* Mise en page médicale responsive */
+  .medical-container {
+    @apply w-full px-4 sm:px-6 lg:px-8;
+  }
+  
+  .medical-grid {
+    @apply grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  
+  .medical-grid-2 {
+    @apply grid gap-6 sm:grid-cols-1 lg:grid-cols-2;
+  }
+  
+  .medical-grid-auto {
+    @apply grid gap-6;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  /* Utilitaires typographiques cliniques */
+  .text-medical-heading {
+    @apply text-3xl font-bold tracking-tight text-foreground lg:text-4xl;
+  }
+  
+  .text-medical-subheading {
+    @apply text-xl font-semibold tracking-tight text-foreground;
+  }
+  
+  .text-medical-body {
+    @apply text-base leading-relaxed text-foreground;
+  }
+  
+  .text-medical-body-large {
+    @apply text-lg leading-relaxed text-foreground;
+  }
+  
+  .text-medical-caption {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .text-medical-caption-small {
+    @apply text-xs text-muted-foreground;
+  }
+  
+  .text-medical-code {
+    font-family: var(--font-mono);
+    @apply text-sm bg-muted px-2 py-1 rounded font-medium;
+  }
+  
+  /* Utilitaires de blur médical */
+  .backdrop-blur-medical {
+    backdrop-filter: blur(12px);
+  }
+  
+  .backdrop-blur-medical-light {
+    backdrop-filter: blur(8px);
+  }
+  
+  /* Utilitaires de bordure médicaux */
+  .border-gradient-medical {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, var(--color-primary), var(--color-accent)) 1;
+  }
+  
+  /* Styles d'état pour interface médicale */
+  .state-loading {
+    @apply animate-pulse-medical opacity-70 cursor-wait;
+  }
+  
+  .state-disabled {
+    @apply opacity-50 cursor-not-allowed pointer-events-none;
+  }
+  
+  .state-readonly {
+    @apply bg-muted cursor-default;
+  }
+  
+  /* Responsive breakpoints étendus */
+  .xs-only {
+    @apply block sm:hidden;
+  }
+  
+  .sm-and-up {
+    @apply hidden sm:block;
+  }
+  
+  .md-and-up {
+    @apply hidden md:block;
+  }
+  
+  .lg-and-up {
+    @apply hidden lg:block;
+  }
+  
+  .xl-and-up {
+    @apply hidden xl:block;
+  }
+}
+
+/* Styles pour impression (rapports médicaux) */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  .card-medical {
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}
+
+/* Styles pour mode de contraste élevé (accessibilité médicale) */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-primary: #0066cc;
+    --color-success: #008800;
+    --color-warning: #cc6600;
+    --color-error: #cc0000;
+  }
+  
+  .card-medical {
+    border-width: 2px;
+  }
+  
+  .btn-medical {
+    border-width: 2px;
+    border-color: currentColor;
+  }
+}
+
+/* Styles pour mouvement réduit (accessibilité) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .hover-lift:hover {
+    transform: none !important;
+  }
+  
+  .hover-scale:hover {
+    transform: none !important;
+  }
+}

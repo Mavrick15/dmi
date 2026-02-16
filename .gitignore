@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build / tmp
+build
+tmp
+**/build
+**/tmp
+
+# Secrets
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# IDE / OS
+.idea
+.vscode
+.fleet
+.DS_Store
+
+# Frontend
+frontend/dist
+frontend/build
+frontend/.vite
+
+# Backend Adonis
+backend/public/assets
+backend/tmp
+
+# Optionnel : décommenter si vous ne voulez pas versionner les lock files
+# package-lock.json
+# yarn.lock

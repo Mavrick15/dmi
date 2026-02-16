@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>OpenClinic</title>
+  <meta name="description" content="OpenClinic - Gestion complète des cliniques">
+  
+  <!-- Optimisation Mobile : Empêche le zoom pour un effet "App Native" -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- PWA : Configuration des couleurs de la barre d'état (Light & Dark) -->
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+
+  <!-- PWA : Icônes et Manifeste -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/pwa-192x192.png">
+
+  <!-- PWA : Configuration iOS (Apple) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OpenClinic">
+
+  <!-- Rocket Web Scripts supprimés pour éviter les erreurs CORS -->
+  <!-- Ces scripts de tracking Rocket.new ne sont pas nécessaires et causent des erreurs CORS -->
+  <!-- Si vous avez besoin de tracking, utilisez plutôt Google Analytics ou un autre service -->
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950">
+  <noscript>Vous devez activer JavaScript pour utiliser cette application.</noscript>
+  <div id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+</html>

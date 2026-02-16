@@ -1,0 +1,567 @@
+import { useState, useMemo } from 'react';
+import { Helmet } from 'react-helmet';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import Header from '../../components/ui/Header';
+import Icon from '../../components/AppIcon';
+import Button from '../../components/ui/Button';
+import Input from '../../components/ui/Input';
+import Select from '../../components/ui/Select';
+import Badge from '../../components/ui/Badge';
+import EmptyState from '../../components/ui/EmptyState';
+import PermissionGuard from '../../components/PermissionGuard';
+import { usePermissions } from '../../hooks/usePermissions';
+import { useEstablishments } from '../../hooks/useAdmin';
+import { useAppointments, useDoctors, useAppointmentMutations } from '../../hooks/useAppointments';
+import { useToast } from '../../contexts/ToastContext';
+import { usePatientModal } from '../../contexts/PatientModalContext';
+
+const STATUTS = [
+  { value: '', label: 'Tous les statuts' },
+  { value: 'programme', label: 'Programmé' },
+  { value: 'en_cours', label: 'En cours' },
+  { value: 'termine', label: 'Terminé' },
+  { value: 'annule', label: 'Annulé' },
+];
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+const formatTime = (dateStr) => {
+  if (!dateStr) return '';
+  return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+};
+
+const isToday = (dateKey) => {
+  const today = new Date().toISOString().split('T')[0];
+  return dateKey === today;
+};
+
+const getStatutStyle = (statut) => {
+  const s = (statut || '').toLowerCase();
+  if (s === 'programme') return 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
+  if (s === 'en_cours') return 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+  if (s === 'termine') return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
+  if (s === 'annule') return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400';
+  return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+};
+
+const Agenda = () => {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const { hasPermission } = usePermissions();
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'day'
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  });
+  const [establishmentId, setEstablishmentId] = useState('');
+  const [medecinId, setMedecinId] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
+  const { data: establishmentsData } = useEstablishments({ limit: 100 });
+  const establishmentsList = useMemo(() => {
+    const list = establishmentsData?.data || [];
+    return [{ value: '', label: 'Tous les établissements' }, ...list.map((e) => ({ value: e.id, label: e.nom || e.name || 'Établissement' }))];
+  }, [establishmentsData]);
+
+  const dateRange = useMemo(() => {
+    const d = new Date(selectedDate);
+    const start = new Date(d);
+    start.setDate(1);
+    const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+    return {
+      startDate: start.toISOString().split('T')[0],
+      endDate: end.toISOString().split('T')[0],
+    };
+  }, [selectedDate]);
+
+  const params = useMemo(() => ({
+    startDate: dateRange.startDate,
+    endDate: dateRange.endDate,
+    ...(establishmentId ? { establishmentId } : {}),
+    ...(medecinId ? { medecinId } : {}),
+    ...(statusFilter ? { status: statusFilter } : {}),
+  }), [dateRange, establishmentId, medecinId, statusFilter]);
+
+  const doctorsParams = useMemo(() => (establishmentId ? { establishmentId } : {}), [establishmentId]);
+  const { data: appointmentsData, isLoading } = useAppointments(params, { refetchInterval: 30000 });
+  const { data: doctorsData } = useDoctors(doctorsParams);
+  const { updateAppointmentStatus, deleteAppointment } = useAppointmentMutations();
+
+  const appointments = Array.isArray(appointmentsData) ? appointmentsData : [];
+  const doctors = useMemo(() => {
+    const list = Array.isArray(doctorsData) ? doctorsData : [];
+    return [{ value: '', label: 'Tous les médecins' }, ...list.map((d) => ({
+      value: d.id,
+      label: d.name || d.nomComplet || 'Médecin',
+    }))];
+  }, [doctorsData]);
+
+  const { openPatientModal } = usePatientModal();
+
+  const setToday = () => setSelectedDate(new Date().toISOString().split('T')[0]);
+  const setTomorrow = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+  const shiftMonth = (delta) => {
+    const d = new Date(selectedDate);
+    d.setMonth(d.getMonth() + delta);
+    setSelectedDate(d.toISOString().split('T')[0]);
+  };
+
+  const goToPatient = (patientId) => {
+    if (patientId) openPatientModal(patientId);
+  };
+
+  const handleStatusChange = (id, newStatus) => {
+    updateAppointmentStatus.mutate(
+      { id, status: newStatus },
+      {
+        onError: () => {},
+      }
+    );
+  };
+
+  const handleDelete = (id) => {
+    if (!window.confirm('Annuler ce rendez-vous ?')) return;
+    deleteAppointment.mutate(id);
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+      <Helmet>
+        <title>Agenda | MediCore</title>
+        <meta name="description" content="Agenda des rendez-vous - Vue globale par date, médecin et statut." />
+      </Helmet>
+      <Header />
+
+      <main className="pt-24 w-full max-w-[1400px] mx-auto px-6 lg:px-8 pb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
+              <Icon name="CalendarDays" size={24} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                Agenda
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
+                Rendez-vous par date, médecin et statut
+              </p>
+            </div>
+          </div>
+          <PermissionGuard requiredPermission="appointment_create">
+            <Button
+              variant="default"
+              size="lg"
+              iconName="CalendarPlus"
+              onClick={() => navigate('/gestion-patients?action=rdv')}
+              className="shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
+            >
+              Nouveau rendez-vous
+            </Button>
+          </PermissionGuard>
+        </motion.div>
+
+        {/* Filtres */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm mb-6"
+        >
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap w-full sm:w-auto">Période</label>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => shiftMonth(-1)}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                title="Mois précédent"
+              >
+                <Icon name="ChevronLeft" size={18} />
+              </button>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="w-[160px] sm:w-[180px]"
+              />
+              <button
+                type="button"
+                onClick={() => shiftMonth(1)}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors"
+                title="Mois suivant"
+              >
+                <Icon name="ChevronRight" size={18} />
+              </button>
+            </div>
+            <div className="flex gap-1">
+              <button
+                type="button"
+                onClick={setToday}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${isToday(selectedDate) ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'}`}
+              >
+                Aujourd'hui
+              </button>
+              <button
+                type="button"
+                onClick={setTomorrow}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              >
+                Demain
+              </button>
+            </div>
+          </div>
+          <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+          {establishmentsList.length > 1 && (
+            <>
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">Établissement</label>
+                <Select
+                  options={establishmentsList}
+                  value={establishmentId}
+                  onChange={setEstablishmentId}
+                  placeholder="Tous"
+                  className="min-w-[200px]"
+                />
+              </div>
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 hidden sm:block" />
+            </>
+          )}
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">Médecin</label>
+            <Select
+              options={doctors}
+              value={medecinId}
+              onChange={setMedecinId}
+              placeholder="Tous"
+              className="min-w-[200px]"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">Statut</label>
+            <Select
+              options={STATUTS}
+              value={statusFilter}
+              onChange={setStatusFilter}
+              className="min-w-[160px]"
+            />
+          </div>
+          <div className="flex gap-1 ml-auto rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+            >
+              <Icon name="List" size={16} />
+              Liste
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('day')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'day' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+            >
+              <Icon name="CalendarDays" size={16} />
+              Jour
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Compteur */}
+        {!isLoading && appointments.length > 0 && (
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            <span className="font-semibold text-slate-900 dark:text-white">{appointments.length}</span>
+            {appointments.length === 1 ? ' rendez-vous' : ' rendez-vous'} pour la période
+          </p>
+        )}
+
+        {/* Contenu */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-24">
+            <Icon name="Loader2" size={32} className="animate-spin text-primary" />
+          </div>
+        ) : appointments.length === 0 ? (
+          <EmptyState
+            icon="CalendarX"
+            title="Aucun rendez-vous"
+            description="Aucun rendez-vous pour la période et les filtres sélectionnés."
+            actionLabel={hasPermission('appointment_create') ? 'Créer un rendez-vous' : undefined}
+            action={hasPermission('appointment_create') ? () => navigate('/gestion-patients?action=rdv') : undefined}
+          />
+        ) : viewMode === 'day' ? (
+          <DayView
+            appointments={appointments}
+            selectedDate={selectedDate}
+            onPatientClick={goToPatient}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            getStatutStyle={getStatutStyle}
+          />
+        ) : (
+          <ListView
+            appointments={appointments}
+            onPatientClick={goToPatient}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            getStatutStyle={getStatutStyle}
+          />
+        )}
+      </main>
+    </div>
+  );
+};
+
+function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getStatutStyle, compact }) {
+  const patientName = apt.patient?.user?.nomComplet || apt.patientName || '—';
+  const medecinName = apt.medecin?.user?.nomComplet || apt.medecinName || '—';
+  const motif = apt.motif || apt.type || null;
+  return (
+    <div className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden ${compact ? 'p-3' : 'p-4'} shadow-sm hover:shadow-md transition-shadow`}>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="font-medium text-slate-900 dark:text-white">{formatDate(apt.dateHeure)}</div>
+          <div className="text-sm text-slate-500 dark:text-slate-400">{formatTime(apt.dateHeure)} • {apt.dureeMinutes || 30} min</div>
+          <button
+            type="button"
+            onClick={() => onPatientClick(apt.patientId || apt.patient?.id)}
+            className="text-primary font-medium hover:underline mt-1 block truncate"
+          >
+            {patientName}
+          </button>
+          <p className="text-sm text-slate-600 dark:text-slate-300 truncate">{medecinName}</p>
+          {motif && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{motif}</p>}
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Badge className={getStatutStyle(apt.statut)}>{(apt.statut || 'programme').replace('_', ' ')}</Badge>
+          {apt.statut === 'programme' && (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => onStatusChange(apt.id, 'en_cours')}>Démarrer</Button>
+              <Button variant="ghost" size="sm" className="text-rose-600" onClick={() => onDelete(apt.id)}>Annuler</Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getStatutStyle }) {
+  const sorted = useMemo(
+    () => [...appointments].sort((a, b) => new Date(a.dateHeure) - new Date(b.dateHeure)),
+    [appointments]
+  );
+
+  return (
+    <>
+      {/* Tableau : visible à partir de md */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="hidden md:block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Date & Heure</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Patient</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Médecin</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">Motif</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Statut</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider w-32">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((apt) => (
+                <tr
+                  key={apt.id}
+                  className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-slate-900 dark:text-white">{formatDate(apt.dateHeure)}</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">{formatTime(apt.dateHeure)} • {apt.dureeMinutes || 30} min</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button type="button" onClick={() => onPatientClick(apt.patientId || apt.patient?.id)} className="text-primary font-medium hover:underline">
+                      {apt.patient?.user?.nomComplet || apt.patientName || '—'}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 text-slate-700 dark:text-slate-300">{apt.medecin?.user?.nomComplet || apt.medecinName || '—'}</td>
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden lg:table-cell max-w-[180px] truncate">{apt.motif || apt.type || '—'}</td>
+                  <td className="px-6 py-4">
+                    <Badge className={getStatutStyle(apt.statut)}>{(apt.statut || 'programme').replace('_', ' ')}</Badge>
+                  </td>
+                  <td className="px-6 py-4">
+                    {apt.statut === 'programme' && (
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => onStatusChange(apt.id, 'en_cours')}>Démarrer</Button>
+                        <Button variant="ghost" size="sm" className="text-rose-600" onClick={() => onDelete(apt.id)}>Annuler</Button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+      {/* Cartes : mobile */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:hidden space-y-3">
+        {sorted.map((apt) => (
+          <AppointmentCard
+            key={apt.id}
+            apt={apt}
+            onPatientClick={onPatientClick}
+            onStatusChange={onStatusChange}
+            onDelete={onDelete}
+            getStatutStyle={getStatutStyle}
+            compact
+          />
+        ))}
+      </motion.div>
+    </>
+  );
+}
+
+const TIMELINE_START_H = 7;
+const TIMELINE_END_H = 20;
+const SLOT_HEIGHT_PX = 52;
+
+function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, onDelete, getStatutStyle }) {
+  const dayAppointments = useMemo(() => {
+    const key = selectedDate;
+    return appointments
+      .filter((apt) => {
+        const d = apt.dateHeure ? new Date(apt.dateHeure).toISOString().split('T')[0] : apt.date;
+        return d === key;
+      })
+      .sort((a, b) => new Date(a.dateHeure) - new Date(b.dateHeure));
+  }, [appointments, selectedDate]);
+
+  const blocks = useMemo(() => {
+    return dayAppointments.map((apt) => {
+      const start = new Date(apt.dateHeure);
+      const duration = apt.dureeMinutes || 30;
+      const startH = start.getHours() + start.getMinutes() / 60 + start.getSeconds() / 3600;
+      const endH = startH + duration / 60;
+      const top = Math.max(0, (startH - TIMELINE_START_H) * SLOT_HEIGHT_PX);
+      const endY = (TIMELINE_END_H - TIMELINE_START_H) * SLOT_HEIGHT_PX;
+      const height = Math.min(
+        (duration / 60) * SLOT_HEIGHT_PX,
+        endY - top
+      );
+      return { apt, top, height: Math.max(20, height) };
+    });
+  }, [dayAppointments]);
+
+  const totalHeight = (TIMELINE_END_H - TIMELINE_START_H + 1) * SLOT_HEIGHT_PX;
+  const hours = Array.from({ length: TIMELINE_END_H - TIMELINE_START_H + 1 }, (_, i) => TIMELINE_START_H + i);
+
+  if (dayAppointments.length === 0) {
+    return (
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center">
+        <Icon name="Calendar" size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
+        <p className="text-slate-600 dark:text-slate-400">Aucun rendez-vous ce jour-là.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">Sélectionnez une autre date ou créez un rendez-vous.</p>
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+    >
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          {formatDate(dayAppointments[0]?.dateHeure)} — Vue timeline
+        </p>
+      </div>
+      <div className="flex">
+        <div className="w-14 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 py-1">
+          {hours.map((h) => (
+            <div
+              key={h}
+              className="text-xs text-slate-500 dark:text-slate-400 pr-2 text-right"
+              style={{ height: SLOT_HEIGHT_PX, lineHeight: `${SLOT_HEIGHT_PX}px` }}
+            >
+              {h.toString().padStart(2, '0')}h
+            </div>
+          ))}
+        </div>
+        <div className="flex-1 relative min-h-[200px]" style={{ height: totalHeight }}>
+          {hours.slice(0, -1).map((h) => (
+            <div
+              key={h}
+              className="absolute left-0 right-0 border-t border-slate-100 dark:border-slate-800"
+              style={{ top: (h - TIMELINE_START_H) * SLOT_HEIGHT_PX }}
+            />
+          ))}
+          {blocks.map(({ apt, top, height }) => (
+            <div
+              key={apt.id}
+              className="absolute left-2 right-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden flex flex-col"
+              style={{ top: `${top}px`, height: `${height}px`, minHeight: 36 }}
+            >
+              <div
+                className={`flex-1 p-2 flex flex-col justify-center border-l-4 ${
+                  apt.statut === 'programme'
+                    ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-500'
+                    : apt.statut === 'en_cours'
+                    ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-500'
+                    : apt.statut === 'termine'
+                    ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500'
+                    : 'bg-slate-50 dark:bg-slate-800/50 border-slate-300 dark:border-slate-600'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
+                    {formatTime(apt.dateHeure)} — {(apt.dureeMinutes || 30)} min
+                  </span>
+                  <Badge className={`text-[10px] px-1.5 py-0 ${getStatutStyle(apt.statut)}`}>
+                    {(apt.statut || 'programme').replace('_', ' ')}
+                  </Badge>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onPatientClick(apt.patientId || apt.patient?.id)}
+                  className="text-sm font-medium text-primary hover:underline truncate text-left"
+                >
+                  {apt.patient?.user?.nomComplet || apt.patientName || '—'}
+                </button>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  {apt.medecin?.user?.nomComplet || apt.medecinName || '—'}
+                  {apt.motif || apt.type ? ` • ${apt.motif || apt.type}` : ''}
+                </p>
+                {apt.statut === 'programme' && height >= 56 && (
+                  <div className="flex gap-1 mt-1">
+                    <Button variant="default" size="sm" className="h-6 text-xs" onClick={() => onStatusChange(apt.id, 'en_cours')}>
+                      Démarrer
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-6 text-xs text-rose-600" onClick={() => onDelete(apt.id)}>
+                      Annuler
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export default Agenda;
