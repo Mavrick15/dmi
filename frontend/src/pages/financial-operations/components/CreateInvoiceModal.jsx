@@ -24,6 +24,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [formData, setFormData] = useState({
     patientId: '',
+    typeFacture: '', // consultation | examen | traitement | autre
     consultationId: '',
     analyseIds: [],
     montantTotal: '',
@@ -130,7 +131,13 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
       new Date(new Date(formData.dateEmission).getTime() + 30 * 24 * 60 * 60 * 1000)
         .toISOString().split('T')[0];
 
-    // Préparer les données
+    // Libellé type pour les notes (affichage liste / PDF)
+    const typeLabels = { consultation: 'Consultation', examen: 'Examen(s)', traitement: 'Traitement', autre: 'Autre' };
+    const typePrefix = formData.typeFacture && typeLabels[formData.typeFacture]
+      ? `[${typeLabels[formData.typeFacture]}] `
+      : '';
+    const notesFinal = formData.notes ? `${typePrefix}${formData.notes}` : (typePrefix || null);
+
     const invoiceData = {
       patientId: formData.patientId,
       consultationId: formData.consultationId || null,
@@ -140,7 +147,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
       statut: formData.statut,
       dateEmission: formData.dateEmission,
       dateEcheance: dateEcheance,
-      notes: formData.notes || null
+      notes: notesFinal || null
     };
 
     createInvoice.mutate(invoiceData, {
@@ -150,6 +157,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
         // Réinitialiser le formulaire
         setFormData({
           patientId: '',
+          typeFacture: '',
           consultationId: '',
           analyseIds: [],
           montantTotal: '',
@@ -410,6 +418,25 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
             />
           )}
+        </div>
+
+        {/* Type de facture */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+            Type de facture
+          </label>
+          <Select
+            value={formData.typeFacture}
+            onChange={(value) => handleChange('typeFacture', value)}
+            options={[
+              { value: '', label: 'Choisir le type' },
+              { value: 'consultation', label: 'Consultation' },
+              { value: 'examen', label: 'Examen(s)' },
+              { value: 'traitement', label: 'Traitement' },
+              { value: 'autre', label: 'Autre' }
+            ]}
+            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+          />
         </div>
 
         {/* Consultation (optionnel) */}
