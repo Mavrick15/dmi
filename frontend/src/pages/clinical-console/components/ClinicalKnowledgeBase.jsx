@@ -5,43 +5,37 @@ import Button from '../../../components/ui/Button';
 import { useKnowledgeBase } from '../../../hooks/useClinical';
 import { Loader2 } from 'lucide-react';
 
-// --- MODAL DE DÉTAILS (Interne au composant) ---
+// --- MODAL DE DÉTAILS ---
 const KnowledgeDetailModal = ({ item, type, onClose }) => {
   if (!item) return null;
 
+  const typeLabel = type === 'protocols' ? 'Protocole' : type === 'medications' ? 'Médicament' : type === 'diagnostics' ? 'Diagnostic' : type === 'procedures' ? 'Procédure' : 'Directive';
+
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <motion.div 
-        initial={{ scale: 0.95, opacity: 0 }}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <motion.div
+        initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800"
+        exit={{ scale: 0.96, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700"
       >
-        {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
-                {type === 'protocols' ? 'Protocole' : type === 'medications' ? 'Médicament' : 'Diagnostic'}
-              </span>
-              {item.urgency && (
-                <span className={`px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${
-                  item.urgency === 'urgent' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                }`}>
-                  {item.urgency}
-                </span>
-              )}
+        <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
+              <Icon name="BookOpen" size={20} className="text-primary dark:text-blue-400" />
             </div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              {item.title || item.name}
-            </h2>
+            <div className="min-w-0">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{typeLabel}</span>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white truncate mt-0.5">{item.title || item.name}</h2>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <button type="button" onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400">
             <Icon name="X" size={20} />
-          </Button>
+          </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+        <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
           
           {/* Description */}
           {item.description && (
@@ -99,7 +93,8 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
                       <p className="text-sm dark:text-slate-300">{item.contraindications}</p>
                    </div>
                 </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                {(item.steps || []).length > 0 && (
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                    <h4 className="font-semibold mb-3 dark:text-white">Étapes</h4>
                    <ol className="list-decimal list-inside space-y-2 text-sm text-slate-600 dark:text-slate-400">
                       {item.steps.map((step, idx) => (
@@ -107,6 +102,7 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
                       ))}
                    </ol>
                 </div>
+                )}
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800">
                    <h4 className="font-semibold text-amber-800 dark:text-amber-300 mb-2 flex items-center gap-2">
                      <Icon name="AlertTriangle" size={16} /> Complications possibles
@@ -140,10 +136,8 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose} className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Fermer</Button>
-          <Button variant="default" iconName="Printer">Imprimer</Button>
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+          <Button variant="outline" size="sm" onClick={onClose} className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800">Fermer</Button>
         </div>
       </motion.div>
     </div>
@@ -215,76 +209,57 @@ const ClinicalKnowledgeBase = () => {
   const renderContent = () => {
     if (isLoadingKnowledge) {
       return (
-        <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-          <Loader2 className="animate-spin text-primary mx-auto mb-3" size={32} />
-          <p>Chargement des données...</p>
+        <div className="flex flex-col items-center justify-center py-16 text-slate-500 dark:text-slate-400">
+          <Loader2 className="animate-spin text-primary mb-3" size={28} />
+          <p className="text-sm">Chargement...</p>
         </div>
       );
     }
 
     if (filteredData.length === 0) {
-        return (
-            <div className="text-center py-12 text-slate-500 dark:text-slate-400">
-                <Icon name="SearchX" size={48} className="mx-auto mb-3 opacity-20" />
-                <p>Aucun résultat trouvé pour "{searchQuery}"</p>
-            </div>
-        );
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Icon name="SearchX" size={40} className="text-slate-300 dark:text-slate-600 mb-3" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun résultat</p>
+          {searchQuery && <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">pour « {searchQuery} »</p>}
+        </div>
+      );
     }
 
-    // Grouper les données par priorité pour affichage avec en-têtes
     const groupedByUrgency = filteredData.reduce((acc, item) => {
       const urgency = item.urgency || 'standard';
-      if (!acc[urgency]) {
-        acc[urgency] = [];
-      }
+      if (!acc[urgency]) acc[urgency] = [];
       acc[urgency].push(item);
       return acc;
     }, {});
 
-    const urgencyLabels = {
-      'urgent': 'Urgent',
-      'priority': 'Priorité',
-      'standard': 'Standard'
-    };
-
+    const urgencyLabels = { urgent: 'Urgent', priority: 'Priorité', standard: 'Standard' };
     const urgencyOrder = ['urgent', 'priority', 'standard'];
 
     return (
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-6">
         {urgencyOrder.map((urgency) => {
           const items = groupedByUrgency[urgency] || [];
           if (items.length === 0) return null;
 
           return (
-            <div key={urgency} className="space-y-3">
-              {/* En-tête de section par priorité */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`h-px flex-1 ${
-                  urgency === 'urgent' ? 'bg-rose-200 dark:bg-rose-900/50' :
-                  urgency === 'priority' ? 'bg-amber-200 dark:bg-amber-900/50' :
-                  'bg-emerald-200 dark:bg-emerald-900/50'
-                }`} />
-                <span className={`px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider ${
-                  urgency === 'urgent' ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400' :
-                  urgency === 'priority' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                  'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                }`}>
-                  {urgencyLabels[urgency]} ({items.length})
-                </span>
-                <div className={`h-px flex-1 ${
-                  urgency === 'urgent' ? 'bg-rose-200 dark:bg-rose-900/50' :
-                  urgency === 'priority' ? 'bg-amber-200 dark:bg-amber-900/50' :
-                  'bg-emerald-200 dark:bg-emerald-900/50'
-                }`} />
-              </div>
-
-              {/* Items de cette priorité */}
-              <div className="space-y-4">
+            <div key={urgency} className="space-y-2">
+              <p className={`text-xs font-semibold uppercase tracking-wider ${
+                urgency === 'urgent' ? 'text-rose-600 dark:text-rose-400' :
+                urgency === 'priority' ? 'text-amber-600 dark:text-amber-400' :
+                'text-slate-500 dark:text-slate-400'
+              }`}>
+                {urgencyLabels[urgency]} — {items.length}
+              </p>
+              <div className="space-y-2">
                 {items.map((item) => (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedItem(item)}
-                    className="p-5 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl hover:shadow-md hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-200 cursor-pointer group"
+                    onKeyDown={(e) => e.key === 'Enter' && setSelectedItem(item)}
+                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group"
                   >
             {/* Cas Protocoles */}
             {activeCategory === 'protocols' && (
@@ -295,25 +270,20 @@ const ClinicalKnowledgeBase = () => {
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed line-clamp-2">{item.description}</p>
                     <div className="flex items-center space-x-4 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Icon name="Folder" size={12} /> {item.category}</span>
-                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> Mis à jour: {new Date(item.lastUpdated).toLocaleDateString('fr-FR')}</span>
+                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> Mis à jour: {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('fr-FR') : '—'}</span>
                     </div>
                   </div>
                   <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${getUrgencyStyle(item.urgency)}`}>
                     {item.urgency === 'urgent' ? 'Urgent' : item.urgency === 'priority' ? 'Priorité' : 'Standard'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-                  <div className="flex flex-wrap gap-2">
+                {(item.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     {(item.tags || []).map((tag, index) => (
-                      <span key={index} className="px-2 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium rounded-md">
-                        #{tag}
-                      </span>
+                      <span key={index} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs rounded-md">#{tag}</span>
                     ))}
                   </div>
-                  <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">
-                    <Icon name="Eye" size={14} className="mr-1.5" /> Consulter
-                  </Button>
-                </div>
+                )}
               </>
             )}
 
@@ -369,25 +339,20 @@ const ClinicalKnowledgeBase = () => {
                     </p>
                     <div className="flex items-center space-x-4 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Icon name="Folder" size={12} /> {item.category}</span>
-                      <span className="flex items-center gap-1"><Icon name="AlertCircle" size={12} /> {item.complications.split(',')[0]}</span>
+                      <span className="flex items-center gap-1"><Icon name="AlertCircle" size={12} /> {(item.complications || '').split(',')[0] || '—'}</span>
                     </div>
                   </div>
                   <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800">
                     Procédure
                   </span>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-                  <div className="flex flex-wrap gap-2">
+                {(item.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     {(item.tags || []).map((tag, index) => (
-                      <span key={index} className="px-2 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium rounded-md">
-                        #{tag}
-                      </span>
+                      <span key={index} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs rounded-md">#{tag}</span>
                     ))}
                   </div>
-                  <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">
-                    <Icon name="Eye" size={14} className="mr-1.5" /> Consulter
-                  </Button>
-                </div>
+                )}
               </>
             )}
 
@@ -400,25 +365,20 @@ const ClinicalKnowledgeBase = () => {
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed line-clamp-2">{item.description}</p>
                     <div className="flex items-center space-x-4 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Icon name="Folder" size={12} /> {item.category}</span>
-                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> {new Date(item.lastUpdated).toLocaleDateString('fr-FR')}</span>
+                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('fr-FR') : '—'}</span>
                     </div>
                   </div>
                   <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${getUrgencyStyle(item.urgency)}`}>
                     {item.urgency === 'urgent' ? 'Urgent' : item.urgency === 'priority' ? 'Priorité' : 'Standard'}
                   </span>
                 </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-50 dark:border-slate-800">
-                  <div className="flex flex-wrap gap-2">
+                {(item.tags || []).length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     {(item.tags || []).map((tag, index) => (
-                      <span key={index} className="px-2 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-medium rounded-md">
-                        #{tag}
-                      </span>
+                      <span key={index} className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs rounded-md">#{tag}</span>
                     ))}
                   </div>
-                  <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/10">
-                    <Icon name="Eye" size={14} className="mr-1.5" /> Consulter
-                  </Button>
-                </div>
+                )}
               </>
             )}
                   </div>
@@ -432,52 +392,48 @@ const ClinicalKnowledgeBase = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
-      
-      {/* Sidebar de Catégories */}
-      <div className="w-full md:w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col">
-        <div className="p-6 border-b border-slate-200/50 dark:border-slate-800">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-              <Icon name="BookOpen" size={20} />
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
+      {/* Sidebar */}
+      <div className="w-full md:w-64 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="BookOpen" size={20} className="text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900 dark:text-white leading-tight">Base Clinique</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Ressources & Savoir</p>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Base de Connaissances</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Protocoles, médicaments, directives</p>
             </div>
           </div>
-
           <div className="relative">
-             <Icon name="Search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-             <input 
-                type="text" 
-                placeholder="Rechercher..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all dark:text-white placeholder:text-slate-400"
-             />
+            <Icon name="Search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white placeholder-slate-400"
+            />
           </div>
         </div>
-
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto custom-scrollbar">
           {knowledgeCategories.map((category) => (
             <button
               key={category.id}
+              type="button"
               onClick={() => { setActiveCategory(category.id); setSearchQuery(''); }}
-              className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
                 activeCategory === category.id
-                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-white/50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400'
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
               }`}
             >
-              <div className="flex items-center gap-3">
+              <span className="flex items-center gap-2">
                 <Icon name={category.icon} size={18} className={activeCategory === category.id ? category.color : 'text-slate-400'} />
                 {category.label}
-              </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${
-                  activeCategory === category.id 
-                  ? 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300' 
-                  : 'bg-transparent text-slate-400'
+              </span>
+              <span className={`text-[10px] font-semibold tabular-nums ${
+                activeCategory === category.id ? 'text-slate-600 dark:text-slate-300' : 'text-slate-400 dark:text-slate-500'
               }`}>
                 {category.count}
               </span>
@@ -486,12 +442,12 @@ const ClinicalKnowledgeBase = () => {
         </nav>
       </div>
 
-      {/* Zone de Contenu */}
-      <div className="flex-1 flex flex-col bg-slate-50/30 dark:bg-black/20 overflow-hidden min-h-0">
-        <div className="flex-1 p-6 md:p-8 overflow-y-auto custom-scrollbar min-h-0">
-           <div className="max-w-4xl mx-auto">
-              {renderContent()}
-           </div>
+      {/* Contenu */}
+      <div className="flex-1 flex flex-col min-h-0 bg-slate-50/30 dark:bg-slate-950/30">
+        <div className="flex-1 p-5 overflow-y-auto custom-scrollbar min-h-0">
+          <div className="max-w-3xl mx-auto">
+            {renderContent()}
+          </div>
         </div>
       </div>
 

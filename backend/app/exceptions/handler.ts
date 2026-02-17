@@ -185,12 +185,16 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * Surcharge de la méthode de base pour un contrôle plus fin
    */
   protected shouldReport(error: HttpError): boolean {
+    // Ne pas logger les cas attendus (évite le bruit en prod)
+    const msg = (error.message || '').toLowerCase()
+    if (msg.includes('token expiré') || msg.includes('token expired')) return false
+    if (msg.includes('request aborted')) return false
+
     // Ne pas logger les erreurs client (4xx) sauf exceptions
     if (error.status >= 400 && error.status < 500) {
-      // Logger quand même les erreurs 429 (rate limiting) pour monitoring
       return error.status === 429 || error.status === 401
     }
-    
+
     // Toujours logger les erreurs serveur (5xx)
     return true
   }

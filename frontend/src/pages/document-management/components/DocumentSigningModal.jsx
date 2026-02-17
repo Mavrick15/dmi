@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
-import { X, PenTool, Eraser, Check } from 'lucide-react';
+import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 
@@ -19,70 +19,80 @@ const DocumentSigningModal = ({ isOpen, onClose, onConfirm, documentTitle, isSig
 
   const handleSave = () => {
     if (isEmpty) return;
-    // Récupère l'image en base64 (PNG transparent)
     const signatureDataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
     onConfirm(signatureDataURL);
   };
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col">
-        
+      <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <PenTool className="text-primary" size={20} />
-              Signer le document
-            </h2>
-            <p className="text-sm text-slate-500 mt-1 truncate max-w-xs">{documentTitle}</p>
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="PenTool" size={20} className="text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Signer le document</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[240px]" title={documentTitle}>
+                {documentTitle || 'Document'}
+              </p>
+            </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-white"><X size={24}/></button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors shrink-0"
+            aria-label="Fermer"
+          >
+            <Icon name="X" size={20} />
+          </button>
         </div>
 
         {/* Canvas Zone */}
-        <div className="p-6 bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center">
-          <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-white overflow-hidden shadow-inner">
-            <SignatureCanvas 
+        <div className="p-6 bg-slate-50/50 dark:bg-slate-900/30 flex flex-col items-center justify-center">
+          <div className="rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+            <SignatureCanvas
               ref={sigCanvas}
               penColor="black"
               canvasProps={{
-                width: 400, 
-                height: 200, 
-                className: 'cursor-crosshair'
+                width: 400,
+                height: 200,
+                className: 'cursor-crosshair w-full'
               }}
               onEnd={handleEnd}
             />
           </div>
-          <p className="text-xs text-slate-400 mt-3">Dessinez votre signature dans le cadre ci-dessus</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center">
+            Dessinez votre signature dans le cadre ci-dessus
+          </p>
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 rounded-b-2xl">
-          <Button 
-            variant="ghost" 
-            onClick={clear} 
-            className="text-slate-500 hover:text-rose-500"
+        <div className="p-6 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center gap-4 shrink-0">
+          <Button
+            variant="ghost"
+            onClick={clear}
+            className="text-slate-500 hover:text-red-500 dark:hover:text-red-400"
             disabled={isSigning}
           >
-            <Eraser size={16} className="mr-2" /> Effacer
+            <Icon name="Eraser" size={16} className="mr-2" />
+            Effacer
           </Button>
-
-          <div className="flex gap-3">
-             <Button variant="outline" onClick={onClose} disabled={isSigning}>Annuler</Button>
-             <Button 
-               variant="default" 
-               onClick={handleSave} 
-               disabled={isEmpty || isSigning}
-               loading={isSigning}
-               className="shadow-lg shadow-primary/20"
-             >
-               <Check size={18} className="mr-2" /> 
-               {isSigning ? 'Signature...' : 'Valider'}
-             </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose} disabled={isSigning}>
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isEmpty || isSigning}
+              loading={isSigning}
+            >
+              <Icon name="Check" size={18} className="mr-2" />
+              {isSigning ? 'Signature...' : 'Valider'}
+            </Button>
           </div>
         </div>
-
       </div>
     </AnimatedModal>
   );

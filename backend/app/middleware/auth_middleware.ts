@@ -16,7 +16,7 @@ export default class AuthMiddleware {
     }
 
     if (!token) {
-      const error: any = new Error('Non autorisé')
+      const error: any = new Error('Token manquant. Veuillez vous connecter.')
       error.code = 'E_UNAUTHORIZED_ACCESS'
       throw error
     }

@@ -159,16 +159,16 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
         )}
       </div>
 
-      {/* Category Filters */}
+      {/* Category Filters — scroll horizontal si beaucoup */}
       {loadingCategories ? (
         <div className="flex justify-center py-4">
           <Loader2 className="animate-spin text-primary" size={16} />
         </div>
       ) : (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar max-w-full">
           <button
             onClick={() => setSelectedCategory(null)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               !selectedCategory
                 ? 'bg-primary text-white'
                 : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -180,7 +180,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
                 selectedCategory === cat
                   ? 'bg-primary text-white'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -198,60 +198,73 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
           <div className="flex justify-center py-8">
             <Loader2 className="animate-spin text-primary" size={24} />
           </div>
+        ) : !searchQuery.trim() && !selectedCategory && filteredResults.length === 0 ? (
+          <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+            <Icon name="Search" size={28} className="mx-auto mb-2 opacity-40" />
+            <p className="text-sm">Tapez 2 caractères ou plus pour rechercher</p>
+            <p className="text-xs mt-1">ou choisissez une catégorie ci-dessus</p>
+          </div>
         ) : filteredResults.length === 0 ? (
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
             <Icon name="SearchX" size={32} className="mx-auto mb-2 opacity-50" />
             <p className="text-sm">Aucun résultat trouvé</p>
           </div>
         ) : (
-          filteredResults.map((item) => {
-            const isSelected = selectedCode === item.code;
-            return (
-              <motion.button
-                key={item.code}
-                onClick={() => handleSelect(item)}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className={`w-full text-left p-3 rounded-xl border transition-all ${
-                  isSelected
-                    ? 'bg-primary/10 border-primary dark:bg-primary/20 dark:border-primary/50'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30'
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-mono font-bold text-primary dark:text-blue-400 text-sm">
-                        {item.code}
-                      </span>
-                      {isSelected && (
-                        <Check size={14} className="text-primary dark:text-blue-400" />
+          <>
+            {filteredResults.map((item) => {
+              const isSelected = selectedCode === item.code;
+              return (
+                <motion.button
+                  key={item.code}
+                  onClick={() => handleSelect(item)}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  className={`w-full text-left p-3 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'bg-primary/10 border-primary dark:bg-primary/20 dark:border-primary/50'
+                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-md font-mono text-xs font-bold bg-slate-100 dark:bg-slate-700 text-primary dark:text-blue-400">
+                      {item.code}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-sm text-slate-700 dark:text-slate-300 font-medium line-clamp-2"
+                        title={item.name}
+                      >
+                        {item.name}
+                      </p>
+                      {item.category && (
+                        <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block">
+                          {item.category}
+                        </span>
                       )}
                     </div>
-                    <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-                      {item.name}
-                    </p>
-                    <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 inline-block">
-                      {item.category}
-                    </span>
+                    {isSelected && (
+                      <Check size={16} className="shrink-0 text-primary dark:text-blue-400" />
+                    )}
                   </div>
-                </div>
-              </motion.button>
-            );
-          })
+                </motion.button>
+              );
+            })}
+            {pagination && (pagination.total > pagination.perPage) && (
+              <div className="pt-2 text-center text-xs text-slate-500 dark:text-slate-400">
+                {pagination.total} résultat{(pagination.total > 1) ? 's' : ''}
+              </div>
+            )}
+          </>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
         <div className="flex items-start gap-2">
-          <Icon name="Info" size={16} className="text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-blue-700 dark:text-blue-300">
-            La Classification Internationale des Maladies (CIM-10) est utilisée pour codifier les diagnostics.
-            {selectedCode && (
-              <span className="block mt-1 font-semibold">
-                Code sélectionné: <span className="font-mono">{selectedCode}</span>
-              </span>
+          <Icon name="Info" size={16} className="text-slate-500 dark:text-slate-400 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-slate-600 dark:text-slate-400">
+            CIM-10 OMS — codification des diagnostics. {selectedCode && (
+              <span className="font-semibold text-slate-700 dark:text-slate-300">Sélection: <span className="font-mono">{selectedCode}</span></span>
             )}
           </p>
         </div>

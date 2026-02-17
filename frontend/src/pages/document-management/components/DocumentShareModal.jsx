@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
@@ -11,6 +11,9 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../../../lib/axios';
 import { useAuth } from '../../../contexts/AuthContext';
 
+// Partage réservé aux docteurs uniquement
+const ROLES_DOCTEURS = [{ value: 'docteur', label: 'Tous les docteurs' }];
+
 const DocumentShareModal = ({ document, isOpen, onClose }) => {
   const { hasPermission } = usePermissions();
   const { user } = useAuth();
@@ -20,7 +23,6 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
   const [expiresAt, setExpiresAt] = useState('');
   const { shareDocument } = useDocumentMutations();
 
-  // Récupérer la liste des utilisateurs
   const { data: usersData } = useQuery({
     queryKey: ['users', 'list'],
     queryFn: async () => {
@@ -30,22 +32,14 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
     enabled: isOpen
   });
 
-  // Récupérer la liste des rôles
-  const roles = [
-    { value: 'docteur', label: 'Docteurs' },
-    { value: 'infirmiere', label: 'Infirmières' },
-    { value: 'pharmacien', label: 'Pharmaciens' },
-    { value: 'gestionnaire', label: 'Gestionnaires' },
-    { value: 'admin', label: 'Administrateurs' }
-  ];
-
   if (!isOpen || !document) return null;
 
-  const handleShare = async () => {
-    if (selectedUserIds.length === 0 && selectedRoleIds.length === 0) {
-      return;
-    }
+  const noSelection = (Array.isArray(selectedUserIds) ? selectedUserIds.length : 0) === 0 &&
+    (Array.isArray(selectedRoleIds) ? selectedRoleIds.length : 0) === 0;
+  const canSubmit = !noSelection && hasPermission('document_share') && !shareDocument.isPending;
 
+  const handleShare = async () => {
+    if (noSelection) return;
     try {
       await shareDocument.mutateAsync({
         id: document.id,
@@ -62,48 +56,60 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
 
   const toggleUser = (userId) => {
     setSelectedUserIds(prev => {
-      const prevArray = Array.isArray(prev) ? prev : [];
-      return prevArray.includes(userId) 
-        ? prevArray.filter(id => id !== userId)
-        : [...prevArray, userId];
+      const arr = Array.isArray(prev) ? prev : [];
+      return arr.includes(userId) ? arr.filter(id => id !== userId) : [...arr, userId];
     });
   };
 
   const toggleRole = (roleId) => {
     setSelectedRoleIds(prev => {
-      const prevArray = Array.isArray(prev) ? prev : [];
-      return prevArray.includes(roleId) 
-        ? prevArray.filter(id => id !== roleId)
-        : [...prevArray, roleId];
+      const arr = Array.isArray(prev) ? prev : [];
+      return arr.includes(roleId) ? arr.filter(id => id !== roleId) : [...arr, roleId];
     });
   };
 
+  const users = Array.isArray(usersData)
+    ? usersData.filter(u => u && typeof u === 'object' && u.id !== user?.id && u.actif !== false && (u.role === 'docteur' || u.role === 'Docteur'))
+    : [];
+
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center border border-indigo-100 dark:border-indigo-900/50">
-              <Icon name="Share2" size={20} className="text-indigo-600 dark:text-indigo-400" />
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="Share2" size={20} className="text-primary" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Partager le document</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{document.title}</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Partager le document</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[280px]" title={document.title}>
+                {document.title || document.originalName}
+              </p>
             </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-colors"
+            aria-label="Fermer"
+          >
             <Icon name="X" size={20} />
-          </Button>
+          </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5 min-h-0">
+          {/* Rubrique Partage (docteurs uniquement) */}
+          <div className="flex items-center gap-2 pb-1">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Partage du document</span>
+            <span className="flex-1 h-px bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Les documents ne peuvent être partagés qu&apos;avec des médecins. Chaque médecin concerné sera notifié.</p>
+
           {/* Permission */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Permission
-            </label>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Niveau d'accès</p>
             <Select
               options={[
                 { value: 'read', label: 'Lecture seule' },
@@ -115,115 +121,94 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
             />
           </div>
 
-          {/* Utilisateurs */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-              Utilisateurs
-            </label>
-            <div className="max-h-48 overflow-y-auto space-y-2 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-              {Array.isArray(usersData) && usersData.length > 0 ? (
-                usersData
-                  .filter(u => {
-                    if (!u || typeof u !== 'object') return false;
-                    return u.id !== user?.id && u.actif !== false;
-                  })
-                  .map((user) => {
-                    if (!user || typeof user !== 'object') return null;
-                    return (
-                    <label
-                      key={user.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedUserIds.includes(user.id)}
-                        onChange={() => toggleUser(user.id)}
-                        className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-900 dark:text-white">
-                          {user.nomComplet || user.email}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{user.role}</p>
-                      </div>
-                    </label>
-                    );
-                  }).filter(Boolean)
+          {/* Médecins (sélection individuelle) */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+            <p className="text-sm font-bold text-slate-900 dark:text-white px-4 pt-4 pb-2">Médecins</p>
+            <div className="max-h-44 overflow-y-auto px-4 pb-4">
+              {users.length > 0 ? (
+                <ul className="space-y-1">
+                  {users.map((u) => (
+                    <li key={u.id}>
+                      <label className="flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={selectedUserIds.includes(u.id)}
+                          onChange={() => toggleUser(u.id)}
+                          className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium text-slate-900 dark:text-white block truncate">
+                            {u.nomComplet || u.email}
+                          </span>
+                          {u.role && (
+                            <span className="text-xs text-slate-500 dark:text-slate-400">{u.role}</span>
+                          )}
+                        </div>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">
-                  Aucun utilisateur disponible
-                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-6">Aucun médecin disponible pour le partage.</p>
               )}
             </div>
           </div>
 
-          {/* Rôles */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-              Rôles
-            </label>
-            <div className="space-y-2">
-              {Array.isArray(roles) && roles.map((role) => {
-                if (!role || typeof role !== 'object') return null;
-                return (
-                  <label
-                    key={role.value || Math.random()}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={Array.isArray(selectedRoleIds) && selectedRoleIds.includes(role.value)}
-                      onChange={() => toggleRole(role.value)}
-                      className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500"
-                    />
-                    <span className="text-sm font-medium text-slate-900 dark:text-white">
-                      {role.label || ''}
-                    </span>
-                  </label>
-                );
-              }).filter(Boolean)}
+          {/* Rôles (docteurs uniquement) */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4">
+            <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Partager avec un rôle</p>
+            <div className="flex flex-wrap gap-2">
+              {ROLES_DOCTEURS.map((role) => (
+                <label
+                  key={role.value}
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedRoleIds.includes(role.value)}
+                    onChange={() => toggleRole(role.value)}
+                    className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20"
+                  />
+                  <span className="text-sm font-medium text-slate-900 dark:text-white">{role.label}</span>
+                </label>
+              ))}
             </div>
           </div>
 
           {/* Expiration */}
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Expiration (optionnel)
-            </label>
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Expiration (optionnel)</p>
             <Input
               type="datetime-local"
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
               className="w-full"
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              L'accès expirera automatiquement à cette date
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">L'accès expirera automatiquement à cette date.</p>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-end gap-2 p-6 border-t border-slate-200 dark:border-slate-700 shrink-0">
           <Button variant="outline" onClick={onClose}>
             Annuler
           </Button>
           <PermissionGuard requiredPermission="document_share">
             <Button
               onClick={handleShare}
-              disabled={shareDocument.isPending || (Array.isArray(selectedUserIds) ? selectedUserIds.length === 0 : true) && (Array.isArray(selectedRoleIds) ? selectedRoleIds.length === 0 : true) || !hasPermission('document_share')}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              disabled={!canSubmit}
             >
-            {shareDocument.isPending ? (
-              <>
-                <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
-                Partage en cours...
-              </>
-            ) : (
-              <>
-                <Icon name="Share2" size={16} className="mr-2" />
-                Partager
-              </>
-            )}
+              {shareDocument.isPending ? (
+                <>
+                  <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                  Partage en cours...
+                </>
+              ) : (
+                <>
+                  <Icon name="Share2" size={16} className="mr-2" />
+                  Partager
+                </>
+              )}
             </Button>
           </PermissionGuard>
         </div>

@@ -419,34 +419,43 @@ const MedicalCalculators = ({ onClose }) => {
     }
   };
 
+  const activeLabel = calculators.find(c => c.id === activeCalculator)?.name || '';
+
   return (
-    <div className="space-y-6">
-      {/* Calculator Selector */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+    <div className="space-y-5">
+      {/* Sélecteur d'outil */}
+      <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
         {calculators.map((calc) => (
           <button
             key={calc.id}
+            type="button"
             onClick={() => setActiveCalculator(calc.id)}
-            className={`p-3 rounded-xl border text-left transition-all ${
+            className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-left transition-all ${
               activeCalculator === calc.id
                 ? 'bg-primary/10 border-primary dark:bg-primary/20 dark:border-primary/50'
-                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-primary/30'
             }`}
           >
-            <Icon name={calc.icon} size={20} className={`mb-2 ${activeCalculator === calc.id ? 'text-primary' : 'text-slate-400'}`} />
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">{calc.name}</p>
+            <Icon name={calc.icon} size={18} className={activeCalculator === calc.id ? 'text-primary dark:text-blue-400' : 'text-slate-400'} />
+            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">{calc.name}</span>
           </button>
         ))}
       </div>
 
-      {/* Calculator Content */}
-      <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
+      {/* Contenu du calculateur */}
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+        {activeLabel && (
+          <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+            <Icon name={calculators.find(c => c.id === activeCalculator)?.icon || 'Activity'} size={16} className="text-primary dark:text-blue-400" />
+            {activeLabel}
+          </h4>
+        )}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeCalculator}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
             {renderCalculator()}

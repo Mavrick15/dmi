@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
@@ -10,6 +9,7 @@ import { usePermissions } from '../../hooks/usePermissions';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext'; 
 import { useDocuments, useDocumentMutations, useDocumentStats } from '../../hooks/useDocuments';
+import tokenService from '../../services/tokenService';
 
 // Composants
 import DocumentCard from './components/DocumentCard';
@@ -152,15 +152,17 @@ const DocumentManagement = () => {
     setCurrentPage(1); // Retourner à la première page lors d'une nouvelle recherche
   };
 
-  // Téléchargement
+  // Téléchargement (nouvel onglet : le token doit être dans l'URL car le navigateur n'envoie pas les headers)
   const handleDownload = async (doc) => {
     if (!doc) return;
     try {
-      const downloadUrl = downloadDocument(doc.id);
-      window.open(downloadUrl, '_blank');
-      showToast(`Téléchargement de "${doc.title}" lancé.`, 'info');
+      const baseUrl = downloadDocument(doc.id);
+      const token = tokenService.getAccessToken();
+      const url = token ? `${baseUrl}?token=${encodeURIComponent(token)}` : baseUrl;
+      window.open(url, '_blank');
+      showToast(`Téléchargement de "${doc.title || doc.originalName}" lancé.`, 'info');
     } catch (err) {
-      showToast("Impossible de télécharger le fichier.", 'error');
+      showToast('Impossible de télécharger le fichier.', 'error');
     }
   };
 
@@ -298,205 +300,137 @@ const DocumentManagement = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors">
       <Header />
-      
+
       <main className="pt-24 max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
-        
         {/* En-tête de page */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6"
-        >
-          <div className="space-y-2">
-            <div className="flex items-center gap-4">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-              >
-                <Icon name="FileText" size={24} />
-              </motion.div>
-              <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
-                  Gestion Documentaire
-                </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
-                  Archivage, consultation et signature des dossiers médicaux
-                </p>
-              </div>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="FileText" size={24} className="text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                Gestion documentaire
+              </h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                Archivage, consultation et signature des dossiers médicaux
+              </p>
             </div>
           </div>
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex items-center gap-3"
-          >
-            <Button 
-              variant="outline" 
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
               onClick={() => {
                 queryClient.invalidateQueries({ queryKey: ['documents'], exact: false });
                 showToast('Documents actualisés', 'success');
               }}
-              className="flex items-center gap-2 border-slate-200 dark:border-slate-700 hover-lift"
+              className="gap-2 border-slate-200 dark:border-slate-700"
             >
-              <Icon name="RefreshCw" size={16} className={isLoading ? "animate-spin" : ""} />
+              <Icon name="RefreshCw" size={16} className={isLoading ? 'animate-spin' : ''} />
               Actualiser
             </Button>
             {selectedDocumentsForExport.length > 0 && (
               <PermissionGuard requiredPermission="audit_view">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={handleExportBulk}
                   disabled={exportBulkMutation.isPending || !hasPermission('audit_view')}
-                  className="flex items-center gap-2 border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                  className="gap-2 text-primary border-primary/30 hover:bg-primary/10 dark:hover:bg-primary/20"
                 >
-                  <Icon name="Download" size={16} className={exportBulkMutation.isPending ? "animate-spin" : ""} />
+                  <Icon name="Download" size={16} className={exportBulkMutation.isPending ? 'animate-spin' : ''} />
                   Exporter ({selectedDocumentsForExport.length})
                 </Button>
               </PermissionGuard>
             )}
             <PermissionGuard requiredPermission="document_upload">
-              <Button 
-                onClick={() => setIsModalOpen(true)} 
-                className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 border-transparent hover:shadow-xl hover:shadow-indigo-500/40 transition-all"
+              <Button
+                onClick={() => setIsModalOpen(true)}
                 disabled={!hasPermission('document_upload')}
+                className="gap-2"
               >
                 <Icon name="Plus" size={20} />
-                Nouveau Document
+                Nouveau document
               </Button>
             </PermissionGuard>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Statistiques */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8 w-full"
-        >
+        <div className="mb-6 w-full">
           <DocumentStats stats={computedStats} />
-        </motion.div>
+        </div>
 
         {/* Zone d'erreur globale */}
-        <AnimatePresence>
-          {documentsError && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-xl mb-6 flex items-center gap-3 border border-red-100 dark:border-red-900/30"
-            >
-              <Icon name="AlertCircle" size={20} />
-              <p>{documentsError.message || "Impossible de charger les documents."}</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Conteneur principal (Liste) */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm min-h-[400px] border border-slate-200 dark:border-slate-800 hover:shadow-md transition-shadow"
-        >
-          
-          {/* Barre de recherche interne */}
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800 gap-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Fichiers récents ({totalDocuments})
-            </h2>
-            
-            <div className="relative w-full sm:w-72">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icon name="Search" size={16} className="text-slate-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Rechercher (titre, patient)..."
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                maxLength={100}
-                className="w-full pl-10 pr-10 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all dark:text-white placeholder:text-slate-400"
-              />
-              {searchTerm && (
-                <button onClick={() => handleSearchChange('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                  <Icon name="X" size={14} />
-                </button>
-              )}
-            </div>
+        {documentsError && (
+          <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400">
+            <Icon name="AlertCircle" size={20} className="shrink-0" />
+            <p className="text-sm">{documentsError.message || 'Impossible de charger les documents.'}</p>
           </div>
+        )}
 
-          {/* Grille de documents */}
-          <AnimatePresence mode="wait">
+        {/* Conteneur principal */}
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm min-h-[400px] overflow-hidden">
+          <div className="p-6">
+            {/* Barre de recherche */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Fichiers ({totalDocuments})
+              </h2>
+              <div className="relative w-full sm:w-72">
+                <Icon name="Search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Rechercher (titre, patient)..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  maxLength={100}
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder:text-slate-400"
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => handleSearchChange('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700"
+                    aria-label="Effacer la recherche"
+                  >
+                    <Icon name="X" size={14} />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Grille de documents */}
             {isLoading ? (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center py-32 text-slate-400"
-              >
-                <div className="relative mb-4">
-                  <div className="w-16 h-16 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-500 rounded-full animate-spin"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Icon name="RefreshCw" className="text-indigo-600 dark:text-indigo-400" size={24} />
-                  </div>
-                </div>
+              <div className="flex flex-col items-center justify-center py-24 text-slate-500 dark:text-slate-400">
+                <Icon name="Loader2" size={32} className="animate-spin text-primary mb-4" />
                 <p className="text-sm font-medium">Chargement des documents...</p>
-              </motion.div>
+              </div>
             ) : documents.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col items-center justify-center py-24 text-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.2, type: "spring", bounce: 0.4 }}
-                  className="w-20 h-20 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center mb-4"
-                >
-                  <Icon name="FileText" className="text-indigo-600 dark:text-indigo-400" size={40} />
-                </motion.div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Aucun document</h3>
-                <p className="text-slate-500 dark:text-slate-400 max-w-sm mb-6">
-                  Aucun fichier trouvé. Utilisez le bouton "Nouveau" pour en ajouter.
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                  <Icon name="FileText" size={32} className="text-slate-400 dark:text-slate-500" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
+                  Aucun fichier trouvé. Utilisez « Nouveau document » pour en ajouter.
                 </p>
-                <Button 
-                  onClick={() => setIsModalOpen(true)} 
-                  variant="outline"
-                  className="hover-lift"
-                >
-                  Uploader un document
+                <Button onClick={() => setIsModalOpen(true)} variant="outline" size="sm">
+                  Ajouter un document
                 </Button>
-              </motion.div>
+              </div>
             ) : (
-              <motion.div
-                key="documents-grid"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
-              >
-                {Array.isArray(documents) && documents.map((doc, index) => {
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {documents.map((doc) => {
                   if (!doc || typeof doc !== 'object') return null;
                   const selectedArray = Array.isArray(selectedDocumentsForExport) ? selectedDocumentsForExport : [];
-                  const isSelected = selectedArray.some(d => d && d.id === doc.id);
+                  const isSelected = selectedArray.some((d) => d && d.id === doc.id);
                   return (
-                    <motion.div
+                    <div
                       key={doc.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className={`h-full relative ${isSelected ? 'ring-2 ring-indigo-500 rounded-2xl' : ''}`}
+                      className={`h-full relative ${isSelected ? 'ring-2 ring-primary rounded-2xl ring-offset-2 dark:ring-offset-slate-900' : ''}`}
                     >
-                      {/* Checkbox pour sélection multiple */}
                       <div className="absolute top-2 right-2 z-10">
                         <input
                           type="checkbox"
@@ -504,98 +438,88 @@ const DocumentManagement = () => {
                           onChange={(e) => {
                             e.stopPropagation();
                             if (isSelected) {
-                              setSelectedDocumentsForExport(prev => {
-                                const prevArray = Array.isArray(prev) ? prev : [];
-                                return prevArray.filter(d => d && d.id !== doc.id);
-                              });
+                              setSelectedDocumentsForExport((prev) => (Array.isArray(prev) ? prev : []).filter((d) => d && d.id !== doc.id));
                             } else {
-                              setSelectedDocumentsForExport(prev => {
-                                const prevArray = Array.isArray(prev) ? prev : [];
-                                return [...prevArray, doc];
-                              });
+                              setSelectedDocumentsForExport((prev) => [...(Array.isArray(prev) ? prev : []), doc]);
                             }
                           }}
                           onClick={(e) => e.stopPropagation()}
-                          className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500 cursor-pointer bg-white dark:bg-slate-800"
+                          className="w-5 h-5 text-primary rounded border-slate-300 focus:ring-primary/20 cursor-pointer bg-white dark:bg-slate-800"
                         />
                       </div>
-                        <DocumentCard
-                          document={doc}
-                        onView={(document) => openViewer(document)}
-                        onDownload={(document) => handleDownload(document)}
-                        onDelete={(document) => initiateDelete(document)}
-                        onShare={(document) => handleShare(document)}
-                        />
-                    </motion.div>
+                      <DocumentCard
+                        document={doc}
+                        onView={openViewer}
+                        onDownload={handleDownload}
+                        onDelete={initiateDelete}
+                        onShare={handleShare}
+                        canDelete={doc.uploadedBy === user?.id || user?.role === 'admin' || user?.role === 'gestionnaire'}
+                        canShare={doc.uploadedBy === user?.id}
+                      />
+                    </div>
                   );
-                }).filter(Boolean)}
-              </motion.div>
+                })}
+              </div>
             )}
-          </AnimatePresence>
 
-          {/* Pagination */}
-          {documents.length > 0 && totalPages > 1 && (
-            <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
-              <div className="text-sm text-slate-500 dark:text-slate-400">
-                Affichage de <span className="font-bold text-slate-900 dark:text-white">
-                  {((currentPage - 1) * limit) + 1}
-                </span> à{' '}
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {Math.min(currentPage * limit, totalDocuments)}
-                </span>{' '}
-                sur <span className="font-bold text-slate-900 dark:text-white">{totalDocuments}</span> documents
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1 || isLoading}
-                >
-                  <Icon name="ChevronLeft" size={16} className="mr-1" />
-                  Précédent
-                </Button>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                    let page;
-                    if (totalPages <= 7) {
-                      page = i + 1;
-                    } else if (currentPage <= 4) {
-                      page = i + 1;
-                    } else if (currentPage >= totalPages - 3) {
-                      page = totalPages - 6 + i;
-                    } else {
-                      page = currentPage - 3 + i;
-                    }
-                    return (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                          currentPage === page
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
-                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-                        }`}
-                        disabled={isLoading}
-                      >
-                        {page}
-                      </button>
-                    );
-                  })}
+            {/* Pagination */}
+            {documents.length > 0 && totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
+                <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{((currentPage - 1) * limit) + 1}</span>
+                  {' – '}
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{Math.min(currentPage * limit, totalDocuments)}</span>
+                  {' sur '}
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{totalDocuments}</span>
+                </p>
+                <div className="flex items-center gap-2 order-1 sm:order-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1 || isLoading}
+                  >
+                    <Icon name="ChevronLeft" size={16} className="mr-1" />
+                    Précédent
+                  </Button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                      let page;
+                      if (totalPages <= 7) page = i + 1;
+                      else if (currentPage <= 4) page = i + 1;
+                      else if (currentPage >= totalPages - 3) page = totalPages - 6 + i;
+                      else page = currentPage - 3 + i;
+                      return (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => setCurrentPage(page)}
+                          className={`min-w-[2.25rem] px-2 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === page
+                              ? 'bg-primary text-white'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 border border-transparent'
+                          }`}
+                          disabled={isLoading}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages || isLoading}
+                  >
+                    Suivant
+                    <Icon name="ChevronRight" size={16} className="ml-1" />
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages || isLoading}
-                >
-                  Suivant
-                  <Icon name="ChevronRight" size={16} className="ml-1" />
-                </Button>
               </div>
-            </div>
-          )}
-        </motion.div>
+            )}
+          </div>
+        </div>
       </main>
 
       {/* --- MODALES --- */}

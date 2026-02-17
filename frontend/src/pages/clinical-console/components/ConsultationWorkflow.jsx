@@ -544,529 +544,570 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
       case 'complaint':
         return (
           <div className="space-y-6">
-            <Input label="Motif Principal" placeholder="Décrivez le motif..." value={consultationData.chiefComplaint} onChange={(e) => setConsultationData(prev => ({ ...prev, chiefComplaint: e.target.value }))} className={inputClassName} autoFocus />
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-3 uppercase tracking-wide">Symptômes Associés</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {/* Motif principal */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="MessageSquare" size={18} className="text-primary dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Motif principal</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Raison de la consultation (min. 3 caractères)</p>
+                </div>
+              </div>
+              <textarea
+                autoFocus
+                placeholder="Ex: douleur thoracique, fièvre, contrôle annuel..."
+                value={consultationData.chiefComplaint}
+                onChange={(e) => setConsultationData(prev => ({ ...prev, chiefComplaint: e.target.value }))}
+                className={`w-full min-h-[100px] p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y ${inputClassName} placeholder-slate-400`}
+                rows={3}
+              />
+            </div>
+            {/* Symptômes associés */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <Icon name="List" size={18} className="text-slate-600 dark:text-slate-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Symptômes associés</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Cochez les symptômes mentionnés par le patient</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {Array.isArray(commonSymptoms) && commonSymptoms.map((symptom) => {
                   if (!symptom || typeof symptom !== 'string') return null;
+                  const isChecked = Array.isArray(consultationData.symptoms) && consultationData.symptoms.includes(symptom);
                   return (
-                    <div key={symptom} className={`p-3 rounded-lg border transition-all duration-200 ${Array.isArray(consultationData.symptoms) && consultationData.symptoms.includes(symptom) ? 'bg-primary/10 border-primary/30 dark:bg-primary/20 dark:border-primary/50' : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-slate-300'}`}>
-                      <Checkbox label={symptom} checked={Array.isArray(consultationData.symptoms) && consultationData.symptoms.includes(symptom)} onChange={() => handleSymptomToggle(symptom)} className="dark:text-white" />
+                    <div
+                      key={symptom}
+                      className={`p-3 rounded-xl border transition-all duration-200 ${
+                        isChecked
+                          ? 'bg-primary/10 border-primary/40 dark:bg-primary/20 dark:border-primary/50'
+                          : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                      }`}
+                    >
+                      <Checkbox
+                        label={symptom}
+                        checked={isChecked}
+                        onChange={() => handleSymptomToggle(symptom)}
+                        className="dark:text-white"
+                      />
                     </div>
                   );
                 }).filter(Boolean)}
               </div>
+              {consultationData.symptoms?.length > 0 && (
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                  {consultationData.symptoms.length} symptôme{(consultationData.symptoms.length > 1) ? 's' : ''} sélectionné{(consultationData.symptoms.length > 1) ? 's' : ''}
+                </p>
+              )}
             </div>
           </div>
         );
       case 'vitals':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <Input 
-                label="Température (°C)" 
-                type="number" 
-                placeholder="36.5" 
-                value={consultationData.vitalSigns.temperature} 
-                onChange={(e) => handleVitalSignChange('temperature', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.temperature ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.temperature && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.temperature}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                label="Tension Artérielle (mmHg)" 
-                type="text" 
-                placeholder="120/80" 
-                value={consultationData.vitalSigns.bloodPressure} 
-                onChange={(e) => handleVitalSignChange('bloodPressure', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.bloodPressure ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.bloodPressure && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.bloodPressure}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                label="Fréquence Cardiaque (bpm)" 
-                type="number" 
-                placeholder="72" 
-                value={consultationData.vitalSigns.heartRate} 
-                onChange={(e) => handleVitalSignChange('heartRate', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.heartRate ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.heartRate && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.heartRate}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                label="Fréquence Respiratoire (/min)" 
-                type="number" 
-                placeholder="16" 
-                value={consultationData.vitalSigns.respiratoryRate} 
-                onChange={(e) => handleVitalSignChange('respiratoryRate', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.respiratoryRate ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.respiratoryRate && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.respiratoryRate}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                label="Saturation O2 (%)" 
-                type="number" 
-                placeholder="98" 
-                value={consultationData.vitalSigns.oxygenSaturation} 
-                onChange={(e) => handleVitalSignChange('oxygenSaturation', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.oxygenSaturation ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.oxygenSaturation && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.oxygenSaturation}
-                </p>
-              )}
-            </div>
-            
-            {/* Séparateur visuel pour données anthropométriques */}
-            <div className="md:col-span-2 pt-4 border-t border-slate-200 dark:border-slate-700">
-              <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 uppercase tracking-wide flex items-center gap-2">
-                <Icon name="User" size={16} className="text-primary" />
-                Données Anthropométriques
-              </h3>
-            </div>
-            
-            <div>
-              <Input 
-                label="Poids (kg)" 
-                type="number" 
-                step="0.1"
-                placeholder="70" 
-                value={consultationData.vitalSigns.weight} 
-                onChange={(e) => handleVitalSignChange('weight', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.weight && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.weight}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <Input 
-                label="Taille (cm)" 
-                type="number" 
-                placeholder="170" 
-                value={consultationData.vitalSigns.height} 
-                onChange={(e) => handleVitalSignChange('height', e.target.value)} 
-                className={`${inputClassName} ${vitalSignsErrors.height ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`} 
-              />
-              {vitalSignsErrors.height && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                  <AlertTriangle size={12} />
-                  {vitalSignsErrors.height}
-                </p>
-              )}
-            </div>
-            
-            {/* IMC calculé automatiquement */}
-            {consultationData.vitalSigns.bmi && (
-              <div className="md:col-span-2">
-                <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-emerald-900/20 dark:to-green-900/10 border-2 border-emerald-200 dark:border-emerald-800 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-emerald-500 dark:bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                        <Icon name="Activity" size={24} className="text-white" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                          Indice de Masse Corporelle (IMC)
-                        </p>
-                        <p className="text-3xl font-bold text-emerald-700 dark:text-emerald-300">
-                          {consultationData.vitalSigns.bmi}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-sm font-bold px-3 py-1.5 rounded-full ${
-                        consultationData.vitalSigns.bmi < 18.5 
-                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
-                          : consultationData.vitalSigns.bmi < 25
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                          : consultationData.vitalSigns.bmi < 30
-                          ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                          : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                      }`}>
-                        {consultationData.vitalSigns.bmi < 18.5 
-                          ? 'Insuffisance pondérale'
-                          : consultationData.vitalSigns.bmi < 25
-                          ? 'Poids normal'
-                          : consultationData.vitalSigns.bmi < 30
-                          ? 'Surpoids'
-                          : 'Obésité'
-                        }
-                      </p>
-                      <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                        kg/m²
-                      </p>
-                    </div>
-                  </div>
+          <div className="space-y-6">
+            {/* Constantes vitales */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Activity" size={18} className="text-primary dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Constantes vitales</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Température, tension, fréquence cardiaque, etc.</p>
                 </div>
               </div>
-            )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Input
+                    label="Température (°C)"
+                    type="number"
+                    placeholder="36.5"
+                    value={consultationData.vitalSigns.temperature}
+                    onChange={(e) => handleVitalSignChange('temperature', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.temperature ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.temperature && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.temperature}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Tension (mmHg)"
+                    type="text"
+                    placeholder="120/80"
+                    value={consultationData.vitalSigns.bloodPressure}
+                    onChange={(e) => handleVitalSignChange('bloodPressure', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.bloodPressure ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.bloodPressure && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.bloodPressure}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Fréquence cardiaque (bpm)"
+                    type="number"
+                    placeholder="72"
+                    value={consultationData.vitalSigns.heartRate}
+                    onChange={(e) => handleVitalSignChange('heartRate', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.heartRate ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.heartRate && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.heartRate}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Fréquence respiratoire (/min)"
+                    type="number"
+                    placeholder="16"
+                    value={consultationData.vitalSigns.respiratoryRate}
+                    onChange={(e) => handleVitalSignChange('respiratoryRate', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.respiratoryRate ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.respiratoryRate && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.respiratoryRate}
+                    </p>
+                  )}
+                </div>
+                <div className="md:col-span-2">
+                  <Input
+                    label="Saturation O₂ (%)"
+                    type="number"
+                    placeholder="98"
+                    value={consultationData.vitalSigns.oxygenSaturation}
+                    onChange={(e) => handleVitalSignChange('oxygenSaturation', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.oxygenSaturation ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.oxygenSaturation && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.oxygenSaturation}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Données anthropométriques */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <Icon name="User" size={18} className="text-slate-600 dark:text-slate-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Poids et taille</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">IMC calculé automatiquement</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Input
+                    label="Poids (kg)"
+                    type="number"
+                    step="0.1"
+                    placeholder="70"
+                    value={consultationData.vitalSigns.weight}
+                    onChange={(e) => handleVitalSignChange('weight', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.weight ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.weight && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.weight}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Input
+                    label="Taille (cm)"
+                    type="number"
+                    placeholder="170"
+                    value={consultationData.vitalSigns.height}
+                    onChange={(e) => handleVitalSignChange('height', e.target.value)}
+                    className={`${inputClassName} ${vitalSignsErrors.height ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : ''}`}
+                  />
+                  {vitalSignsErrors.height && (
+                    <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <AlertTriangle size={12} />
+                      {vitalSignsErrors.height}
+                    </p>
+                  )}
+                </div>
+              </div>
+              {consultationData.vitalSigns.bmi && (
+                <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/10 border border-emerald-200 dark:border-emerald-800/50">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500 dark:bg-emerald-600 flex items-center justify-center">
+                        <Icon name="Activity" size={20} className="text-white" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">IMC</p>
+                        <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{consultationData.vitalSigns.bmi} <span className="text-sm font-normal text-emerald-600 dark:text-emerald-400">kg/m²</span></p>
+                      </div>
+                    </div>
+                    <span className={`text-sm font-semibold px-3 py-1.5 rounded-full ${
+                      consultationData.vitalSigns.bmi < 18.5
+                        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                        : consultationData.vitalSigns.bmi < 25
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                        : consultationData.vitalSigns.bmi < 30
+                        ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                        : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                    }`}>
+                      {consultationData.vitalSigns.bmi < 18.5 ? 'Insuffisance pondérale' : consultationData.vitalSigns.bmi < 25 ? 'Poids normal' : consultationData.vitalSigns.bmi < 30 ? 'Surpoids' : 'Obésité'}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         );
       case 'examination':
         return (
           <div className="space-y-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">Examen Clinique</label>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                    <Icon name="Stethoscope" size={18} className="text-primary dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Examen clinique</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Observations physiques (min. 3 caractères)</p>
+                  </div>
+                </div>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   iconName="Zap"
                   onClick={() => {
                     setQuickNotesTarget('examination');
                     setShowQuickNotes(true);
                   }}
-                  className="text-xs dark:text-slate-400"
+                  className="shrink-0 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   Notes rapides
                 </Button>
               </div>
-              <textarea className={`w-full h-48 p-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none ${inputClassName} placeholder-slate-400`} placeholder="Observations physiques détaillées..." value={consultationData.examination} onChange={(e) => setConsultationData(prev => ({ ...prev, examination: e.target.value }))} />
+              <textarea
+                placeholder="Ex: état général conservé, auscultation cardio-pulmonaire normale, abdomen souple..."
+                value={consultationData.examination}
+                onChange={(e) => setConsultationData(prev => ({ ...prev, examination: e.target.value }))}
+                className={`w-full min-h-[180px] p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y ${inputClassName} placeholder-slate-400`}
+                rows={6}
+              />
             </div>
           </div>
         );
       case 'diagnosis':
         return (
           <div className="space-y-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                  Diagnostic Principal
-                </label>
+            {/* Bloc Diagnostic principal */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Stethoscope" size={18} className="text-primary dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Diagnostic principal</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Saisissez ou choisissez un code CIM-10 OMS</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <Input
+                  type="text"
+                  placeholder="Ex: hypertension, diabète, pneumonie..."
+                  value={consultationData.diagnosis}
+                  onChange={(e) => setConsultationData(prev => ({ ...prev, diagnosis: e.target.value }))}
+                  className={`flex-1 ${inputClassName}`}
+                />
                 <Button
                   variant="outline"
                   size="sm"
                   iconName="Search"
                   onClick={() => setShowCIM10Search(true)}
-                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="shrink-0 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
-                  Rechercher CIM-10
+                  CIM-10
                 </Button>
               </div>
-              <Input 
-                type="text" 
-                placeholder="Entrez le diagnostic..." 
-                value={consultationData.diagnosis} 
-                onChange={(e) => setConsultationData(prev => ({ ...prev, diagnosis: e.target.value }))} 
-                className={inputClassName} 
-              />
               {selectedCIM10Code && (
-                <div className="mt-2 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">Code CIM-10 sélectionné:</span>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="font-mono font-bold text-emerald-900 dark:text-emerald-100">{selectedCIM10Code.code}</span>
-                        <span className="text-sm text-emerald-700 dark:text-emerald-300">{selectedCIM10Code.name}</span>
-                      </div>
+                <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg font-mono text-sm font-bold bg-emerald-200/80 dark:bg-emerald-800/50 text-emerald-800 dark:text-emerald-200">
+                        {selectedCIM10Code.code}
+                      </span>
+                      <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">CIM-10 OMS</span>
                     </div>
-                    <button
-                      onClick={() => {
-                        setSelectedCIM10Code(null);
-                        setConsultationData(prev => ({ ...prev, diagnosisCode: null }));
-                      }}
-                      className="p-1 hover:bg-emerald-200 dark:hover:bg-emerald-800 rounded"
-                    >
-                      <X size={16} className="text-emerald-600 dark:text-emerald-400" />
-                    </button>
+                    <p className="mt-2 text-sm text-slate-700 dark:text-slate-300 leading-snug">
+                      {selectedCIM10Code.name}
+                    </p>
+                    {selectedCIM10Code.category && (
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{selectedCIM10Code.category}</p>
+                    )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCIM10Code(null);
+                      setConsultationData(prev => ({ ...prev, diagnosisCode: null }));
+                    }}
+                    className="shrink-0 p-2 rounded-lg hover:bg-emerald-200/60 dark:hover:bg-emerald-800/40 text-emerald-700 dark:text-emerald-300 transition-colors"
+                    title="Retirer le code"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
               )}
             </div>
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
-                <div className="flex items-center gap-2 mb-2 text-blue-700 dark:text-blue-300 font-medium"><Icon name="Info" size={16} /> Aide au diagnostic</div>
-                <p className="text-sm text-blue-600/80 dark:text-blue-400/80">Suggestions basées sur les symptômes : {consultationData.symptoms.length > 0 ? 'Analyse en cours...' : 'Aucun symptôme saisi.'}</p>
+            {/* Aide au diagnostic */}
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                <Icon name="Info" size={16} />
+                <span className="text-sm font-medium">Aide au diagnostic</span>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                {consultationData.symptoms.length > 0
+                  ? 'Suggestions basées sur les symptômes saisis (analyse en cours).'
+                  : 'Saisissez des symptômes à l\'étape précédente pour obtenir des suggestions.'}
+              </p>
             </div>
           </div>
         );
       
-      // --- ÉTAPE PRESCRIPTION (MODIFIÉE) ---
+      // --- ÉTAPE PRESCRIPTION ---
       case 'treatment':
         return (
-          <div className="space-y-8">
-            
-            {/* ZONE 1 : PANIER DE PRESCRIPTION */}
-            <div className="p-4 bg-blue-50/50 dark:bg-blue-900/10 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-2xl transition-all">
-                
-                {/* CAS A: Aucun médicament en cours d'édition -> Barre de recherche */}
-                {!currentMedDraft ? (
-                    <div className="relative">
-                        <label className="block text-xs font-bold text-blue-700 dark:text-blue-300 mb-2 uppercase tracking-wide">
-                            <Icon name="Search" className="inline mr-1.5" size={14}/>
-                            Ajouter un médicament
-                        </label>
-                        <div className="relative">
-                            <input 
-                                type="text" 
-                                className={`w-full pl-4 pr-10 py-2.5 rounded-xl border shadow-sm outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm ${inputClassName}`}
-                                placeholder="Taper le nom du produit (ex: Paracétamol)..."
-                                value={medQuery}
-                                onChange={(e) => setMedQuery(e.target.value)}
-                                autoFocus
-                            />
-                            {isSearchingMed && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary" size={16} />}
-                        </div>
-
-                        {/* Dropdown Résultats */}
-                        {Array.isArray(medResults) && medResults.length > 0 && (
-                            <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in zoom-in-95 duration-100">
-                                {medResults.map(res => {
-                                  if (!res || typeof res !== 'object') return null;
-                                  return (
-                                    <button 
-                                        key={res.value || Math.random()}
-                                        className="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-slate-800 border-b last:border-0 border-slate-100 dark:border-slate-800 flex justify-between items-center transition-colors group"
-                                        onClick={() => selectMedFromSearch(res)}
-                                    >
-                                        <span className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-primary">
-                                          {typeof res.label === 'string' ? res.label.split(' - ')[0] : (res.label || 'N/A')}
-                                        </span>
-                                        {typeof res.label === 'string' && res.label.includes(' - ') && (
-                                          <span className="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-950 px-2 py-1 rounded">
-                                            {res.label.split(' - ')[1]}
-                                          </span>
-                                        )}
-                                    </button>
-                                  );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    // CAS B: Médicament sélectionné -> Formulaire de configuration
-                    <div className="animate-in slide-in-from-bottom-2 duration-300">
-                        <div className="flex justify-between items-center mb-4 pb-2 border-b border-blue-200 dark:border-blue-800">
-                            <div className="flex items-center gap-2">
-                                <div className="p-1.5 bg-primary rounded-lg text-white shadow-lg shadow-primary/30"><Icon name="Pill" size={18}/></div>
-                                <div>
-                                    <h4 className="text-base font-bold text-slate-900 dark:text-white leading-none">{currentMedDraft.name}</h4>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Configuration de la posologie</p>
-                                </div>
-                            </div>
-                            <button onClick={() => setCurrentMedDraft(null)} className="p-1.5 hover:bg-white/50 dark:hover:bg-slate-800 rounded-full text-slate-400 hover:text-rose-500 transition-colors">
-                                <X size={18}/>
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-                            <Input label="Dosage" placeholder="Ex: 500mg" value={currentMedDraft.dosage} onChange={e => setCurrentMedDraft({...currentMedDraft, dosage: e.target.value})} className="bg-white dark:bg-slate-900 text-sm" autoFocus />
-                            <Input label="Posologie" placeholder="Ex: 1 matin / 1 soir" value={currentMedDraft.frequency} onChange={e => setCurrentMedDraft({...currentMedDraft, frequency: e.target.value})} className="bg-white dark:bg-slate-900 text-sm" />
-                            <Input label="Durée" placeholder="Ex: 5 jours" value={currentMedDraft.duration} onChange={e => setCurrentMedDraft({...currentMedDraft, duration: e.target.value})} className="bg-white dark:bg-slate-900 text-sm" />
-                            <Input label="Quantité" type="number" min="1" placeholder="Ex: 10" value={currentMedDraft.quantity || 1} onChange={e => setCurrentMedDraft({...currentMedDraft, quantity: parseInt(e.target.value) || 1})} className="bg-white dark:bg-slate-900 text-sm" />
-                        </div>
-
-                        <Button 
-                            fullWidth 
-                            className="bg-primary hover:bg-blue-600 text-white shadow-lg shadow-primary/20 h-10 text-sm font-bold transition-transform active:scale-[0.98]"
-                            onClick={validateAndAddMed}
-                        >
-                            <Check className="mr-2" size={18} strokeWidth={3} /> 
-                            Valider et ajouter à l'ordonnance
-                        </Button>
-                    </div>
-                )}
-            </div>
-
-            {/* ZONE 2 : LISTE DES MÉDICAMENTS VALIDÉS */}
-            {Array.isArray(consultationData.medications) && consultationData.medications.length > 0 && (
-                <div className="space-y-2 animate-fade-in">
-                    <div className="flex justify-between items-center px-1">
-                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                            <Icon name="List" size={12} /> Liste ({consultationData.medications.length})
-                        </h4>
-                    </div>
-                    
-                    {consultationData.medications.map((med, idx) => {
-                      if (!med || typeof med !== 'object') return null;
-                      return (
-                        <div key={idx} className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:border-primary/50 transition-all group">
-                            <div className="flex items-center gap-3">
-                                <div className="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 p-1.5 rounded-lg">
-                                    <Check size={14} strokeWidth={3}/>
-                                </div>
-                                <div>
-                                    <div className="font-bold text-slate-900 dark:text-white text-sm">{med.name || 'Médicament'}</div>
-                                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex gap-1.5 flex-wrap">
-                                        {med.dosage && <span className="bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded text-xs">{med.dosage}</span>}
-                                        {med.frequency && <span className="bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded text-xs">{med.frequency}</span>}
-                                        {med.duration && <span className="bg-slate-100 dark:bg-slate-900 px-1.5 py-0.5 rounded text-xs">{med.duration}</span>}
-                                        {med.quantity && <span className="bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded font-semibold text-xs">Qté: {med.quantity}</span>}
-                                    </div>
-                                </div>
-                            </div>
-                            <button 
-                                onClick={() => removeMedFromList(idx)} 
-                                className="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-all"
-                                title="Retirer"
-                            >
-                                <Trash2 size={16} />
-                            </button>
-                        </div>
-                      );
-                    })}
+          <div className="space-y-6">
+            {/* Carte Médicaments */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Pill" size={18} className="text-primary dark:text-blue-400" />
                 </div>
-            )}
-
-            {/* ZONE 3 : EXAMENS */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-              <div className="p-4 bg-gradient-to-br from-indigo-50/50 via-white to-purple-50/30 dark:from-slate-900/50 dark:via-slate-900 dark:to-indigo-900/10 border border-indigo-100 dark:border-slate-800 rounded-xl">
-                <div className="flex items-center justify-between mb-3">
-                  <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">
-                    <Icon name="FileText" size={14} className="text-indigo-600 dark:text-indigo-400" />
-                    Examens Complémentaires
-                  </label>
-                  <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/30 px-2 py-0.5 rounded-full">
-                    {Array.isArray(consultationData.requestedExams) ? consultationData.requestedExams.length : 0}
-                  </span>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Médicaments</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Recherchez et ajoutez les médicaments à l'ordonnance</p>
                 </div>
-                
-                {/* Examens courants */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                  {commonExams.map((exam, index) => {
-                    const isSelected = consultationData.requestedExams.includes(exam);
+              </div>
+
+              {!currentMedDraft ? (
+                <div className="relative">
+                  <input
+                    type="text"
+                    className={`w-full pl-4 pr-10 py-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm ${inputClassName}`}
+                    placeholder="Ex: Paracétamol, Amoxicilline..."
+                    value={medQuery}
+                    onChange={(e) => setMedQuery(e.target.value)}
+                    autoFocus
+                  />
+                  {isSearchingMed && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary" size={18} />}
+                  {Array.isArray(medResults) && medResults.length > 0 && (
+                    <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
+                      {medResults.map(res => {
+                        if (!res || typeof res !== 'object') return null;
+                        return (
+                          <button
+                            key={res.value || Math.random()}
+                            type="button"
+                            className="w-full text-left px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 border-b last:border-0 border-slate-100 dark:border-slate-800 flex justify-between items-center transition-colors group"
+                            onClick={() => selectMedFromSearch(res)}
+                          >
+                            <span className="font-medium text-slate-800 dark:text-slate-200 group-hover:text-primary text-sm">
+                              {typeof res.label === 'string' ? res.label.split(' - ')[0] : (res.label || 'N/A')}
+                            </span>
+                            {typeof res.label === 'string' && res.label.includes(' - ') && (
+                              <span className="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">{res.label.split(' - ')[1]}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="p-1.5 bg-primary rounded-lg text-white"><Icon name="Pill" size={18} /></div>
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white">{currentMedDraft.name}</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Posologie</p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => setCurrentMedDraft(null)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-rose-500 transition-colors">
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <Input label="Dosage" placeholder="500 mg" value={currentMedDraft.dosage} onChange={e => setCurrentMedDraft({ ...currentMedDraft, dosage: e.target.value })} className="bg-white dark:bg-slate-900 text-sm" />
+                    <Input label="Posologie" placeholder="1 matin, 1 soir" value={currentMedDraft.frequency} onChange={e => setCurrentMedDraft({ ...currentMedDraft, frequency: e.target.value })} className="bg-white dark:bg-slate-900 text-sm" />
+                    <Input label="Durée" placeholder="5 jours" value={currentMedDraft.duration} onChange={e => setCurrentMedDraft({ ...currentMedDraft, duration: e.target.value })} className="bg-white dark:bg-slate-900 text-sm" />
+                    <Input label="Quantité" type="number" min="1" placeholder="10" value={currentMedDraft.quantity || 1} onChange={e => setCurrentMedDraft({ ...currentMedDraft, quantity: parseInt(e.target.value) || 1 })} className="bg-white dark:bg-slate-900 text-sm" />
+                  </div>
+                  <Button fullWidth className="bg-primary hover:bg-blue-600 text-white h-10 text-sm font-semibold" onClick={validateAndAddMed}>
+                    <Check className="mr-2" size={18} strokeWidth={3} /> Valider et ajouter
+                  </Button>
+                </div>
+              )}
+
+              {Array.isArray(consultationData.medications) && consultationData.medications.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                    <Icon name="List" size={12} /> Ordonnance ({consultationData.medications.length})
+                  </h4>
+                  {consultationData.medications.map((med, idx) => {
+                    if (!med || typeof med !== 'object') return null;
                     return (
-                      <button
-                        type="button"
-                        key={index}
-                        onClick={() => handleExamToggle(exam)}
-                        className={`p-2 rounded-lg border-2 text-xs font-medium text-left transition-all duration-200 flex items-center gap-1.5 ${
-                          isSelected 
-                            ? 'bg-indigo-500 border-indigo-600 text-white shadow-lg shadow-indigo-500/30 scale-[1.02]' 
-                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-300 dark:hover:border-indigo-600 hover:shadow-md'
-                        }`}
-                      >
-                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                          isSelected 
-                            ? 'bg-white border-white' 
-                            : 'border-slate-300 dark:border-slate-600'
-                        }`}>
-                          {isSelected && <Check size={12} className="text-indigo-600" strokeWidth={3} />}
+                      <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="shrink-0 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 p-1.5 rounded-lg"><Check size={14} strokeWidth={3} /></div>
+                          <div className="min-w-0">
+                            <div className="font-semibold text-slate-900 dark:text-white text-sm truncate">{med.name || 'Médicament'}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex gap-1.5 flex-wrap">
+                              {med.dosage && <span className="bg-slate-200/60 dark:bg-slate-700 px-1.5 py-0.5 rounded">{med.dosage}</span>}
+                              {med.frequency && <span className="bg-slate-200/60 dark:bg-slate-700 px-1.5 py-0.5 rounded">{med.frequency}</span>}
+                              {med.duration && <span className="bg-slate-200/60 dark:bg-slate-700 px-1.5 py-0.5 rounded">{med.duration}</span>}
+                              {med.quantity && <span className="text-emerald-600 dark:text-emerald-400 font-medium">Qté {med.quantity}</span>}
+                            </div>
+                          </div>
                         </div>
-                        <span className="flex-1">{exam}</span>
-                      </button>
+                        <button type="button" onClick={() => removeMedFromList(idx)} className="shrink-0 p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg" title="Retirer"><Trash2 size={16} /></button>
+                      </div>
                     );
                   })}
                 </div>
-                
-                {/* Ajouter un examen personnalisé */}
-                <div className="pt-3 border-t border-indigo-100 dark:border-slate-800">
-                  <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                    Ajouter un examen personnalisé
-                  </label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Ex: Échographie abdominale..."
-                      value={consultationData.customExam || ''}
-                      onChange={(e) => setConsultationData(prev => ({ ...prev, customExam: e.target.value }))}
-                      className={`${inputClassName} text-sm`}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && consultationData.customExam && consultationData.customExam.trim()) {
-                          e.preventDefault();
-                          handleExamToggle(consultationData.customExam.trim());
-                          setConsultationData(prev => ({ ...prev, customExam: '' }));
-                        }
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      variant="default"
-                      size="sm"
-                      onClick={() => {
-                        if (consultationData.customExam && consultationData.customExam.trim()) {
-                          handleExamToggle(consultationData.customExam.trim());
-                          setConsultationData(prev => ({ ...prev, customExam: '' }));
-                          showToast('Examen ajouté', 'success');
-                        }
-                      }}
-                      disabled={!consultationData.customExam || !consultationData.customExam.trim()}
-                      className="whitespace-nowrap"
-                    >
-                      <Plus size={14} className="mr-1" />
-                      Ajouter
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Liste des examens sélectionnés */}
-                {Array.isArray(consultationData.requestedExams) && consultationData.requestedExams.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-indigo-100 dark:border-slate-800">
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">Examens prescrits :</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {consultationData.requestedExams.map((exam, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-medium rounded-lg border border-indigo-200 dark:border-indigo-800"
-                        >
-                          {exam}
-                          <button
-                            type="button"
-                            onClick={() => handleExamToggle(exam)}
-                            className="ml-0.5 hover:bg-indigo-200 dark:hover:bg-indigo-800 rounded-full p-0.5 transition-colors"
-                          >
-                            <X size={12} />
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
 
-            {/* ZONE 3.5 : ANALYSES PRESCRITES (si consultation sauvegardée) */}
-            {consultationData.consultationId && (
-              <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-                <ConsultationAnalyses 
-                  consultationId={consultationData.consultationId} 
-                  patientId={patient?.id}
+            {/* Carte Examens complémentaires */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <Icon name="FileText" size={18} className="text-slate-600 dark:text-slate-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Examens complémentaires</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Prescrire des examens ou analyses</p>
+                  </div>
+                </div>
+                <span className="text-xs font-semibold text-primary dark:text-blue-400 bg-primary/10 dark:bg-primary/20 px-2.5 py-1 rounded-full">
+                  {Array.isArray(consultationData.requestedExams) ? consultationData.requestedExams.length : 0}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
+                {commonExams.map((exam, index) => {
+                  const isSelected = consultationData.requestedExams.includes(exam);
+                  return (
+                    <button
+                      type="button"
+                      key={index}
+                      onClick={() => handleExamToggle(exam)}
+                      className={`p-2.5 rounded-xl border text-xs font-medium text-left transition-all flex items-center gap-2 ${
+                        isSelected
+                          ? 'bg-primary border-primary text-white'
+                          : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-primary/40'
+                      }`}
+                    >
+                      {isSelected ? <Check size={14} strokeWidth={3} /> : <div className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-600" />}
+                      <span className="flex-1 truncate">{exam}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Ex: Échographie abdominale..."
+                  value={consultationData.customExam || ''}
+                  onChange={(e) => setConsultationData(prev => ({ ...prev, customExam: e.target.value }))}
+                  className={`flex-1 ${inputClassName} text-sm`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && consultationData.customExam?.trim()) {
+                      e.preventDefault();
+                      handleExamToggle(consultationData.customExam.trim());
+                      setConsultationData(prev => ({ ...prev, customExam: '' }));
+                    }
+                  }}
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (consultationData.customExam?.trim()) {
+                      handleExamToggle(consultationData.customExam.trim());
+                      setConsultationData(prev => ({ ...prev, customExam: '' }));
+                      showToast('Examen ajouté', 'success');
+                    }
+                  }}
+                  disabled={!consultationData.customExam?.trim()}
+                  className="shrink-0"
+                >
+                  <Plus size={14} className="mr-1" /> Ajouter
+                </Button>
+              </div>
+              {Array.isArray(consultationData.requestedExams) && consultationData.requestedExams.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Prescrits :</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {consultationData.requestedExams.map((exam, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 text-xs font-medium rounded-lg">
+                        {exam}
+                        <button type="button" onClick={() => handleExamToggle(exam)} className="hover:bg-primary/20 dark:hover:bg-primary/30 rounded p-0.5"><X size={12} /></button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Analyses (si consultation sauvegardée) */}
+            {consultationData.consultationId && (
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+                <ConsultationAnalyses consultationId={consultationData.consultationId} patientId={patient?.id} />
               </div>
             )}
 
-            {/* ZONE 4 : CONSEILS */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wide">Conseils / Traitement Libre</label>
-              <textarea className={`w-full h-24 p-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none ${inputClassName} placeholder-slate-400`} placeholder="Conseils hygiéno-diététiques, autres..." value={consultationData.treatment} onChange={(e) => setConsultationData(prev => ({ ...prev, treatment: e.target.value }))} />
+            {/* Carte Conseils / Traitement libre */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <Icon name="Info" size={18} className="text-slate-600 dark:text-slate-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Conseils et traitement libre</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Hygiène de vie, recommandations...</p>
+                </div>
+              </div>
+              <textarea
+                className={`w-full min-h-[100px] p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y ${inputClassName} placeholder-slate-400`}
+                placeholder="Conseils hygiéno-diététiques, repos, autres..."
+                value={consultationData.treatment}
+                onChange={(e) => setConsultationData(prev => ({ ...prev, treatment: e.target.value }))}
+              />
             </div>
-            
-            {/* BOUTON IMPRESSION */}
-            <div className="flex justify-end pt-2">
+
+            {/* Boutons d'action */}
+            <div className="flex justify-end gap-2 pt-2">
                  <PermissionGuard requiredPermission="prescription_create">
                    <div className="flex items-center gap-2">
                      <Button 
@@ -1098,8 +1139,42 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
       case 'followup':
         return (
           <div className="space-y-6">
-            <Input label="Instructions de Suivi" placeholder="Prochaine consultation, surveillance..." value={consultationData.followUp} onChange={(e) => setConsultationData(prev => ({ ...prev, followUp: e.target.value }))} className={inputClassName} />
-            <textarea className={`w-full h-32 p-4 rounded-xl border outline-none focus:ring-2 focus:ring-primary/20 ${inputClassName}`} placeholder="Notes privées (non visibles sur l'ordonnance)..." value={consultationData.consultationNotes} onChange={(e) => setConsultationData(prev => ({ ...prev, consultationNotes: e.target.value }))} />
+            {/* Instructions de suivi */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Calendar" size={18} className="text-primary dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Instructions de suivi</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Prochaine consultation, surveillance, rappels</p>
+                </div>
+              </div>
+              <Input
+                placeholder="Ex: contrôle dans 3 mois, surveillance tension..."
+                value={consultationData.followUp}
+                onChange={(e) => setConsultationData(prev => ({ ...prev, followUp: e.target.value }))}
+                className={inputClassName}
+              />
+            </div>
+            {/* Notes privées */}
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <Icon name="Lock" size={18} className="text-slate-600 dark:text-slate-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Notes privées</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Non visibles sur l'ordonnance ni à l'export</p>
+                </div>
+              </div>
+              <textarea
+                className={`w-full min-h-[120px] p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-y ${inputClassName} placeholder-slate-400`}
+                placeholder="Notes internes, rappels pour la prochaine consultation..."
+                value={consultationData.consultationNotes}
+                onChange={(e) => setConsultationData(prev => ({ ...prev, consultationNotes: e.target.value }))}
+              />
+            </div>
           </div>
         );
       default: return null;
@@ -1107,10 +1182,14 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
   };
 
   if (!patient) return (
-    <div className="h-full flex flex-col items-center justify-center p-12 text-slate-400 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl">
-        <Icon name="UserX" size={48} className="mb-4 opacity-20" />
-        <h3 className="text-xl font-bold">Sélectionnez un patient</h3>
-        <p className="text-sm">Pour commencer une consultation</p>
+    <div className="h-full flex flex-col items-center justify-center p-10">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-8 max-w-sm w-full text-center">
+        <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+          <Icon name="UserPlus" size={32} className="text-slate-400 dark:text-slate-500" />
+        </div>
+        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">Sélectionnez un patient</h3>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Choisissez un dossier dans la liste à gauche pour ouvrir la consultation</p>
+      </div>
     </div>
   );
 
@@ -1182,18 +1261,10 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   </Button>
                 </motion.div>
               </div>
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                className="font-mono bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-md flex items-center gap-2"
-              >
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  >
-                    <Loader2 size={14} className="text-primary"/> 
-                  </motion.div>
-                  <span className="font-bold text-slate-700 dark:text-slate-200">{formatTimer(secondsElapsed)}</span>
-              </motion.div>
+              <span className="font-mono text-sm font-semibold tabular-nums text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                <Icon name="Clock" size={14} className="text-slate-400 dark:text-slate-500" />
+                {formatTimer(secondsElapsed)}
+              </span>
           </div>
       </motion.div>
 
@@ -1340,12 +1411,12 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl max-h-[90vh] flex flex-col"
+              className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl max-h-[90vh] flex flex-col"
             >
               <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recherche CIM-10</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Classification Internationale des Maladies</p>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recherche CIM-10 OMS</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Code ou libellé</p>
                 </div>
                 <button
                   onClick={() => setShowCIM10Search(false)}
@@ -1520,15 +1591,21 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
               className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-3xl max-h-[90vh] flex flex-col"
             >
               <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Calculatrices Médicales</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Outils de calcul clinique</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                    <Icon name="Calculator" size={20} className="text-primary dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Calculatrices médicales</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">IMC, clairance, scores cliniques</p>
+                  </div>
                 </div>
                 <button
+                  type="button"
                   onClick={() => setShowCalculators(false)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
                 >
-                  <X size={20} className="text-slate-500 dark:text-slate-400" />
+                  <X size={20} />
                 </button>
               </div>
               <div className="p-6 overflow-y-auto custom-scrollbar">

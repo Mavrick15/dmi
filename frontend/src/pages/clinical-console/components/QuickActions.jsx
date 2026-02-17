@@ -38,85 +38,78 @@ const QuickActions = ({ onActionSelect }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full min-h-[500px]">
-      
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[780px]">
       {/* Header */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
-              <Icon name="Zap" size={20} />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Actions Rapides</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Raccourcis cliniques</p>
-            </div>
+      <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+            <Icon name="Zap" size={20} className="text-primary dark:text-blue-400" />
+          </div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Actions Rapides</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Raccourcis et accès directs</p>
           </div>
         </div>
-
-        {/* Category Tabs */}
-        <div className="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl overflow-x-auto custom-scrollbar gap-1">
+        <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
           {actionCategories.map((category) => (
             <button
               key={category.id}
+              type="button"
               onClick={() => setActiveCategory(category.id)}
-              className={`
-                flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 whitespace-nowrap
-                ${activeCategory === category.id
-                  ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/10'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
-                }
-              `}
+              className={`shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                activeCategory === category.id
+                  ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+              }`}
             >
-              <Icon name={category.icon} size={16} className={activeCategory === category.id ? 'text-primary' : 'opacity-70'} />
-              <span>{category.label}</span>
+              <Icon name={category.icon} size={16} />
+              {category.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Grid Content */}
-      <div className="flex-1 p-6 overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Grille d'actions */}
+      <div className="flex-1 p-5 overflow-y-auto custom-scrollbar">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {quickActions[activeCategory]?.map((action) => (
             <motion.button
               key={action.id}
-              whileHover={{ y: -2, scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
+              type="button"
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               onClick={() => onActionSelect(action)}
-              className="group relative p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-primary/20 dark:hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 text-left overflow-hidden"
+              className="group p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all text-left flex items-start gap-3"
             >
-              <div className="flex items-start gap-4 relative z-10">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center text-white shadow-md flex-shrink-0`}>
-                  <Icon name={action.icon} size={22} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-slate-800 dark:text-white text-sm mb-1 group-hover:text-primary transition-colors">{action.title}</h3>
-                    {action.shortcut && (
-                        <span className="hidden lg:inline-block text-[10px] font-mono bg-slate-100 dark:bg-slate-900 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                            {action.shortcut}
-                        </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{action.description}</p>
-                </div>
+              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center text-white shrink-0`}>
+                <Icon name={action.icon} size={20} />
               </div>
-              {/* Hover Background Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-50 to-transparent dark:from-slate-700/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="font-semibold text-slate-800 dark:text-white text-sm group-hover:text-primary dark:group-hover:text-blue-400 transition-colors">
+                    {action.title}
+                  </h3>
+                  {action.shortcut && (
+                    <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
+                      {action.shortcut}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{action.description}</p>
+              </div>
             </motion.button>
           ))}
         </div>
       </div>
 
-      {/* Footer Emergency */}
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-rose-50/30 dark:bg-rose-900/10">
+      {/* Urgence */}
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <Button
-          variant="destructive"
+          variant="outline"
           fullWidth
           iconName="AlertTriangle"
           iconPosition="left"
-          className="bg-rose-600 hover:bg-rose-700 shadow-lg shadow-rose-500/20 h-12 rounded-xl text-base font-semibold"
+          className="border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 font-semibold"
           onClick={() => onActionSelect({ id: 'emergency', title: 'Urgence Médicale' })}
         >
           Urgence Médicale

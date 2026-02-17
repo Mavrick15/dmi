@@ -1,7 +1,7 @@
 // frontend/src/pages/clinical-console/components/PatientSelector.jsx
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query'; // <--- IMPORT REACT QUERY
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
@@ -13,7 +13,6 @@ import { Loader2, AlertCircle } from 'lucide-react';
 
 const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewConsultation }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   // --- FONCTION DE FETCH DÉPORTÉE (Pour React Query) ---
@@ -105,80 +104,63 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
   }, []);
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
+    <motion.div
+      initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.4 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden flex flex-col h-[780px]"
+      transition={{ duration: 0.3 }}
+      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[780px]"
     >
-      
       {/* Header */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-800/50 dark:via-slate-900 dark:to-slate-800/30">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <motion.div 
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              className="w-12 h-12 bg-gradient-to-br from-primary/10 to-blue-500/10 dark:from-primary/20 dark:to-blue-500/20 rounded-2xl flex items-center justify-center border border-primary/20 dark:border-primary/30 shadow-sm"
-            >
-              <Icon name="Users" size={22} className="text-primary dark:text-blue-400" />
-            </motion.div>
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Patients</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Sélection & Recherche</p>
-            </div>
+      <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+            <Icon name="Users" size={20} className="text-primary dark:text-blue-400" />
           </div>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className={isSearchOpen ? "bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20" : "text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"}
-            >
-              <Icon name={isSearchOpen ? "X" : "Search"} size={20} />
-            </Button>
-          </motion.div>
+          <div>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Sélection du patient</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Recherchez ou choisissez un dossier</p>
+          </div>
         </div>
-
-        <AnimatePresence>
-          {isSearchOpen && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden"
+        <div className="relative">
+          <Icon name="Search" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            placeholder="Nom, n° patient..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder-slate-400"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400"
             >
-              <Input
-                type="search"
-                placeholder="Rechercher par nom ou ID..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-700 focus:ring-primary/20"
-                autoFocus
-              />
-            </motion.div>
+              <span className="sr-only">Effacer</span>
+              <Icon name="X" size={14} />
+            </button>
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
-      {/* Liste des Patients */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3 bg-white dark:bg-slate-900">
-        
+      {/* Liste des patients */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2 bg-slate-50/30 dark:bg-slate-900">
         {loadingList ? (
-             <div className="flex justify-center py-10">
-               <Loader2 className="animate-spin text-primary" size={24} />
-               <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers...</span>
-             </div>
+          <div className="flex flex-col items-center justify-center py-12">
+            <Loader2 className="animate-spin text-primary mb-3" size={28} />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers...</span>
+          </div>
         ) : isError ? (
-             <div className="flex flex-col items-center justify-center py-10 text-rose-500">
-                <AlertCircle size={24} className="mb-2"/>
-                <p className="text-sm">Erreur de chargement</p>
-             </div>
+          <div className="flex flex-col items-center justify-center py-12 text-rose-600 dark:text-rose-400">
+            <AlertCircle size={28} className="mb-2" />
+            <p className="text-sm font-medium">Erreur de chargement</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Réessayez plus tard</p>
+          </div>
         ) : filteredPatients.length > 0 ? (
           <>
-            <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-2 mb-2">
-              Patients Récents ({filteredPatients.length})
-            </h3>
-            
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 px-1 mb-2">
+              {filteredPatients.length} patient{filteredPatients.length > 1 ? 's' : ''}
+            </p>
             {filteredPatients.map((patient, index) => {
               const styles = getUrgencyStyles(patient.urgency);
               const isSelected = selectedPatient?.id === patient.id;
@@ -186,79 +168,56 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
               return (
                 <motion.div
                   key={patient.id}
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03 }}
-                  whileHover={{ y: -2, scale: 1.01 }}
-                  onClick={() => handleSelect(patient)} 
+                  transition={{ delay: Math.min(index * 0.02, 0.15) }}
+                  onClick={() => handleSelect(patient)}
                   className={`
-                    p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 group relative overflow-hidden
-                    ${isSelected 
-                      ? 'bg-gradient-to-br from-primary/10 via-primary/5 to-blue-50/50 dark:from-primary/20 dark:via-primary/10 dark:to-blue-950/30 border-primary/50 dark:border-primary/40 shadow-lg shadow-primary/10' 
-                      : 'bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 hover:border-primary/40 dark:hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5'
+                    p-3 rounded-xl border cursor-pointer transition-all duration-200 group relative overflow-hidden
+                    ${isSelected
+                      ? 'bg-primary/10 dark:bg-primary/20 border-primary dark:border-primary/50 shadow-sm ring-1 ring-primary/20'
+                      : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30 hover:bg-slate-50 dark:hover:bg-slate-800/80'
                     }
                   `}
                 >
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  
                   {loadingDetails && isSelected && (
-                     <motion.div 
-                       initial={{ opacity: 0 }}
-                       animate={{ opacity: 1 }}
-                       className="absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm flex items-center justify-center rounded-2xl z-10"
-                     >
-                        <Loader2 className="animate-spin text-primary" size={24} />
-                     </motion.div>
+                    <div className="absolute inset-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm flex items-center justify-center rounded-xl z-10">
+                      <Loader2 className="animate-spin text-primary" size={22} />
+                    </div>
                   )}
 
-                  <div className="relative flex items-start space-x-4 z-10">
-                    <motion.div 
-                      whileHover={{ scale: 1.1 }}
-                      className="relative flex-shrink-0"
-                    >
-                      <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-slate-100 dark:border-slate-700 shadow-md">
-                        <Image
-                          src={patient.avatar}
-                          alt={patient.name}
-                          className="w-full h-full object-cover" 
-                        />
+                  <div className="relative flex items-center gap-3 z-10">
+                    <div className="relative flex-shrink-0">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                        <Image src={patient.avatar} alt={patient.name} className="w-full h-full object-cover" />
                       </div>
-                      <motion.div 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-800 shadow-lg ${styles.dot}`} 
-                      />
-                    </motion.div>
-                    
+                      <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-800 ${styles.dot}`} />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className={`font-bold text-sm truncate transition-colors ${isSelected ? 'text-primary dark:text-blue-400' : 'text-slate-800 dark:text-slate-100 group-hover:text-primary dark:group-hover:text-blue-400'}`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className={`font-semibold text-sm truncate ${isSelected ? 'text-primary dark:text-blue-400' : 'text-slate-800 dark:text-slate-100'}`}>
                           {patient.name}
                         </h4>
-                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                          {patient.numeroPatient}
-                        </span>
+                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 shrink-0">{patient.numeroPatient}</span>
                       </div>
-                      
-                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2">
-                        <span className="font-medium">{patient.age}</span>
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                        <span>{patient.gender}</span>
-                        <span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
-                        <span className="truncate">Visite: {patient.lastVisit}</span>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <span>{patient.age}</span>
+                        <span>·</span>
+                        <span className="truncate">{patient.gender}</span>
+                        {patient.lastVisit && (
+                          <>
+                            <span>·</span>
+                            <span className="truncate">{patient.lastVisit}</span>
+                          </>
+                        )}
                       </div>
-
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]">
+                      <div className="flex items-center justify-between mt-1.5">
+                        <span className="text-xs text-slate-600 dark:text-slate-400 truncate max-w-[100px]" title={patient.condition}>
                           {patient.condition}
                         </span>
-                        <motion.span 
-                          whileHover={{ scale: 1.05 }}
-                          className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide rounded-lg border shadow-sm ${styles.badge}`}
-                        >
+                        <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase rounded-md ${styles.badge}`}>
                           {patient.urgency === 'urgent' ? 'Urgent' : patient.urgency === 'priority' ? 'Priorité' : 'Routine'}
-                        </motion.span>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -267,27 +226,26 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
             })}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-40 text-slate-400 dark:text-slate-500">
-             <Icon name="SearchX" size={32} className="mb-2 opacity-50" />
-             <p className="text-sm">Aucun patient trouvé</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center px-4">
+            <Icon name="SearchX" size={36} className="mb-3 text-slate-300 dark:text-slate-600" />
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun patient trouvé</p>
+            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Vérifiez l'orthographe ou créez un nouveau dossier</p>
           </div>
         )}
       </div>
 
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-gradient-to-br from-slate-50/50 via-white to-slate-50/30 dark:from-slate-900/50 dark:via-slate-900 dark:to-slate-800/30">
+      <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
         <PermissionGuard requiredPermission="consultation_create">
-          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              variant="primary"
-              fullWidth
-              iconName="UserPlus"
-              iconPosition="left"
-              onClick={onNewConsultation}
-              className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg shadow-primary/20 font-semibold"
-            >
-              Nouvelle Consultation
-            </Button>
-          </motion.div>
+          <Button
+            variant="primary"
+            fullWidth
+            iconName="UserPlus"
+            iconPosition="left"
+            onClick={onNewConsultation}
+            className="font-semibold"
+          >
+            Nouvelle consultation
+          </Button>
         </PermissionGuard>
       </div>
     </motion.div>

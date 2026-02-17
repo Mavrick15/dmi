@@ -38,7 +38,10 @@ const ClinicalConsole = () => {
   // --- ÉTATS ---
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [currentAppointmentId, setCurrentAppointmentId] = useState(null);
-  const [activeView, setActiveView] = useState('consultation');
+  const viewFromUrl = searchParams.get('view');
+  const [activeView, setActiveView] = useState(
+    ['consultation', 'calendar', 'knowledge', 'actions'].includes(viewFromUrl || '') ? viewFromUrl : 'consultation'
+  );
   const [loadingPatient, setLoadingPatient] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isNotificationDetailsOpen, setIsNotificationDetailsOpen] = useState(false);
@@ -147,6 +150,14 @@ const ClinicalConsole = () => {
     const isRead = n.isRead !== undefined ? n.isRead : (n.is_read || false);
     return !isRead;
   }).length : 0;
+
+  // Synchroniser l'onglet actif avec l'URL (?view=consultation)
+  useEffect(() => {
+    if (searchParams.get('view') === activeView) return;
+    const next = new URLSearchParams(searchParams);
+    next.set('view', activeView);
+    setSearchParams(next, { replace: true });
+  }, [activeView]);
 
   // Charger le patient depuis les paramètres URL si présent
   useEffect(() => {

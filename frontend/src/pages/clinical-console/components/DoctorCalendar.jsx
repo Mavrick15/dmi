@@ -362,309 +362,205 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
   }
 
   return (
-    <div className="flex flex-col h-[780px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-      {/* Header avec navigation */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50/30 to-slate-50 dark:from-slate-900 dark:via-blue-950/20 dark:to-slate-800 border-b-2 border-slate-200/50 dark:border-slate-800/50 shadow-sm p-4 backdrop-blur-sm flex-shrink-0">
-        <div className="absolute inset-0 bg-grid-slate-100 dark:bg-grid-slate-800/50 [mask-image:linear-gradient(0deg,white,transparent)] opacity-50"></div>
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <motion.div 
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary via-blue-500 to-blue-600 dark:from-primary dark:via-blue-600 dark:to-blue-700 flex items-center justify-center shadow-lg shadow-primary/30 border-2 border-white/20 dark:border-slate-700/30"
-            >
-              <Icon name="Calendar" size={20} className="text-white drop-shadow-sm" />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/20 to-transparent"></div>
-            </motion.div>
-            <div>
-              <h2 className="text-xl font-extrabold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-white dark:via-slate-100 dark:to-white bg-clip-text text-transparent">
-                Mon Agenda
-              </h2>
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 capitalize mt-0.5">
-                {monthName}
-              </p>
-            </div>
-          </div>
-          
+    <div className="flex flex-col h-[780px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-lg p-1 border-2 border-slate-200/50 dark:border-slate-700/50 shadow-md">
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconName="ChevronLeft"
-                  onClick={goToPreviousMonth}
-                  className="h-7 w-7 p-0 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-md"
-                />
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconName="ChevronRight"
-                  onClick={goToNextMonth}
-                  className="h-7 w-7 p-0 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-md"
-                />
-              </motion.div>
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="Calendar" size={20} className="text-primary dark:text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Mon Agenda</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{monthName}</p>
             </div>
           </div>
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="sm" iconName="ChevronLeft" onClick={goToPreviousMonth} className="h-8 w-8 p-0 rounded-lg" />
+            <Button variant="outline" size="sm" onClick={goToToday} className="text-xs font-medium px-3 rounded-lg">Aujourd'hui</Button>
+            <Button variant="ghost" size="sm" iconName="ChevronRight" onClick={goToNextMonth} className="h-8 w-8 p-0 rounded-lg" />
+          </div>
+        </div>
+        {/* Légende compacte */}
+        <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          {[
+            { color: 'bg-blue-500', label: 'Planifié' },
+            { color: 'bg-emerald-500', label: 'Confirmé' },
+            { color: 'bg-purple-500', label: 'En cours' },
+            { color: 'bg-slate-400', label: 'Terminé' },
+            { color: 'bg-red-400', label: 'Annulé' },
+            { color: 'bg-amber-500', label: 'Absent' },
+          ].map((item, idx) => (
+            <span key={idx} className="flex items-center gap-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">
+              <span className={`w-2 h-2 rounded-full ${item.color}`} />
+              {item.label}
+            </span>
+          ))}
         </div>
       </div>
 
       {/* Contenu scrollable */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
-        {/* Légende des couleurs - sticky */}
-        <div className="sticky top-0 z-10 overflow-hidden bg-gradient-to-br from-white/80 via-slate-50/80 to-white/80 dark:from-slate-900/80 dark:via-slate-800/80 dark:to-slate-900/80 backdrop-blur-xl rounded-xl border-2 border-slate-200/50 dark:border-slate-800/50 shadow-lg p-3 flex-shrink-0 mb-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-blue-500/5"></div>
-        <div className="relative">
-          <div className="flex flex-wrap items-center gap-2">
-            {[
-              { color: 'from-blue-500 to-blue-600', label: 'Planifié' },
-              { color: 'from-emerald-500 to-emerald-600', label: 'Confirmé' },
-              { color: 'from-purple-500 to-purple-600', label: 'En cours' },
-              { color: 'from-slate-400 to-slate-500', label: 'Terminé' },
-              { color: 'from-red-400 to-red-500', label: 'Annulé', opacity: 'opacity-60' },
-              { color: 'from-amber-500 to-amber-600', label: 'Absent' },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                whileHover={{ scale: 1.1, y: -2 }}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all ${item.opacity || ''}`}
-              >
-                <div className={`w-3 h-3 rounded-md bg-gradient-to-r ${item.color} shadow-sm ring-1 ring-white/50 dark:ring-slate-700/50`}></div>
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.label}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
 
-        {/* Calendrier avec transition */}
+        {/* Calendrier */}
         <AnimatePresence mode="wait">
           <motion.div
             key={`${currentDate.getFullYear()}-${currentDate.getMonth()}`}
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="relative bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden flex-shrink-0"
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900/50"
           >
-        {/* En-têtes des jours */}
-        <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-          {weekDays.map((day, index) => (
-            <div
-              key={index}
-              className="p-3 text-center text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide"
-            >
-              {day}
+            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              {weekDays.map((day, index) => (
+                <div key={index} className="py-2 text-center text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {day}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-7">
+              {calendarDays.map((day, index) => {
+                const dayAppointments = getAppointmentsForDate(day.date);
+                const isSelected = selectedDate && day.date.toDateString() === selectedDate.toDateString();
+                const appointmentCount = dayAppointments.length;
 
-        {/* Jours du calendrier */}
-        <div className="relative grid grid-cols-7">
-          {calendarDays.map((day, index) => {
-            const dayAppointments = getAppointmentsForDate(day.date);
-            const isSelected = selectedDate && day.date.toDateString() === selectedDate.toDateString();
-            const appointmentCount = dayAppointments.length;
-            
-            return (
-              <motion.div
-                key={index}
-                onClick={() => {
-                  if (day.isCurrentMonth) {
-                    const dayAppointments = getAppointmentsForDate(day.date);
-                    // Ouvrir le modal seulement s'il y a des rendez-vous
-                    if (dayAppointments.length > 0) {
-                      setSelectedDate(day.date);
-                    }
-                  }
-                }}
-                onDragOver={day.isCurrentMonth ? handleDragOver : undefined}
-                onDrop={day.isCurrentMonth ? (e) => handleDrop(e, day.date) : undefined}
-                whileHover={day.isCurrentMonth ? { scale: 1.03, zIndex: 10 } : {}}
-                className={`
-                  min-h-[120px] p-2 border-r border-b border-slate-200 dark:border-slate-800 relative
-                  ${day.isCurrentMonth ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-950/30'}
-                  ${day.isToday ? 'bg-blue-50 dark:bg-blue-950/20' : ''}
-                  ${isSelected ? 'ring-2 ring-primary ring-offset-1 dark:ring-offset-slate-900 z-20 bg-primary/5 dark:bg-primary/10' : ''}
-                  ${day.isCurrentMonth ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'cursor-default'}
-                  ${draggedAppointment && day.isCurrentMonth ? 'ring-2 ring-dashed ring-primary/50 bg-primary/5 dark:bg-primary/10' : ''}
-                  transition-all duration-200
-                `}
-              >
-                {/* Numéro du jour */}
-                <div className="flex items-center justify-between mb-2">
-                  <div 
+                return (
+                  <motion.div
+                    key={index}
+                    onClick={() => {
+                      if (day.isCurrentMonth && getAppointmentsForDate(day.date).length > 0) setSelectedDate(day.date);
+                    }}
+                    onDragOver={day.isCurrentMonth ? handleDragOver : undefined}
+                    onDrop={day.isCurrentMonth ? (e) => handleDrop(e, day.date) : undefined}
                     className={`
-                      w-7 h-7 flex items-center justify-center rounded-lg text-sm font-bold
-                      ${day.isCurrentMonth 
-                        ? day.isToday 
-                          ? 'bg-primary text-white shadow-md' 
-                          : 'text-slate-700 dark:text-slate-300'
-                        : 'text-slate-400 dark:text-slate-600'
-                      }
-                      transition-all duration-200
+                      min-h-[100px] p-1.5 border-r border-b border-slate-100 dark:border-slate-800 last:border-r-0
+                      ${day.isCurrentMonth ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-950/50'}
+                      ${day.isToday ? 'bg-primary/5 dark:bg-primary/10' : ''}
+                      ${isSelected ? 'ring-2 ring-inset ring-primary bg-primary/10 dark:bg-primary/20' : ''}
+                      ${day.isCurrentMonth ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'cursor-default'}
+                      ${draggedAppointment && day.isCurrentMonth ? 'ring-2 ring-dashed ring-primary/40 bg-primary/5' : ''}
+                      transition-colors
                     `}
                   >
-                    {day.date.getDate()}
-                  </div>
-                  {appointmentCount > 0 && day.isCurrentMonth && (
-                    <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  )}
-                </div>
-                
-                {/* Rendez-vous du jour */}
-                <div className="space-y-1">
-                  {dayAppointments.slice(0, 3).map((appointment, idx) => {
-                    const styles = getAppointmentStyles(appointment);
-                    return (
-                      <motion.div
-                        key={appointment.id || idx}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: idx * 0.03 }}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, appointment)}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onSelectAppointment) {
-                            onSelectAppointment(appointment);
-                          }
-                        }}
-                        whileHover={{ scale: 1.05, zIndex: 10 }}
-                        whileTap={{ scale: 0.95 }}
+                    <div className="flex items-center justify-between mb-1">
+                      <span
                         className={`
-                          text-xs p-1.5 rounded-md cursor-move border shadow-sm
-                          ${styles.bg} ${styles.text} ${styles.border}
-                          ${styles.opacity || ''}
-                          hover:shadow-md
-                          ${draggedAppointment?.id === appointment.id ? 'opacity-50 scale-95' : ''}
-                          transition-all duration-200
+                          w-6 h-6 flex items-center justify-center rounded-md text-xs font-semibold
+                          ${day.isCurrentMonth
+                            ? day.isToday
+                              ? 'bg-primary text-white'
+                              : 'text-slate-700 dark:text-slate-300'
+                            : 'text-slate-400 dark:text-slate-600'}
                         `}
                       >
-                        <div className="font-bold truncate flex items-center gap-1 text-xs">
-                          <Clock size={10} className="flex-shrink-0" />
-                          {formatTime(appointment.dateHeure || appointment.date)}
-                        </div>
-                        <div className="truncate text-xs font-medium opacity-90 mt-0.5">
-                          {appointment.patient?.nomComplet || appointment.patient?.name || appointment.patientName || 'Patient'}
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                  {dayAppointments.length > 3 && (
-                    <div className="text-xs text-slate-500 dark:text-slate-400 font-semibold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-center">
-                      +{dayAppointments.length - 3}
+                        {day.date.getDate()}
+                      </span>
+                      {appointmentCount > 0 && day.isCurrentMonth && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary dark:bg-blue-400" />
+                      )}
                     </div>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-        </motion.div>
+                    <div className="space-y-0.5">
+                      {dayAppointments.slice(0, 3).map((appointment, idx) => {
+                        const styles = getAppointmentStyles(appointment);
+                        return (
+                          <motion.div
+                            key={appointment.id || idx}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: idx * 0.02 }}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, appointment)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onSelectAppointment?.(appointment);
+                            }}
+                            className={`
+                              px-1.5 py-1 rounded text-[10px] cursor-move border truncate
+                              ${styles.bg} ${styles.text} ${styles.border} ${styles.opacity || ''}
+                              hover:opacity-95
+                              ${draggedAppointment?.id === appointment.id ? 'opacity-50' : ''}
+                            `}
+                          >
+                            <span className="font-semibold">{formatTime(appointment.dateHeure || appointment.date)}</span>
+                            <span className="block truncate opacity-90">
+                              {appointment.patient?.nomComplet || appointment.patient?.name || appointment.patientName || 'Patient'}
+                            </span>
+                          </motion.div>
+                        );
+                      })}
+                      {dayAppointments.length > 3 && (
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium text-center py-0.5">
+                          +{dayAppointments.length - 3}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Modal des rendez-vous de la date sélectionnée */}
+      {/* Modal rendez-vous du jour */}
       <Modal
         isOpen={selectedDate !== null && selectedDateAppointments.length > 0}
         onClose={() => setSelectedDate(null)}
-        className="max-w-3xl w-full"
-        showCloseButton={true}
-        headerClassName="relative"
+        className="max-w-2xl w-full"
+        showCloseButton
+        title={selectedDate ? formatDate(selectedDate) : ''}
       >
-        {/* Date en haut à gauche */}
-        {selectedDate && (
-          <style>{`
-            .modal-header-date {
-              position: absolute;
-              top: 1.5rem;
-              left: 1.5rem;
-              font-size: 1.125rem;
-              font-weight: 700;
-              color: rgb(71 85 105);
-            }
-            .dark .modal-header-date {
-              color: rgb(148 163 184);
-            }
-          `}</style>
-        )}
-        {selectedDate && (
-          <div className="modal-header-date">
-            {formatDate(selectedDate)}
-          </div>
-        )}
-        <div className="space-y-2">
+        <div className="space-y-2 pt-2">
           {selectedDateAppointments.map((appointment, idx) => {
             const styles = getAppointmentStyles(appointment);
             return (
               <motion.div
                 key={appointment.id}
-                initial={{ opacity: 0, x: -30, scale: 0.95 }}
-                animate={{ opacity: 1, x: 0, scale: 1 }}
-                transition={{ delay: idx * 0.1, type: "spring", stiffness: 100 }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, appointment)}
                 onClick={() => {
-                  if (onSelectAppointment) {
-                    onSelectAppointment(appointment);
-                    setSelectedDate(null); // Fermer le modal après sélection
-                  }
+                  onSelectAppointment?.(appointment);
+                  setSelectedDate(null);
                 }}
-                whileHover={{ scale: 1.01 }}
                 className={`
-                  p-3 rounded-lg border cursor-pointer transition-all duration-200
-                  ${styles.border}
-                  bg-white dark:bg-slate-800/50
-                  hover:shadow-md hover:border-primary/30 dark:hover:border-primary/20
-                  ${draggedAppointment?.id === appointment.id ? 'opacity-50 scale-95' : ''}
+                  p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer
+                  bg-slate-50/50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors
+                  ${draggedAppointment?.id === appointment.id ? 'opacity-50' : ''}
                 `}
               >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-md ${styles.bg} flex items-center justify-center shadow-sm`}>
-                      <Clock size={14} className="text-white" />
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`w-10 h-10 rounded-lg ${styles.bg} flex items-center justify-center shrink-0`}>
+                      <Clock size={18} className="text-white" />
                     </div>
-                    <div>
-                      <div className="font-bold text-slate-900 dark:text-white text-sm">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white">
                         {formatTime(appointment.dateHeure || appointment.date)}
-                      </div>
-                      {appointment.dureeMinutes && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          {appointment.dureeMinutes} min
-                        </span>
+                        {appointment.dureeMinutes && (
+                          <span className="text-slate-500 dark:text-slate-400 font-normal ml-1">({appointment.dureeMinutes} min)</span>
+                        )}
+                      </p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300 truncate">
+                        {appointment.patient?.nomComplet || appointment.patient?.name || appointment.patientName || 'Patient'}
+                      </p>
+                      {(appointment.motif || appointment.type) && (
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                          {appointment.motif || appointment.type || 'Consultation'}
+                        </p>
                       )}
                     </div>
                   </div>
                   {getStatusBadge(appointment)}
                 </div>
-                
-                <div className="space-y-1.5 pl-10">
-                  <div className="flex items-center gap-2 text-sm">
-                    <User size={14} className="text-slate-500 dark:text-slate-400" />
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {appointment.patient?.nomComplet || appointment.patient?.name || appointment.patientName || 'Patient inconnu'}
-                    </span>
-                  </div>
-                  
-                  {(appointment.motif || appointment.type) && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Icon name="FileText" size={14} className="text-slate-500 dark:text-slate-400" />
-                      <span className="text-slate-600 dark:text-slate-400">
-                        {appointment.motif || appointment.type || 'Consultation'}
-                      </span>
-                    </div>
-                  )}
-                  
-                  {appointment.notes && (
-                    <div className="mt-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <p className="text-xs text-slate-600 dark:text-slate-400 italic">
-                        {appointment.notes}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                {appointment.notes && (
+                  <p className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 italic">
+                    {appointment.notes}
+                  </p>
+                )}
               </motion.div>
             );
           })}

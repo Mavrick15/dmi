@@ -1,12 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useDocuments = (params) => {
   const { showToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
-  queryKey: ['documents', params],
+    queryKey: ['documents', params],
     queryFn: async () => {
       try {
         const response = await api.get('/documents', { params });
@@ -30,19 +32,22 @@ export const useDocuments = (params) => {
         throw error;
       }
     },
+    enabled: !!isAuthenticated,
     keepPreviousData: true,
     refetchOnWindowFocus: true,
-    refetchOnMount: true, // Rafraîchir à chaque montage
-    staleTime: 0, // Les données sont immédiatement considérées comme périmées pour forcer le rafraîchissement
+    refetchOnMount: true,
+    staleTime: 0,
     retry: 1
   });
 };
 
 export const useDocumentStats = () => {
   const { showToast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
     queryKey: ['documents', 'stats'],
+    enabled: !!isAuthenticated,
     queryFn: async () => {
       try {
         const response = await api.get('/documents/stats');

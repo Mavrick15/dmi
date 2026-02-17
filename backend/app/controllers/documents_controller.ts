@@ -206,9 +206,15 @@ export default class DocumentsController {
   }
 
   // --- PRÉVISUALISATION ---
-  public async preview({ params, response }: HttpContext) {
-    const doc = await Document.findOrFail(params.id) 
-    
+  public async preview({ params, response, auth }: HttpContext) {
+    const user = auth.user as UserProfile
+    const doc = await Document.findOrFail(params.id)
+
+    const hasAccess = await DocumentService.checkAccess(doc.id, user.id, user.role, 'read')
+    if (!hasAccess) {
+      throw AppException.forbidden('Vous n\'avez pas accès à ce document')
+    }
+
     // Vérifier si le fichier existe
     const exists = await drive.use().exists(doc.filePath)
     if (!exists) {
@@ -263,10 +269,15 @@ export default class DocumentsController {
   // --- SIGNATURE PDF (In-Memory pour compatibilité Cloud) ---
   public async sign({ params, request, response, auth }: HttpContext) {
     const user = auth.user as UserProfile
-    const doc = await Document.findOrFail(params.id) 
+    const doc = await Document.findOrFail(params.id)
+
+    // Seul le médecin propriétaire du document (uploader) peut le signer
+    if (doc.uploadedBy !== user.id) {
+      throw AppException.forbidden('Seul le médecin propriétaire du document peut le signer.')
+    }
 
     if (!doc.mimeType.includes('pdf')) {
-        throw AppException.badRequest("Seuls les PDF peuvent être signés.")
+      throw AppException.badRequest('Seuls les PDF peuvent être signés.')
     }
 
     const { signatureImage } = request.only(['signatureImage'])
@@ -344,50 +355,52 @@ export default class DocumentsController {
       throw AppException.unauthorized('Non authentifié')
     }
 
-    // Vérification supplémentaire : seuls les admins et gestionnaires peuvent supprimer
-    if (user.role !== 'admin' && user.role !== 'gestionnaire') {
-      const userName = user.nomComplet || user.email || 'Utilisateur'
-      throw AppException.forbidden(userName)
+    const doc = await Document.find(params.id)
+    if (!doc) {
+      throw AppException.notFound('Document')
+    }
+
+    // Seuls le médecin propriétaire (uploader), les admins et gestionnaires peuvent supprimer
+    const isOwner = doc.uploadedBy === user.id
+    const isAdminOrGestionnaire = user.role === 'admin' || user.role === 'gestionnaire'
+    if (!isOwner && !isAdminOrGestionnaire) {
+      throw AppException.forbidden('Seul le médecin propriétaire du document ou un administrateur peut le supprimer.')
     }
 
     const trx = await db.transaction()
 
     try {
-        const doc = await Document.findOrFail(params.id, { client: trx })
-        const filePath = doc.filePath
-        
-        // Récupérer les informations nécessaires pour la notification avant la suppression
-        const documentTitle = doc.title || doc.originalName
-        const uploadedBy = doc.uploadedBy
+        const docInTrx = await Document.findOrFail(params.id, { client: trx })
+        const filePath = docInTrx.filePath
+
+        const documentTitle = docInTrx.title || docInTrx.originalName
+        const uploadedBy = docInTrx.uploadedBy
         let patientId: string | null = null
         let patientName: string | null = null
-        
-        if (doc.patientId) {
-          patientId = doc.patientId
+
+        if (docInTrx.patientId) {
+          patientId = docInTrx.patientId
           try {
-            const patient = await Patient.find(doc.patientId)
+            const patient = await Patient.find(docInTrx.patientId)
             if (patient) {
               await patient.load('user')
               patientName = patient.user?.nomComplet || null
             }
           } catch (error) {
-            logger.debug({ patientId: doc.patientId, err: error }, 'Impossible de charger le patient pour notification de suppression')
+            logger.debug({ patientId: docInTrx.patientId, err: error }, 'Impossible de charger le patient pour notification de suppression')
           }
         }
 
-        // Suppression DB
-        await doc.delete()
+        await docInTrx.delete()
 
-        // Suppression Fichier Physique (asynchrone, on attend pas forcément le résultat critique)
         await drive.use().delete(filePath).catch(err => {
-            logger.warn({ err }, 'Fichier physique non supprimé lors de la suppression du document')
+          logger.warn({ err }, 'Fichier physique non supprimé lors de la suppression du document')
         })
 
         await trx.commit()
 
-        // Notification de suppression (après le commit)
         await NotificationService.notifyDocumentDeleted(
-          String(doc.id),
+          String(docInTrx.id),
           documentTitle,
           patientId,
           patientName,
@@ -395,10 +408,9 @@ export default class DocumentsController {
           uploadedBy
         )
 
-        // Log d'audit - Suppression de document
         await AuditService.logDocumentDeleted(
           { auth, request: {} as any, response } as HttpContext,
-          String(doc.id),
+          String(docInTrx.id),
           documentTitle,
           'Suppression demandée par utilisateur autorisé'
         )
@@ -494,32 +506,76 @@ export default class DocumentsController {
   }
 
   /**
-   * Partager un document
+   * Partager un document (uniquement avec des docteurs)
    */
   public async share({ params, request, response, auth }: HttpContext) {
     const user = auth.user as UserProfile
-    const userIds = request.input('userIds', [])
-    const roleIds = request.input('roleIds', [])
+    const userIds: string[] = Array.isArray(request.input('userIds')) ? request.input('userIds') : []
+    const roleIds: string[] = Array.isArray(request.input('roleIds')) ? request.input('roleIds') : []
     const permission = request.input('permission', 'read')
-    const expiresAt = request.input('expiresAt') 
+    const expiresAt = request.input('expiresAt')
       ? DateTime.fromISO(request.input('expiresAt'))
       : null
-    
+
+    // Les documents ne peuvent être partagés qu'avec des docteurs
+    const allowedRole = 'docteur'
+    const invalidRoleIds = roleIds.filter((r) => r !== allowedRole)
+    if (invalidRoleIds.length > 0) {
+      throw AppException.badRequest('Le partage est autorisé uniquement avec le rôle Docteurs.')
+    }
+
+    if (userIds.length > 0) {
+      const profiles = await UserProfile.query().whereIn('id', userIds).where('actif', true)
+      const nonDoctors = profiles.filter((p) => p.role !== 'docteur')
+      if (nonDoctors.length > 0) {
+        throw AppException.badRequest('Le partage est autorisé uniquement avec des médecins (docteurs).')
+      }
+    }
+
+    // Les médecins avec qui on partage n'ont que le droit de lecture (pas signer ni supprimer)
+    const readOnlyPermission = 'read' as const
     await DocumentService.shareDocument(
       params.id,
       userIds,
       roleIds,
-      permission,
+      readOnlyPermission,
       expiresAt,
       user.id
     )
-    
+
     const document = await Document.findOrFail(params.id)
-    
+
+    // Déterminer les médecins à notifier (IDs utilisateur)
+    const doctorIdsToNotify: string[] = [...userIds]
+    if (roleIds.includes('docteur')) {
+      const doctorsByRole = await UserProfile.query()
+        .where('role', 'docteur')
+        .where('actif', true)
+        .select('id')
+      for (const d of doctorsByRole) {
+        if (!doctorIdsToNotify.includes(d.id)) doctorIdsToNotify.push(d.id)
+      }
+    }
+    const uniqueDoctorIds = [...new Set(doctorIdsToNotify)].filter((id) => id !== user.id)
+    if (uniqueDoctorIds.length > 0) {
+      try {
+        await NotificationService.notifyDocumentShared(
+          String(document.id),
+          document.title,
+          uniqueDoctorIds,
+          user.nomComplet || user.email || 'Un utilisateur'
+        )
+      } catch (err) {
+        logger.warn({ err, documentId: document.id }, 'Notification de partage de document échouée')
+      }
+    }
+
     // Log d'audit - Partage de document
-    const sharedWithNames = userIds.length > 0 
-      ? `${userIds.length} utilisateur(s)` 
-      : `Rôle(s): ${roleIds.join(', ')}`
+    const sharedWithNames = userIds.length > 0
+      ? `${userIds.length} utilisateur(s)`
+      : roleIds.length > 0
+        ? `Rôle(s): ${roleIds.join(', ')}`
+        : '—'
     await AuditService.logDocumentShared(
       { auth, request, response } as HttpContext,
       String(document.id),
@@ -527,11 +583,10 @@ export default class DocumentsController {
       sharedWithNames,
       user.nomComplet || user.email
     )
-    
+
     // Log d'audit - Accès accordé pour chaque utilisateur (RGPD)
     if (userIds.length > 0) {
       for (const userId of userIds) {
-        // Récupérer le nom de l'utilisateur
         const grantedUser = await UserProfile.find(userId)
         if (grantedUser) {
           await AuditService.logDocumentAccessGranted(
@@ -544,7 +599,7 @@ export default class DocumentsController {
         }
       }
     }
-    
+
     return response.json(ApiResponse.success(null, 'Document partagé avec succès'))
   }
 

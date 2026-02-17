@@ -152,54 +152,47 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
           </div>
         </div>
 
-        {/* Montants */}
-        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100/50 dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-800/30 rounded-xl p-4 mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div className="grid grid-cols-3 gap-4">
+        {/* Montants (widget compact) */}
+        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100/50 dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-800/30 rounded-lg px-3 py-2 mb-3 border border-slate-200 dark:border-slate-700">
+          <div className="grid grid-cols-3 gap-2">
             <div>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                Montant Total
+              <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                Total
               </div>
-              <div className="text-lg font-bold text-slate-900 dark:text-white">
+              <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                 {formatCurrency(invoice.montantTotal)}
               </div>
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+              <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                 Payé
               </div>
-              <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 leading-tight">
                 {formatCurrency(invoice.montantPaye || 0)}
               </div>
             </div>
             <div>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                Reste à payer
+              <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                Reste
               </div>
-              <div className={`text-lg font-bold ${montantRestant > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+              <div className={`text-sm font-bold leading-tight ${montantRestant > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                 {formatCurrency(montantRestant)}
               </div>
             </div>
           </div>
-
-          {/* Barre de progression */}
           {invoice.montantTotal > 0 && (
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 mb-1">
-                <span>Progression du paiement</span>
-                <span className="font-bold">{Math.round(pourcentagePaye)}%</span>
-              </div>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+            <div className="mt-2 flex items-center gap-2">
+              <div className="flex-1 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${pourcentagePaye}%` }}
                   transition={{ duration: 0.5, ease: 'easeOut' }}
                   className={`h-full rounded-full ${
-                    pourcentagePaye === 100 
-                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' 
-                      : 'bg-gradient-to-r from-primary to-blue-600'
+                    pourcentagePaye === 100 ? 'bg-emerald-500' : 'bg-primary'
                   }`}
                 />
               </div>
+              <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 tabular-nums">{Math.round(pourcentagePaye)}%</span>
             </div>
           )}
         </div>

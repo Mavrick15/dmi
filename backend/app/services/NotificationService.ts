@@ -1319,6 +1319,50 @@ export default class NotificationService {
   }
 
   /**
+   * Notification de document partagé
+   * Notifie chaque médecin avec qui le document a été partagé
+   */
+  static async notifyDocumentShared(
+    documentId: string,
+    documentTitle: string,
+    sharedWithUserIds: string[],
+    sharedByName: string
+  ) {
+    const validIds = sharedWithUserIds.filter((id) => id && typeof id === 'string')
+    if (validIds.length === 0) return
+
+    const actionUrl = `/gestion-documents?document=${documentId}`
+
+    await this.createNotification(
+      validIds,
+      'Document partagé avec vous',
+      `${sharedByName} vous a partagé un document : ${documentTitle}`,
+      {
+        type: 'info',
+        category: 'document',
+        targetId: documentId,
+        targetType: 'document',
+        actionUrl,
+        priority: 'normal',
+        metadata: { documentId, documentTitle, sharedByName },
+      }
+    )
+
+    await this.logNotificationToAudit(
+      'document_shared',
+      'Document partagé',
+      `Document "${documentTitle}" partagé avec ${validIds.length} médecin(s) par ${sharedByName}`,
+      validIds,
+      ['docteur'],
+      'document',
+      documentId,
+      'document',
+      sharedByName,
+      { documentTitle, sharedByName }
+    )
+  }
+
+  /**
    * Notification de prescription créée
    * Notifie TOUS les pharmaciens actifs quand un médecin prescrit des médicaments
    */
