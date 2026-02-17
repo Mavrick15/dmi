@@ -303,7 +303,7 @@ export default class AnalysesController {
         notesPrescription: payload.notesPrescription || null,
         priorite: (payload.priorite || 'normale') as any
       })
-      await CacheService.deleteAsync('analyses:stats')
+      await CacheService.deleteByPrefixAsync('dashboard:data:')
 
       await analyse.load('patient', (q) => q.preload('user'))
       if (analyse.medecinId) {
@@ -362,7 +362,7 @@ export default class AnalysesController {
       if (payload.priorite) analyse.priorite = payload.priorite as any
 
       await analyse.save()
-      await CacheService.deleteAsync('analyses:stats')
+      await CacheService.deleteByPrefixAsync('dashboard:data:')
 
       await analyse.load('patient', (q) => q.preload('user'))
       if (analyse.medecinId) {
@@ -415,7 +415,7 @@ export default class AnalysesController {
 
       analyse.statut = 'annulee'
       await analyse.save()
-      await CacheService.deleteAsync('analyses:stats')
+      await CacheService.deleteByPrefixAsync('dashboard:data:')
 
       return response.json(
         ApiResponse.success({
@@ -452,6 +452,7 @@ export default class AnalysesController {
 
       // Supprimer l'analyse (les résultats seront supprimés en cascade grâce à la relation)
       await analyse.delete()
+      await CacheService.deleteByPrefixAsync('dashboard:data:')
 
       return response.json(
         ApiResponse.success(null, 'Analyse supprimée avec succès')
@@ -466,7 +467,7 @@ export default class AnalysesController {
   }
 
   /**
-   * Statistiques des analyses
+   * Statistiques des analyses (sans cache pour que les statuts soient toujours à jour)
    * @route GET /api/v1/analyses/stats
    */
   public async stats({ response, auth }: HttpContext) {
@@ -474,12 +475,6 @@ export default class AnalysesController {
       const user = auth.user as UserProfile
       if (!user) {
         throw AppException.unauthorized('Non authentifié')
-      }
-
-      const cacheKey = 'analyses:stats'
-      const cached = await CacheService.getAsync(cacheKey)
-      if (cached !== undefined) {
-        return response.json(ApiResponse.success(cached))
       }
 
       const total = await Analyse.query().count('* as total').first()
@@ -504,7 +499,6 @@ export default class AnalysesController {
           count: Number(t.$extras.count || 0)
         }))
       }
-      await CacheService.setAsync(cacheKey, data, 60)
       return response.json(ApiResponse.success(data))
     } catch (error) {
       logger.error({ err: error }, 'Erreur lors de la récupération des statistiques')

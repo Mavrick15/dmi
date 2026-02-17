@@ -13,7 +13,6 @@ import Medicament from '#models/Medicament'
 import Medecin from '#models/Medecin'
 import UserProfile from '#models/UserProfile'
 import Analyse from '#models/Analyse'
-import CacheService from '#services/CacheService'
 import { DashboardTransformer } from '../transformers/DashboardTransformer.js'
 import { AppException } from '../exceptions/AppException.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
@@ -24,7 +23,7 @@ export default class DashboardController {
    * @route GET /api/v1/dashboard
    * @access Authentifié
    * @param {HttpContext} ctx - Contexte HTTP
-   * @returns {Promise<Response>} Données du dashboard avec cache
+   * @returns {Promise<Response>} Données du dashboard (toujours fraîches, pas de cache)
    */
   public async index({ response, auth }: HttpContext) {
     // Récupérer l'utilisateur authentifié
@@ -50,21 +49,7 @@ export default class DashboardController {
       }
     }
 
-    // Cache Redis (ou mémoire) pour limiter la charge sur la base
-    const cacheKey = `dashboard:data:${user.role}:${medecinId || 'all'}`
-    const cached = (await CacheService.getAsync(cacheKey)) as any
-
-    if (cached) {
-      if (cached.metrics && !cached.data) {
-        return response.json(ApiResponse.success(cached))
-      }
-      if (cached.data?.appointments?.length > 0) {
-        return response.json(cached)
-      }
-      if (cached.appointments?.length > 0) {
-        return response.json(ApiResponse.success(cached))
-      }
-    }
+    // Pas de cache : données toujours fraîches (statuts, RDV, analyses, etc.)
     const today = DateTime.now().toSQLDate()
     const startOfMonth = DateTime.now().startOf('month').toSQLDate()
 
@@ -307,10 +292,6 @@ export default class DashboardController {
     // Extraire les données (sans le champ success qui sera ajouté par ApiResponse)
     const { success, ...dashboardData } = transformedData
 
-    // Mettre en cache (Redis si disponible) pour 2 minutes
-    await CacheService.setAsync(cacheKey, dashboardData, 120)
-
-    // Retourner avec ApiResponse pour standardiser la structure
     return response.json(ApiResponse.success(dashboardData))
   }
 }

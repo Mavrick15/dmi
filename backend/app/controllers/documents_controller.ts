@@ -20,8 +20,6 @@ import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
 import { DateTime } from 'luxon'
 import JSZip from 'jszip'
-import CacheService from '#services/CacheService'
-
 export default class DocumentsController {
   
   // --- LISTING ---
@@ -167,7 +165,6 @@ export default class DocumentsController {
       }
 
       await trx.commit()
-      await CacheService.deleteAsync('documents:stats')
 
       // Log d'audit - Création de document
       const patientName = patient.user?.nomComplet || 'Patient'
@@ -322,8 +319,7 @@ export default class DocumentsController {
         doc.signedBy = user.id
         doc.signedAt = DateTime.now()
         await doc.save()
-        await CacheService.deleteAsync('documents:stats')
-        
+
         // Charger la relation signer pour l'inclure dans la réponse
         await doc.load('signer', (q) => q.select('nomComplet'))
         
@@ -745,8 +741,7 @@ export default class DocumentsController {
     const document = action === 'archive'
       ? await DocumentService.archiveDocument(params.id)
       : await DocumentService.unarchiveDocument(params.id)
-    await CacheService.deleteAsync('documents:stats')
-    
+
     // Log d'audit - Archivage de document
     if (action === 'archive') {
       await AuditService.logDocumentArchived(
@@ -890,16 +885,10 @@ export default class DocumentsController {
   }
 
   /**
-   * Statistiques complètes des documents (toutes via rawQuery pour cohérence)
+   * Statistiques complètes des documents (sans cache : données toujours fraîches)
    */
   public async stats({ response }: HttpContext) {
     try {
-      const cacheKey = 'documents:stats'
-      const cached = await CacheService.getAsync(cacheKey)
-      if (cached !== undefined) {
-        return response.json(ApiResponse.success(cached))
-      }
-
       const [
         totalRes,
         archivedRes,
@@ -950,7 +939,6 @@ export default class DocumentsController {
         totalDownloads,
         storageUsed: `${(totalStorageBytes / (1024 * 1024)).toFixed(1)} MB`
       }
-      await CacheService.setAsync(cacheKey, stats, 60)
       return response.json(ApiResponse.success(stats))
     } catch (error) {
       logger.error({ err: error }, 'Erreur lors de la récupération des statistiques des documents')

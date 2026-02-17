@@ -17,8 +17,6 @@ import { PaginationHelper } from '../utils/PaginationHelper.js'
 import { PharmacyTransformer } from '../transformers/PharmacyTransformer.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
-import CacheService from '#services/CacheService'
-
 export default class PharmacyController {
   
   /**
@@ -209,7 +207,6 @@ export default class PharmacyController {
         dateExpiration: data.dateExpiration ? DateTime.fromJSDate(data.dateExpiration) : null,
         prescriptionRequise: data.prescriptionRequise || false
       })
-      await CacheService.deleteAsync('pharmacy:stats')
 
       // Notification SSE
       await transmit.broadcast('pharmacy_channel', {
@@ -288,7 +285,6 @@ export default class PharmacyController {
       }
 
       await medicament.save()
-      await CacheService.deleteAsync('pharmacy:stats')
 
       await transmit.broadcast('pharmacy_channel', {
           message: `Médicament mis à jour : ${medicament.nom}`,
@@ -570,7 +566,6 @@ export default class PharmacyController {
       order.statut = 'recue'
       await order.save()
       await trx.commit()
-      await CacheService.deleteAsync('pharmacy:stats')
 
       await transmit.broadcast('pharmacy_channel', {
           message: `Stock mis à jour (Réception ${order.numeroCommande})`,
@@ -664,7 +659,6 @@ export default class PharmacyController {
       }, { client: trx })
 
       await trx.commit()
-      await CacheService.deleteAsync('pharmacy:stats')
 
       // Notification pour les pharmaciens (mouvement d'inventaire)
       const movementType = diff > 0 ? 'entree' : (diff < 0 ? 'sortie' : 'ajustement')
@@ -762,14 +756,11 @@ export default class PharmacyController {
   // 3. STATISTIQUES & ANALYSES
   // ----------------------------------------------------------------------
 
+  /**
+   * Statistiques pharmacie (sans cache : données toujours fraîches)
+   */
   public async stats({ response }: HttpContext) {
     try {
-      const cacheKey = 'pharmacy:stats'
-      const cached = await CacheService.getAsync(cacheKey)
-      if (cached !== undefined) {
-        return response.json({ success: true, data: cached })
-      }
-
       const totalItems = await Medicament.query().count('* as total')
       const allMeds = await Medicament.query().select('stock_actuel', 'prix_unitaire')
       const totalValue = allMeds.reduce((acc, med) => acc + ((Number(med.prixUnitaire) || 0) * med.stockActuel), 0)
@@ -782,7 +773,6 @@ export default class PharmacyController {
         lowStock: Number(lowStock[0].$extras.total),
         expiringSoon: Number(expiringSoon[0].$extras.total)
       }
-      await CacheService.setAsync(cacheKey, data, 60)
       return response.json({
         success: true,
         data
@@ -1271,7 +1261,6 @@ export default class PharmacyController {
           }, { client: trx })
 
           await trx.commit()
-          await CacheService.deleteAsync('pharmacy:stats')
 
           // Notification si le stock est faible ou en rupture
           if (newStock <= 0) {
