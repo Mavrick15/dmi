@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
+import tokenService from '../services/tokenService';
 
 export const useUsers = (params) => {
   const { showToast } = useToast();
@@ -59,19 +61,20 @@ export const useUserDetails = (id) => {
 
 export const useEstablishments = (params) => {
   const { showToast } = useToast();
-  
+  const { isAuthenticated } = useAuth();
+  const hasToken = !!tokenService.getAccessToken();
+
   return useQuery({
-  queryKey: ['establishments', params],
+    queryKey: ['establishments', params],
+    enabled: !!isAuthenticated && hasToken,
     queryFn: async () => {
       try {
         const response = await api.get('/establishments', { params });
-        // Le backend retourne { success: true, data: [...], meta: {...} }
         return {
           data: response.data.data || [],
           meta: response.data.meta || {}
         };
       } catch (error) {
-        // Gestion des erreurs de rate limiting
         if (error.response?.status === 429) {
           showToast('Trop de requêtes. Veuillez patienter quelques instants.', 'error');
         } else if (error.userMessage) {

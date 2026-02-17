@@ -55,6 +55,6 @@ export const searchAnalysesValidator = vine.compile(
     typeAnalyse: vine.string().maxLength(100).optional(),
     search: vine.string().maxLength(200).optional(),
     page: vine.number().min(1).optional(),
-    limit: vine.number().min(1).max(100).optional(),
+    limit: vine.number().min(1).max(1000).optional(),
   })
 )

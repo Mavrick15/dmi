@@ -166,6 +166,7 @@ export default class PatientsController {
     const { page, limit } = PaginationHelper.fromRequest(request, 12, 50)
     const search = request.input('search')
     const establishmentId = request.input('establishmentId')
+    const forMyAppointments = request.input('forMyAppointments') === true || request.input('forMyAppointments') === '1'
 
     // Récupérer l'utilisateur authentifié
     const user = auth.user as UserProfile
@@ -186,28 +187,25 @@ export default class PatientsController {
 
     // Si c'est un docteur, filtrer pour ne voir que ses patients
     if (!canSeeAllPatients && user.role === 'docteur') {
-      // Récupérer le profil médecin associé
       const medecin = await Medecin.findBy('userId', user.id)
 
       if (medecin) {
-        // Récupérer les IDs des patients qui ont :
-        // 1. Des consultations avec ce médecin
-        // 2. OU des rendez-vous avec ce médecin
-        const consultations = await Consultation.query()
-          .where('medecinId', medecin.id)
-          .select('patientId')
-          .exec()
-
+        // forMyAppointments=1 (ex: console clinique) : uniquement les patients ayant au moins un rendez-vous programmé avec ce médecin
+        // sinon : patients avec consultations OU rendez-vous avec ce médecin
         const rendezVous = await RendezVous.query()
           .where('medecinId', medecin.id)
           .select('patientId')
           .exec()
 
-        // Combiner les IDs uniques
-        const patientIds = new Set([
-          ...consultations.map((c) => c.patientId),
-          ...rendezVous.map((r) => r.patientId),
-        ])
+        const patientIds = new Set(rendezVous.map((r) => r.patientId))
+
+        if (!forMyAppointments) {
+          const consultations = await Consultation.query()
+            .where('medecinId', medecin.id)
+            .select('patientId')
+            .exec()
+          consultations.forEach((c) => patientIds.add(c.patientId))
+        }
 
         // Si aucun patient trouvé, retourner une liste vide
         if (patientIds.size === 0) {

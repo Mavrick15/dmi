@@ -21,6 +21,15 @@ export default class GenerateAdmin extends BaseCommand {
   declare password: string
 
   async run() {
+    // Vérifier que la table user_profiles existe (migrations exécutées)
+    const db = (await import('@adonisjs/lucid/services/db')).default
+    const hasTable = await db.connection().schema.hasTable('user_profiles')
+    if (!hasTable) {
+      this.logger.error('La table "user_profiles" n\'existe pas en base.')
+      this.logger.info('Exécutez d\'abord les migrations : node ace migration:run')
+      return
+    }
+
     // Vérifier si l'utilisateur existe déjà
     const existing = await UserProfile.findBy('email', this.email)
     if (existing) {

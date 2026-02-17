@@ -1,8 +1,12 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import CommonExam from '../../app/models/common_exam.js'
+import CommonExam from '#models/common_exam'
+import db from '@adonisjs/lucid/services/db'
 
 export default class extends BaseSeeder {
   async run() {
+    const hasTable = await db.connection().schema.hasTable('common_exams')
+    if (!hasTable) return
+
     const exams = [
       { name: 'NFS (Hémogramme)', category: 'Biologie', type: 'Sang', ordreAffichage: 1 },
       { name: 'Ionogramme sanguin', category: 'Biologie', type: 'Sang', ordreAffichage: 2 },

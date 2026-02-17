@@ -80,14 +80,18 @@ GRANT ALL PRIVILEGES ON DATABASE openclinic_db TO openclinic_user;
 ### Exécuter les migrations
 
 ```bash
-# Exécuter toutes les migrations
+# Appliquer les migrations (créer ou mettre à jour les tables) — à faire en premier
 node ace migration:run
 
-# Rollback la dernière migration
+# Optionnel : annuler la dernière vague de migrations (en dev, pour repartir de zéro)
 node ace migration:rollback
 ```
 
+Vous n'avez pas besoin de faire `rollback` après `migration:run`. Utilisez `rollback` seulement si vous voulez annuler des migrations ; après un rollback, relancez `migration:run` avant `db:seed`.
+
 ### Seeders (Données de test)
+
+**Important :** exécuter d’abord les migrations (`node ace migration:run`), sinon les seeders qui dépendent des tables (CIM-10, clinical, common_exams, common_symptoms) seront ignorés sans erreur.
 
 ```bash
 # Exécuter les seeders

@@ -51,7 +51,11 @@ export const useDocumentStats = () => {
     queryFn: async () => {
       try {
         const response = await api.get('/documents/stats');
-        return response.data.data || {};
+        const data = response.data?.data ?? response.data;
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+          return data;
+        }
+        return {};
       } catch (error) {
         // Gestion des erreurs de rate limiting
         if (error.response?.status === 429) {
@@ -59,11 +63,12 @@ export const useDocumentStats = () => {
         } else if (error.userMessage) {
           showToast(error.userMessage, 'error');
         }
-        // Retourner des valeurs par défaut en cas d'erreur
+        // Retourner des valeurs par défaut en cas d'erreur (403, 500, etc.)
         return {
           totalDocuments: 0,
           archivedDocuments: 0,
           pendingSignatures: 0,
+          totalSigned: 0,
           signedToday: 0,
           totalViews: 0,
           totalDownloads: 0,

@@ -2,6 +2,7 @@ import RedisService from '#services/RedisService'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import { ApiResponse } from '../utils/ApiResponse.js'
+import logger from '@adonisjs/core/services/logger'
 
 /**
  * Middleware de rate limiting avec support Redis et fallback mémoire
@@ -79,14 +80,15 @@ export default class RateLimitMiddleware {
 
     const now = Date.now()
 
-    // Essayer d'utiliser Redis en premier, sinon fallback en mémoire (sauf si REDIS_REQUIRED)
+    // Essayer d'utiliser Redis en premier, sinon fallback en mémoire (sauf si REDIS_REQUIRED en production)
     const redisRequired = RedisService.isRequired()
+    const isDev = process.env.NODE_ENV === 'development'
     if (!RedisService.isAvailable() && !(RedisService as any)._connectionAttempted) {
       ;(RedisService as any)._connectionAttempted = true
       try {
         await RedisService.connect()
       } catch (error) {
-        if (redisRequired) {
+        if (redisRequired && !isDev) {
           return ctx.response.status(503).json(
             ApiResponse.error(
               'Service temporairement indisponible (Redis requis).',
@@ -94,7 +96,9 @@ export default class RateLimitMiddleware {
             )
           )
         }
-        // Sinon on utilisera le fallback mémoire
+        if (redisRequired && isDev) {
+          logger.warn('Redis requis mais indisponible en développement : utilisation du rate limit en mémoire.')
+        }
       }
     }
 
@@ -137,7 +141,7 @@ export default class RateLimitMiddleware {
         await next()
         return
       } catch (error) {
-        if (redisRequired) {
+        if (redisRequired && !isDev) {
           return ctx.response.status(503).json(
             ApiResponse.error(
               'Service temporairement indisponible (Redis requis).',
@@ -145,12 +149,14 @@ export default class RateLimitMiddleware {
             )
           )
         }
-        // Sinon basculer en mode mémoire
+        if (redisRequired && isDev) {
+          logger.warn('Redis indisponible (rate limit) : fallback mémoire.')
+        }
       }
     }
 
-    // Redis requis mais indisponible : ne pas utiliser le fallback mémoire
-    if (redisRequired) {
+    // Redis requis mais indisponible : 503 en production uniquement
+    if (redisRequired && !isDev) {
       return ctx.response.status(503).json(
         ApiResponse.error(
           'Service temporairement indisponible (Redis requis).',

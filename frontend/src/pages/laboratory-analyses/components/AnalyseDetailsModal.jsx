@@ -6,7 +6,7 @@ import Badge from '../../../components/ui/Badge';
 import Modal from '../../../components/ui/Modal';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
-import { useAnalyseDetails } from '../../../hooks/useAnalyses';
+import { useAnalyseDetails, useAnalysesMutations } from '../../../hooks/useAnalyses';
 import { useResultatsByAnalyse, useResultatsMutations } from '../../../hooks/useResultats';
 import ResultatsTable from './ResultatsTable';
 import ResultatsAnalyseModal from './ResultatsAnalyseModal';
@@ -27,10 +27,19 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
   const { data: analyseData, isLoading, error } = useAnalyseDetails(isOpen ? analyseProp?.id : null);
   const { data: resultats } = useResultatsByAnalyse(analyseProp?.id);
   const { validateResultat } = useResultatsMutations();
+  const { updateAnalyse } = useAnalysesMutations();
 
   const handleValidate = (resultat, analyse) => {
     setSelectedResultat(resultat);
     setIsValidateModalOpen(true);
+  };
+
+  const handleCloturer = () => {
+    if (!analyse?.id) return;
+    updateAnalyse.mutate(
+      { id: analyse.id, data: { statut: 'terminee' } },
+      { onSuccess: () => {} }
+    );
   };
 
   const handleEditResultat = (resultat) => {
@@ -58,6 +67,23 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
       en_attente_validation: { variant: 'warning', label: 'En attente' }
     };
     return badges[statut] || { variant: 'info', label: statut };
+  };
+
+  const moisAbrev = { janvier: 'Janv.', février: 'Fév.', mars: 'Mar.', avril: 'Avr.', mai: 'Mai', juin: 'Juin', juillet: 'Juil.', août: 'Août', septembre: 'Sept.', octobre: 'Oct.', novembre: 'Nov.', décembre: 'Déc.' };
+
+  const formatDateShort = (dateString) => {
+    if (!dateString) return 'N/A';
+    try {
+      const d = new Date(dateString);
+      const day = d.getDate();
+      const month = d.toLocaleDateString('fr-FR', { month: 'long' }).toLowerCase();
+      const year = d.getFullYear();
+      const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const mois = moisAbrev[month] || month;
+      return `${day} ${mois} ${year} à ${time}`;
+    } catch {
+      return dateString;
+    }
   };
 
   const formatDate = (dateString) => {
@@ -184,7 +210,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 3. Dates et Service */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="md:col-span-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="Calendar" size={16} className="text-slate-600 dark:text-slate-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -192,25 +218,23 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                   </h4>
                 </div>
                 <div className="space-y-2 text-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-500 dark:text-slate-400">Prescription:</span>
-                    <span className="font-medium text-slate-900 dark:text-white text-xs">
-                      {formatDate(analyse.datePrescription)}
-                    </span>
+                  <div className="flex flex-wrap gap-6 md:gap-8">
+                    <div>
+                      <p className="font-bold text-slate-900 dark:text-white text-xs">Prescription</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">{formatDateShort(analyse.datePrescription)}</p>
+                    </div>
+                    {analyse.dateResultat && (
+                      <div>
+                        <p className="font-bold text-slate-900 dark:text-white text-xs">Résultat</p>
+                        <p className="text-slate-600 dark:text-slate-400 text-xs mt-0.5">{formatDateShort(analyse.dateResultat)}</p>
+                      </div>
+                    )}
                   </div>
                   {analyse.datePrelevement && (
                     <div className="flex justify-between items-center">
                       <span className="text-slate-500 dark:text-slate-400">Prélèvement:</span>
                       <span className="font-medium text-slate-900 dark:text-white text-xs">
-                        {formatDate(analyse.datePrelevement)}
-                      </span>
-                    </div>
-                  )}
-                  {analyse.dateResultat && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-500 dark:text-slate-400">Résultat:</span>
-                      <span className="font-medium text-slate-900 dark:text-white text-xs">
-                        {formatDate(analyse.dateResultat)}
+                        {formatDateShort(analyse.datePrelevement)}
                       </span>
                     </div>
                   )}
@@ -386,6 +410,18 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                         Imprimer
                       </Button>
                       <AnalyseQRCode analyse={analyse} />
+                      {analyse.statut === 'en_cours' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          iconName="CheckCircle"
+                          onClick={handleCloturer}
+                          disabled={updateAnalyse.isPending}
+                          title="Clôturer l'analyse"
+                        >
+                          Clôturer
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

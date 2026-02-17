@@ -890,7 +890,7 @@ export default class DocumentsController {
   }
 
   /**
-   * Statistiques complètes des documents
+   * Statistiques complètes des documents (toutes via rawQuery pour cohérence)
    */
   public async stats({ response }: HttpContext) {
     try {
@@ -900,9 +900,47 @@ export default class DocumentsController {
         return response.json(ApiResponse.success(cached))
       }
 
-      const today = DateTime.now().toSQLDate()
-
       const [
+        totalRes,
+        archivedRes,
+        pendingRes,
+        signedRes,
+        signedTodayRes,
+        viewsRes,
+        downloadsRes,
+        storageRes
+      ] = await Promise.all([
+        db.rawQuery(`SELECT COUNT(*) as total FROM documents`),
+        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_archived = true`),
+        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_signed = false`),
+        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_signed = true`),
+        db.rawQuery(`
+          SELECT COUNT(*) as total FROM documents
+          WHERE is_signed = true AND DATE(updated_at) = CURRENT_DATE
+        `),
+        db.rawQuery(`SELECT COALESCE(SUM(view_count), 0)::bigint as total FROM documents`),
+        db.rawQuery(`SELECT COALESCE(SUM(download_count), 0)::bigint as total FROM documents`),
+        db.rawQuery(`SELECT COALESCE(SUM(size), 0)::bigint as total FROM documents`)
+      ])
+
+      const firstRow = (r: any) => (r?.rows && r.rows[0]) || (Array.isArray(r) && r[0]) || null
+      const num = (r: any) => {
+        const row = firstRow(r)
+        const v = row?.total
+        if (v === undefined || v === null) return 0
+        return Number(v)
+      }
+
+      const totalDocuments = num(totalRes)
+      const archivedDocuments = num(archivedRes)
+      const pendingSignatures = num(pendingRes)
+      const totalSigned = num(signedRes)
+      const signedToday = num(signedTodayRes)
+      const totalViews = num(viewsRes)
+      const totalDownloads = num(downloadsRes)
+      const totalStorageBytes = num(storageRes)
+
+      const stats = {
         totalDocuments,
         archivedDocuments,
         pendingSignatures,
@@ -910,44 +948,7 @@ export default class DocumentsController {
         signedToday,
         totalViews,
         totalDownloads,
-        totalStorage
-      ] = await Promise.all([
-        Document.query().count('* as total'),
-        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_archived = true`),
-        // Attente de signature : tous les documents non signés
-        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_signed = false`),
-        // Documents signés : intégralité des documents signés (sans exception)
-        db.rawQuery(`SELECT COUNT(*) as total FROM documents WHERE is_signed = true`),
-        // Signés aujourd'hui : documents signés dont la date de signature est aujourd'hui
-        db.rawQuery(`
-          SELECT COUNT(*) as total 
-          FROM documents 
-          WHERE is_signed = true 
-          AND DATE(updated_at) = CURRENT_DATE
-        `),
-        db.rawQuery(`
-          SELECT COALESCE(SUM(view_count), 0) as total
-          FROM documents
-        `),
-        db.rawQuery(`
-          SELECT COALESCE(SUM(download_count), 0) as total
-          FROM documents
-        `),
-        db.rawQuery(`
-          SELECT COALESCE(SUM(size), 0) as total
-          FROM documents
-        `)
-      ])
-
-      const stats = {
-        totalDocuments: Number(totalDocuments[0].$extras.total),
-        archivedDocuments: Number(archivedDocuments.rows[0]?.total || 0),
-        pendingSignatures: Number(pendingSignatures.rows[0]?.total || 0), // Tous les documents non signés
-        totalSigned: Number(totalSigned.rows[0]?.total || 0), // Intégralité des documents signés
-        signedToday: Number(signedToday.rows[0]?.total || 0), // Documents signés aujourd'hui
-        totalViews: Number(totalViews.rows[0]?.total || 0),
-        totalDownloads: Number(totalDownloads.rows[0]?.total || 0),
-        storageUsed: `${(Number(totalStorage.rows[0]?.total || 0) / (1024 * 1024)).toFixed(1)} MB`
+        storageUsed: `${(totalStorageBytes / (1024 * 1024)).toFixed(1)} MB`
       }
       await CacheService.setAsync(cacheKey, stats, 60)
       return response.json(ApiResponse.success(stats))

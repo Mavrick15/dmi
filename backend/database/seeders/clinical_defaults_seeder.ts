@@ -1,9 +1,14 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import ConsultationTemplate from '#models/ConsultationTemplate'
 import QuickNote from '#models/QuickNote'
+import db from '@adonisjs/lucid/services/db'
 
 export default class extends BaseSeeder {
   async run() {
+    const hasTemplates = await db.connection().schema.hasTable('consultation_templates')
+    const hasNotes = await db.connection().schema.hasTable('quick_notes')
+    if (!hasTemplates && !hasNotes) return
+
     // Templates par défaut
     const templates = [
       {
@@ -75,20 +80,22 @@ export default class extends BaseSeeder {
       { text: 'Hydratation abondante', category: 'Traitement', isPublic: true, createdBy: null },
     ]
 
-    // Créer les templates
-    for (const template of templates) {
-      await ConsultationTemplate.updateOrCreate(
-        { name: template.name },
-        template
-      )
+    if (hasTemplates) {
+      for (const template of templates) {
+        await ConsultationTemplate.updateOrCreate(
+          { name: template.name },
+          template
+        )
+      }
     }
 
-    // Créer les notes
-    for (const note of notes) {
-      await QuickNote.updateOrCreate(
-        { text: note.text },
-        note
-      )
+    if (hasNotes) {
+      for (const note of notes) {
+        await QuickNote.updateOrCreate(
+          { text: note.text },
+          note
+        )
+      }
     }
   }
 }

@@ -202,6 +202,18 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                           className="bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-400 font-semibold shadow-sm"
                         />
                       </motion.div>
+                      {analyse.statut !== 'annulee' && (
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            iconName="Send"
+                            onClick={() => {}}
+                            title="Envoyer"
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-300 font-semibold shadow-sm"
+                          />
+                        </motion.div>
+                      )}
                       {analyse.statut !== 'annulee' && analyse.statut !== 'terminee' && (
                         <PermissionGuard requiredPermission="analyses_cancel">
                           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

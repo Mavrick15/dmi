@@ -1,8 +1,12 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import CommonSymptom from '../../app/models/common_symptom.js'
+import CommonSymptom from '#models/common_symptom'
+import db from '@adonisjs/lucid/services/db'
 
 export default class extends BaseSeeder {
   async run() {
+    const hasTable = await db.connection().schema.hasTable('common_symptoms')
+    if (!hasTable) return
+
     const symptoms = [
       { name: 'Fièvre', category: 'Général', ordreAffichage: 1 },
       { name: 'Toux', category: 'Respiratoire', ordreAffichage: 2 },

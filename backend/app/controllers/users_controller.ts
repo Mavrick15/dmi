@@ -175,13 +175,13 @@ export default class UsersController {
         if (data.role === 'docteur') {
           const uniqueOrdre = data.numeroOrdre || `TEMP-${randomUUID().substring(0, 8).toUpperCase()}`
           
-          await Medecin.create({ 
-              userId: user.id, 
-              numeroOrdre: uniqueOrdre, 
-              specialite: null, // Déprécié - utiliser departmentId à la place
+          await Medecin.create({
+              userId: user.id,
+              numeroOrdre: uniqueOrdre,
+              specialite: data.specialite?.trim() || 'Non spécifiée', // requis NOT NULL en base
               etablissementId: data.etablissementId,
               departmentId: data.departmentId || null,
-              disponible: true 
+              disponible: true
           }, { client: trx }) 
         }
 
@@ -388,18 +388,13 @@ export default class UsersController {
         // 2. Gestion de l'entité Médecin (CORRECTION APPLIQUÉE ICI)
         if (user.role === 'docteur') {
             const medecinUpdateData: any = {
-                disponible: true // Toujours mis à jour ou conservé
+                disponible: true,
+                specialite: data.specialite?.trim() || 'Non spécifiée', // requis NOT NULL en base
             };
 
-            // On ajoute les champs seulement s'ils sont définis (non-null et non-undefined)
-            // data.champ || null permet de passer NULL au lieu de la chaîne vide '' si le champ est vidé
             if (data.numeroOrdre !== undefined && data.numeroOrdre !== null) {
                 medecinUpdateData.numeroOrdre = data.numeroOrdre || null;
             }
-            // specialite est déprécié - utiliser departmentId à la place
-            // if (data.specialite !== undefined && data.specialite !== null) {
-            //     medecinUpdateData.specialite = data.specialite || null;
-            // }
             if (data.etablissementId !== undefined && data.etablissementId !== null) {
                 medecinUpdateData.etablissementId = data.etablissementId;
             }

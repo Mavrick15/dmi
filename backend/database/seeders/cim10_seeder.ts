@@ -1,17 +1,19 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import Cim10Code from '#models/Cim10Code'
 import app from '@adonisjs/core/services/app'
+import db from '@adonisjs/lucid/services/db'
 import fs from 'node:fs'
 import path from 'node:path'
 
 /**
  * Seeder CIM-10 OMS (Classification Internationale des Maladies, 10e révision - OMS).
  * Charge les 22 chapitres officiels et une base de codes diagnostics (libellés français OMS).
- * Données : database/seeders/data/cim10-oms-chapitres.json + cim10-oms-codes.json
+ * Données : database/data/cim10-oms-chapitres.json + cim10-oms-codes.json
+ * Ignoré si la table cim10_codes n'existe pas (ex. migrations non exécutées).
  */
 export default class extends BaseSeeder {
   private loadJson(filename: string): Record<string, unknown>[] {
-    const dataPath = path.join(app.makePath('database/seeders/data'), filename)
+    const dataPath = path.join(app.makePath('database/data'), filename)
     if (!fs.existsSync(dataPath)) return []
     const raw = fs.readFileSync(dataPath, 'utf-8')
     const data = JSON.parse(raw)
@@ -19,6 +21,9 @@ export default class extends BaseSeeder {
   }
 
   async run() {
+    const hasTable = await db.connection().schema.hasTable('cim10_codes')
+    if (!hasTable) return
+
     const chapters = this.loadJson('cim10-oms-chapitres.json')
     const codes = this.loadJson('cim10-oms-codes.json')
     const allCodes = [

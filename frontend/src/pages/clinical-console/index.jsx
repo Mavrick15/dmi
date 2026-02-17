@@ -833,7 +833,6 @@ const ClinicalConsole = () => {
                 <PatientSelector
                   selectedPatient={selectedPatient}
                   onPatientSelect={handlePatientSelect}
-                  onNewConsultation={handleNewConsultation}
                 />
               </motion.div>
 

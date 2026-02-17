@@ -53,7 +53,7 @@ export default class AnalysesController {
       // Validation des paramètres de recherche
       const validatedParams = await request.validateUsing(searchAnalysesValidator)
       const { patientId, consultationId, statut, typeAnalyse, search } = validatedParams
-      const { page, limit } = PaginationHelper.fromQueryString(request, 20, 100)
+      const { page, limit } = PaginationHelper.fromQueryString(request, 20, 1000)
 
       const query = Analyse.query()
         .preload('patient', (q) => q.preload('user'))

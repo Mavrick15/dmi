@@ -9,6 +9,7 @@ import PermissionGuard from '../../components/PermissionGuard';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useToast } from '../../contexts/ToastContext';
 import { Loader2 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAnalysesList, useAnalysesStats, useAnalysesMutations } from '../../hooks/useAnalyses';
 import api from '../../lib/axios';
 import ConfirmationModal from '../../components/ui/ConfirmationModal';
@@ -80,6 +81,7 @@ const LaboratoryAnalyses = () => {
 
   // --- HOOKS ---
   // Mémoriser les paramètres de requête pour éviter les re-renders inutiles
+  const queryClient = useQueryClient();
   const queryParams = useMemo(() => ({ ...filters, page: currentPage }), [filters, currentPage]);
   const { data: analysesData, isLoading, isError } = useAnalysesList(queryParams);
   const { data: stats } = useAnalysesStats();
@@ -94,9 +96,17 @@ const LaboratoryAnalyses = () => {
   }, []);
 
   const handleViewDetails = useCallback((analyse) => {
-    setSelectedAnalyse(analyse);
+    const wasEnAttente = analyse.statut === 'prescrite' || analyse.statut === 'en_attente_validation';
+    if (wasEnAttente) {
+      api.put(`/analyses/${analyse.id}`, { statut: 'en_cours' }).then(() => {
+        queryClient.invalidateQueries({ queryKey: ['analyses'], exact: false });
+      }).catch(() => {});
+      setSelectedAnalyse({ ...analyse, statut: 'en_cours' });
+    } else {
+      setSelectedAnalyse(analyse);
+    }
     setIsDetailsModalOpen(true);
-  }, []);
+  }, [queryClient]);
 
   const handleCancel = useCallback((analyse) => {
     setAnalyseToCancel(analyse);

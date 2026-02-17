@@ -2,62 +2,57 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query'; // <--- IMPORT REACT QUERY
+import { useQuery } from '@tanstack/react-query';
 import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import PermissionGuard from '../../../components/PermissionGuard';
-import Input from '../../../components/ui/Input';
 import Image from '../../../components/AppImage';
-import api from '../../../lib/axios'; 
+import api from '../../../lib/axios';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Loader2, AlertCircle } from 'lucide-react';
 
-const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewConsultation }) => {
+const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
+  const { user, loading: authLoading } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const isDoctor = user?.role === 'docteur';
 
-  // --- FONCTION DE FETCH DÉPORTÉE (Pour React Query) ---
-  const fetchRecentPatients = async () => {
-    const response = await api.get('/patients', {
-      params: { limit: 1000 } // Récupérer un grand nombre de patients pour affichage complet
-    });
-    
-    if (response.data.success && Array.isArray(response.data.data)) {
-      // Enrichissement des données
-      return response.data.data.map(p => {
-        if (!p || typeof p !== 'object') return null;
-        return {
-          ...p,
-          condition: p.medicalHistory?.substring(0, 30) || 'Dossier sans antécédent',
-          urgency: Array.isArray(p.appointments) && p.appointments.some(a => a && a.priority === 'urgente') ? 'urgent' : 
-                   (Array.isArray(p.appointments) && p.appointments.some(a => a && a.priority === 'elevee') ? 'priority' : 'routine')
-        };
-      }).filter(p => p !== null);
-    }
-    return [];
-  };
+  const fetchPatients = useCallback(async () => {
+    const params = { limit: 1000 };
+    if (isDoctor) params.forMyAppointments = 1;
+    const response = await api.get('/patients', { params });
+    const list = response.data?.data ?? [];
+    if (!Array.isArray(list)) return [];
+    return list.map((p) => {
+      if (!p || typeof p !== 'object') return null;
+      return {
+        ...p,
+        condition: p.medicalHistory?.substring(0, 30) || 'Dossier sans antécédent',
+        urgency: (Array.isArray(p.appointments) && p.appointments.some((a) => a && a.priority === 'urgente')) ? 'urgent' : (Array.isArray(p.appointments) && p.appointments.some((a) => a && a.priority === 'elevee')) ? 'priority' : 'routine',
+      };
+    }).filter(Boolean);
+  }, [isDoctor]);
 
-  // --- UTILISATION DU HOOK USEQUERY ---
-  const { 
-    data: dynamicPatients = [], 
-    isLoading: loadingList, 
-    isError 
+  const {
+    data: patientsForList = [],
+    isLoading: loadingList,
+    isError,
   } = useQuery({
-    queryKey: ['patients', 'recent'], // Clé unique pour le cache
-    queryFn: fetchRecentPatients,
+    queryKey: ['patients', 'clinical', isDoctor ? 'forMyAppointments' : 'all'],
+    queryFn: fetchPatients,
+    enabled: !authLoading && !!user,
   });
 
-  // Filtrage local - Afficher tous les patients correspondants (memoized)
+  // Filtrage par recherche (nom, n° patient, id)
   const filteredPatients = useMemo(() => {
-    if (!searchQuery.trim()) return dynamicPatients;
+    if (!searchQuery.trim()) return patientsForList;
     const query = searchQuery.toLowerCase();
-    return Array.isArray(dynamicPatients) ? dynamicPatients.filter((patient) => {
+    return patientsForList.filter((patient) => {
       if (!patient || typeof patient !== 'object') return false;
-      const name = typeof patient.name === 'string' ? patient.name.toLowerCase() : '';
-      const numeroPatient = typeof patient.numeroPatient === 'string' ? patient.numeroPatient.toLowerCase() : '';
-      const id = typeof patient.id === 'string' ? patient.id.toLowerCase() : '';
+      const name = (typeof patient.name === 'string' ? patient.name : patient.nomComplet || '').toLowerCase();
+      const numeroPatient = (typeof patient.numeroPatient === 'string' ? patient.numeroPatient : '').toLowerCase();
+      const id = (typeof patient.id === 'string' ? patient.id : '').toLowerCase();
       return name.includes(query) || numeroPatient.includes(query) || id.includes(query);
-    }) : [];
-  }, [dynamicPatients, searchQuery]);
+    });
+  }, [patientsForList, searchQuery]);
 
   const handleSelect = useCallback(async (patient) => {
     if (selectedPatient?.id === patient.id) {
@@ -74,9 +69,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
         }
     } catch (error) {
         if (process.env.NODE_ENV === 'development') {
-          if (process.env.NODE_ENV === 'development') {
-            console.error("Erreur chargement détails patient:", error);
-          }
+          console.error("Erreur chargement détails patient:", error);
         }
     } finally {
         setLoadingDetails(false);
@@ -145,7 +138,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
 
       {/* Liste des patients */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2 bg-slate-50/30 dark:bg-slate-900">
-        {loadingList ? (
+        {authLoading || loadingList ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="animate-spin text-primary mb-3" size={28} />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers...</span>
@@ -227,26 +220,20 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect, onNewCon
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-            <Icon name="SearchX" size={36} className="mb-3 text-slate-300 dark:text-slate-600" />
-            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun patient trouvé</p>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Vérifiez l'orthographe ou créez un nouveau dossier</p>
+            <Icon name={isDoctor && patientsForList.length === 0 ? 'Calendar' : 'SearchX'} size={36} className="mb-3 text-slate-300 dark:text-slate-600" />
+            {isDoctor && patientsForList.length === 0 ? (
+              <>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun rendez-vous programmé</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Les patients apparaîtront ici lorsqu&apos;ils auront un rendez-vous avec vous</p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun patient trouvé</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Vérifiez l&apos;orthographe ou créez un nouveau dossier</p>
+              </>
+            )}
           </div>
         )}
-      </div>
-
-      <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-        <PermissionGuard requiredPermission="consultation_create">
-          <Button
-            variant="primary"
-            fullWidth
-            iconName="UserPlus"
-            iconPosition="left"
-            onClick={onNewConsultation}
-            className="font-semibold"
-          >
-            Nouvelle consultation
-          </Button>
-        </PermissionGuard>
       </div>
     </motion.div>
   );
