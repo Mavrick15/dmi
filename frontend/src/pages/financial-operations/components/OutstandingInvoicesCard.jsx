@@ -8,7 +8,6 @@ import InvoiceCard from './InvoiceCard';
 import Modal from '../../../components/ui/Modal';
 import PaymentModal from './PaymentModal';
 import { useOutstandingInvoices } from '../../../hooks/useFinance';
-import { Loader2 } from 'lucide-react';
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { generateInvoicePDF } from '../../../utils/pdfGenerator';
@@ -104,14 +103,14 @@ const OutstandingInvoicesCard = () => {
 
   return (
     <>
-      <div className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50/50 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/20 border border-amber-100 dark:border-amber-900/50 rounded-3xl shadow-lg p-6 h-full flex flex-col overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300" />
+      <div className="relative bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl shadow-sm p-6 h-full flex flex-col overflow-hidden">
+        <div className="absolute inset-0 bg-amber-500/5 opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
         
         <div className="relative flex items-center justify-between mb-6 z-10">
           <div className="flex items-center gap-3">
             <motion.div
               whileHover={{ scale: 1.1, rotate: 10 }}
-              className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg"
+              className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center"
             >
               <Icon name="AlertCircle" className="text-white" size={20} />
             </motion.div>
@@ -127,8 +126,9 @@ const OutstandingInvoicesCard = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex-1 flex items-center justify-center">
-            <Loader2 className="animate-spin text-primary" size={32} />
+          <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-white/50 dark:bg-slate-800/30 py-8">
+            <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
         ) : invoices.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
@@ -162,7 +162,7 @@ const OutstandingInvoicesCard = () => {
               </AnimatePresence>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 text-center">
               <p className="text-xs text-slate-500">
                 Total dû : <span className="font-bold text-slate-900 dark:text-white">
                   {formatCurrency(totalDue)}

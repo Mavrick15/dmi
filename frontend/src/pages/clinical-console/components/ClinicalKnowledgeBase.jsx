@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useKnowledgeBase } from '../../../hooks/useClinical';
-import { Loader2 } from 'lucide-react';
 
 // --- MODAL DE DÉTAILS ---
 const KnowledgeDetailModal = ({ item, type, onClose }) => {
@@ -18,7 +17,7 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.96, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700"
+        className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700"
       >
         <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
@@ -209,9 +208,9 @@ const ClinicalKnowledgeBase = () => {
   const renderContent = () => {
     if (isLoadingKnowledge) {
       return (
-        <div className="flex flex-col items-center justify-center py-16 text-slate-500 dark:text-slate-400">
-          <Loader2 className="animate-spin text-primary mb-3" size={28} />
-          <p className="text-sm">Chargement...</p>
+        <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+          <Icon name="Loader2" size={28} className="animate-spin text-primary mb-3" />
+          <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
         </div>
       );
     }
@@ -259,7 +258,7 @@ const ClinicalKnowledgeBase = () => {
                     tabIndex={0}
                     onClick={() => setSelectedItem(item)}
                     onKeyDown={(e) => e.key === 'Enter' && setSelectedItem(item)}
-                    className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group"
+                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group"
                   >
             {/* Cas Protocoles */}
             {activeCategory === 'protocols' && (
@@ -392,7 +391,7 @@ const ClinicalKnowledgeBase = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
       {/* Sidebar */}
       <div className="w-full md:w-64 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0">
         <div className="p-5 border-b border-slate-200 dark:border-slate-700">

@@ -240,63 +240,100 @@ const PatientManagement = () => {
       <Header />
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8"
-        >
-          <div className="flex items-center gap-4">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-            >
-              <Icon name="Users" size={24} />
-            </motion.div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+              <Icon name="Users" size={22} />
+            </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">Gestion des Patients</h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg font-medium flex items-center gap-2">
-                <Icon name="Database" size={16} /> Base de données : <span className="font-semibold text-primary">{totalPatients}</span> dossiers actifs
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Gestion des patients</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5 flex items-center gap-2">
+                <Icon name="Database" size={14} />
+                <span className="font-semibold text-primary">{totalPatients}</span> dossiers
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-             <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setViewMode('grid')} 
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-slate-100 dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
-                >
-                  <Icon name="Grid3X3" size={18} />
-                </motion.button>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setViewMode('list')} 
-                  className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-slate-100 dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
-                >
-                  <Icon name="List" size={18} />
-                </motion.button>
-             </div>
-             <PermissionGuard requiredPermission="patient_view">
-               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                 <Button variant="outline" onClick={() => exportPatients.mutate({})} disabled={exportPatients.isPending || !hasPermission('patient_view')} className="font-medium">
-                   <Icon name="Download" className="mr-2" /> Exporter (CSV)
-                 </Button>
-               </motion.div>
-             </PermissionGuard>
-             <PermissionGuard requiredPermission="patient_create">
-               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                 <Button variant="primary" onClick={openCreate} disabled={!hasPermission('patient_create')} className="shadow-lg shadow-primary/20 font-semibold">
-                   <Icon name="UserPlus" className="mr-2" /> Nouveau Patient
-                 </Button>
-               </motion.div>
-             </PermissionGuard>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-slate-100 dark:bg-slate-800 text-primary' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                title="Vue grille"
+              >
+                <Icon name="Grid3X3" size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-slate-100 dark:bg-slate-800 text-primary' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                title="Vue liste"
+              >
+                <Icon name="List" size={18} />
+              </button>
+            </div>
+            <PermissionGuard requiredPermission="patient_view">
+              <Button variant="outline" size="sm" onClick={() => exportPatients.mutate({})} disabled={exportPatients.isPending || !hasPermission('patient_view')} className="rounded-xl" iconName="Download">
+                Exporter
+              </Button>
+            </PermissionGuard>
+            <PermissionGuard requiredPermission="patient_create">
+              <Button variant="primary" size="sm" onClick={openCreate} disabled={!hasPermission('patient_create')} className="rounded-xl" iconName="UserPlus">
+                Nouveau patient
+              </Button>
+            </PermissionGuard>
           </div>
-        </motion.div>
+        </div>
 
         {loading && totalPatients === 0 ? (
-          <div className="flex justify-center py-20"><Icon name="Loader2" className="animate-spin text-primary" size={40} /></div>
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 animate-pulse">
+                  <div className="h-3 w-16 rounded bg-slate-200 dark:bg-slate-600 mb-3" />
+                  <div className="h-8 w-12 rounded bg-slate-200 dark:bg-slate-600" />
+                </div>
+              ))}
+            </div>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 h-14 animate-pulse">
+              <div className="h-10 w-full max-w-md rounded-lg bg-slate-200 dark:bg-slate-600" />
+            </div>
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 overflow-hidden flex">
+              <div className="w-1.5 shrink-0 bg-primary" />
+              <div className="flex-1 p-8 flex flex-col items-center justify-center gap-5">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center border border-primary/20">
+                  <Icon name="Loader2" className="animate-spin text-primary" size={28} />
+                </div>
+                <div className="text-center space-y-2">
+                  <p className="text-base font-semibold text-slate-900 dark:text-white">Chargement des patients</p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Récupération des dossiers en cours…</p>
+                </div>
+                <div className="flex gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 overflow-hidden animate-pulse">
+                  <div className="h-2 w-full bg-primary/30" />
+                  <div className="p-4 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-600" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-600" />
+                        <div className="h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-600" />
+                      </div>
+                    </div>
+                    <div className="h-3 w-full rounded bg-slate-200 dark:bg-slate-600" />
+                    <div className="h-3 w-2/3 rounded bg-slate-200 dark:bg-slate-600" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <motion.div 
             variants={containerVariants} 
@@ -322,39 +359,46 @@ const PatientManagement = () => {
                         onScheduleAppointment={() => openAppointment(patient)} 
                       />
                       <PermissionGuard requiredPermission="patient_delete">
-                        <button 
-                           onClick={(e) => { e.stopPropagation(); initiateDelete(patient); }} 
-                           className="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-800/90 backdrop-blur rounded-lg text-slate-400 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-rose-50 shadow-sm border border-slate-100 dark:border-slate-700 transition-all transform scale-90 group-hover:scale-100"
-                           disabled={deletePatient.isPending || !hasPermission('patient_delete')} // Bouton désactivé pendant la suppression ou sans permission
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); initiateDelete(patient); }}
+                          className="absolute top-2 right-2 p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-400 opacity-0 group-hover:opacity-100 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 shadow-md border border-slate-200 dark:border-slate-700 transition-all"
+                          disabled={deletePatient.isPending || !hasPermission('patient_delete')}
+                          title="Supprimer le dossier"
                         >
-                          <Icon name="Trash2" size={16} />
+                          <Icon name="Trash2" size={14} />
                         </button>
                       </PermissionGuard>
                     </motion.div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-24 text-slate-400">
-                   <Icon name="UserX" size={40} className="mb-2 opacity-50 mx-auto" />
-                   <p>Aucun patient trouvé.</p>
-                   <Button variant="ghost" onClick={handleResetFilters} className="mt-2 text-primary">Réinitialiser la recherche</Button>
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                  <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700">
+                    <Icon name="UserX" size={28} className="text-slate-400 dark:text-slate-500" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun patient trouvé</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Modifiez les filtres ou la recherche.</p>
+                  <Button variant="outline" size="sm" onClick={handleResetFilters} className="rounded-xl" iconName="RotateCcw">
+                    Réinitialiser
+                  </Button>
                 </div>
               )}
             </AnimatePresence>
             
             {patients.length > 0 && lastPage > 1 && (
-              <div className="flex justify-center gap-4 mt-8">
-                 <Button variant="outline" disabled={currentPage === 1 || loading} onClick={() => setCurrentPage(p => p - 1)}>
-                   <Icon name="ChevronLeft" size={16} className="mr-1" />
-                   Précédent
-                 </Button>
-                 <span className="py-2 px-4 text-sm text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                   Page <span className="font-bold text-primary">{currentPage}</span> / {lastPage}
-                 </span>
-                 <Button variant="outline" disabled={currentPage === lastPage || loading} onClick={() => setCurrentPage(p => p + 1)}>
-                   Suivant
-                   <Icon name="ChevronRight" size={16} className="ml-1" />
-                 </Button>
+              <div className="flex flex-wrap justify-center items-center gap-3 mt-6">
+                <Button variant="outline" size="sm" disabled={currentPage === 1 || loading} onClick={() => setCurrentPage(p => p - 1)} className="rounded-xl">
+                  <Icon name="ChevronLeft" size={16} className="mr-1" />
+                  Précédent
+                </Button>
+                <span className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                  Page <span className="font-bold text-primary">{currentPage}</span> / {lastPage}
+                </span>
+                <Button variant="outline" size="sm" disabled={currentPage === lastPage || loading} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl">
+                  Suivant
+                  <Icon name="ChevronRight" size={16} className="ml-1" />
+                </Button>
               </div>
             )}
           </motion.div>

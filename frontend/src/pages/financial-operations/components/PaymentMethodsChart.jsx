@@ -1,8 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import Icon from '../../../components/AppIcon';
 import { usePaymentMethodsStats } from '../../../hooks/useFinance';
-import { Loader2 } from 'lucide-react';
-
 const PaymentMethodsChart = () => {
   const { data: paymentStats = [], isLoading } = usePaymentMethodsStats();
 
@@ -13,23 +11,24 @@ const PaymentMethodsChart = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-6 h-full flex flex-col items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
-        <p className="mt-4 text-slate-500 dark:text-slate-400">Chargement...</p>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl border-l-4 border-l-primary shadow-sm p-6 h-full flex flex-col items-center justify-center">
+        <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+        <p className="text-slate-500 dark:text-slate-400 text-sm">Chargement…</p>
       </div>
     );
   }
 
   if (!paymentStats || paymentStats.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-6 h-full flex flex-col items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Aucune donnée disponible</p>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-full flex flex-col items-center justify-center">
+        <Icon name="PieChart" size={40} className="text-slate-400 mb-2" />
+        <p className="text-slate-500 dark:text-slate-400 text-sm">Aucune donnée disponible</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-6 h-full flex flex-col overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-full flex flex-col overflow-hidden">
       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 flex-shrink-0">
         <Icon name="PieChart" className="text-primary" /> Répartition
       </h3>
@@ -72,7 +71,7 @@ const PaymentMethodsChart = () => {
         {Array.isArray(paymentStats) && paymentStats.map((item, index) => {
           if (!item || typeof item !== 'object') return null;
           return (
-          <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+          <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }}></div>
               <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 truncate">{item.name || ''}</span>

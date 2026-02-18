@@ -134,6 +134,12 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
       return;
     }
 
+    // Interdire le drop vers "Terminée" : seule l’action Clôturer dans le modal peut terminer une analyse
+    if (targetStatut === 'terminee' && (draggedItem.statut === 'en_cours' || draggedItem.statut === 'en_attente_validation')) {
+      setDraggedItem(null);
+      return;
+    }
+
     try {
       await updateAnalyse.mutateAsync({
         id: draggedItem.id,
@@ -159,10 +165,10 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
       {columns.map((column) => {
         const columnAnalyses = groupedAnalyses[column.id] || [];
         const colorClasses = {
-        blue: 'from-blue-50 via-indigo-50/50 to-blue-50 dark:from-slate-900/50 dark:via-blue-950/30 dark:to-slate-900/50 border-blue-200/70 dark:border-blue-900/50 shadow-lg shadow-blue-100/50 dark:shadow-blue-900/20',
-        amber: 'from-amber-50 via-orange-50/50 to-amber-50 dark:from-slate-900/50 dark:via-amber-950/30 dark:to-slate-900/50 border-amber-200/70 dark:border-amber-900/50 shadow-lg shadow-amber-100/50 dark:shadow-amber-900/20',
-        emerald: 'from-emerald-50 via-teal-50/50 to-emerald-50 dark:from-slate-900/50 dark:via-emerald-950/30 dark:to-slate-900/50 border-emerald-200/70 dark:border-emerald-900/50 shadow-lg shadow-emerald-100/50 dark:shadow-emerald-900/20',
-        purple: 'from-purple-50 via-pink-50/50 to-purple-50 dark:from-slate-900/50 dark:via-purple-950/30 dark:to-slate-900/50 border-purple-200/70 dark:border-purple-900/50 shadow-lg shadow-purple-100/50 dark:shadow-purple-900/20'
+          blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+          amber: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
+          emerald: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800',
+          purple: 'bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800'
         };
 
         return (
@@ -177,9 +183,11 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
               damping: 20
             }}
             whileHover={{ scale: 1.01 }}
-            className={`bg-gradient-to-br ${colorClasses[column.color]} rounded-2xl md:rounded-3xl border-2 p-3 md:p-5 min-h-[400px] md:min-h-[500px] backdrop-blur-sm relative overflow-hidden transition-all duration-300 ${
+            className={`${colorClasses[column.color]} rounded-xl border p-3 md:p-4 min-h-[400px] md:min-h-[500px] relative overflow-hidden transition-all ${
               draggedItem && draggedItem.statut !== column.id
-                ? 'ring-2 ring-primary/30 ring-offset-2 scale-[1.02]'
+                ? column.id === 'terminee' && (draggedItem.statut === 'en_cours' || draggedItem.statut === 'en_attente_validation')
+                  ? 'ring-2 ring-rose-300 dark:ring-rose-600 ring-offset-2 opacity-90'
+                  : 'ring-2 ring-primary/30 ring-offset-2 scale-[1.02]'
                 : ''
             }`}
             onDragOver={handleDragOver}
@@ -231,7 +239,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
                       draggable
                       onDragStart={(e) => handleDragStart(e, analyse)}
                       onDragEnd={handleDragEnd}
-                      className={`bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-lg hover:shadow-2xl cursor-move border-2 backdrop-blur-sm relative overflow-hidden group transition-all duration-200 ${
+                      className={`bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm hover:shadow-md cursor-move border relative overflow-hidden group transition-all ${
                         draggedItem?.id === analyse.id 
                           ? 'border-primary/50' 
                           : 'border-slate-200/60 dark:border-slate-700/60'
@@ -248,7 +256,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
                     >
                       <div className="flex items-start justify-between mb-2">
                         {/* Gradient decoratif au hover */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       
                       <div className="flex-1 min-w-0 relative z-10">
                           <p className="font-mono text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
@@ -265,7 +273,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
 
                       {analyse.patient && (
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xs font-bold">
+                          <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xs font-bold border border-emerald-200 dark:border-emerald-800">
                             {(analyse.patient.name || 'P').charAt(0).toUpperCase()}
                           </div>
                           <p className="text-xs text-slate-600 dark:text-slate-400 truncate flex-1">
@@ -338,9 +346,9 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
               </AnimatePresence>
 
               {columnAnalyses.length === 0 && (
-                <div className="text-center py-8 text-slate-400 dark:text-slate-500 text-sm">
-                  <Icon name="Inbox" size={32} className="mx-auto mb-2 opacity-50" />
-                  <p>Aucune analyse</p>
+                <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/30">
+                  <Icon name="Inbox" size={24} className="text-slate-400 dark:text-slate-500 mb-2" />
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Aucune analyse</p>
                 </div>
               )}
             </div>

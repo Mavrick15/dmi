@@ -63,7 +63,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
   // Mode Replié (Bouton simple)
   if (isCollapsed) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 p-4 shadow-sm h-fit">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm h-fit">
         <Button
           variant="outline"
           onClick={onToggle}
@@ -78,10 +78,10 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
 
   // Mode Déplié (Panneau complet)
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col h-full overflow-hidden transition-all duration-300 w-80">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col h-full overflow-hidden transition-all duration-300 w-80">
       
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Icon name="Filter" size={20} className="text-primary" />
           Filtres
@@ -124,7 +124,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
 
         {/* Dates personnalisées */}
         {filters.dateRange === 'custom' && (
-          <div className="grid grid-cols-1 gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 animate-fade-in">
+          <div className="grid grid-cols-1 gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 animate-fade-in">
             <Input
               type="date"
               label="Du"
@@ -173,7 +173,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
       </div>
 
       {/* Footer Actions */}
-      <div className="p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-3">
+      <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col gap-3">
         <Button
           variant="default"
           className="w-full shadow-lg shadow-primary/20"

@@ -8,7 +8,6 @@ import PermissionGuard from '../../components/PermissionGuard';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useToast } from '../../contexts/ToastContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
-import { Loader2, AlertCircle } from 'lucide-react';
 import { useFinanceOverview, useFinanceChart, useFinanceHistory } from '../../hooks/useFinance';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -120,18 +119,20 @@ const FinancialOperations = () => {
   // Cas de chargement initial
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans flex flex-col">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans flex flex-col">
         <Header />
         <div className="flex-1 flex flex-col items-center justify-center pt-20">
-          <Loader2 className="animate-spin text-primary" size={32} />
-          <p className="mt-4 text-slate-500 dark:text-slate-400">Chargement...</p>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-white dark:bg-slate-900/50 px-8 py-8 flex flex-col items-center justify-center">
+            <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">Chargement…</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans">
       <Helmet>
         <title>Opérations Financières - MediCore</title>
         <meta name="description" content="Gestion de la trésorerie, facturation et analyse financière." />
@@ -142,8 +143,8 @@ const FinancialOperations = () => {
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         
         {hasError ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-red-100 dark:border-red-900/30">
-            <AlertCircle size={32} className="text-red-500 mb-4" />
+          <div className="flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-red-500">
+            <Icon name="AlertCircle" size={32} className="text-red-500 mb-4" />
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">Erreur de chargement</h3>
             <p className="text-slate-500 dark:text-slate-400 mb-4">Impossible de récupérer les données financières.</p>
             <Button onClick={handleRetry} variant="outline">Réessayer</Button>
@@ -160,7 +161,7 @@ const FinancialOperations = () => {
               <div className="flex items-center gap-4">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
+                  className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary dark:text-blue-400 border border-slate-200 dark:border-slate-700 shadow-sm"
                 >
                   <Icon name="DollarSign" size={24} />
                 </motion.div>
@@ -174,7 +175,7 @@ const FinancialOperations = () => {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                   <button 
                     onClick={() => setViewMode('overview')} 
                     className={`p-2 rounded-md transition-all ${

@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
-import Badge from '../../../components/ui/Badge';
 
 const ResultatsChart = ({ resultats, historique = [] }) => {
   // Préparer les données pour le graphique de tendance
@@ -74,10 +72,13 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
 
   if (!resultats || resultats.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
-        <Icon name="BarChart3" size={48} className="mx-auto text-slate-400 mb-4" />
-        <p className="text-slate-600 dark:text-slate-400">
-          Aucun résultat disponible pour afficher les graphiques
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
+        <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <Icon name="BarChart3" size={28} className="text-slate-500 dark:text-slate-400" />
+        </div>
+        <p className="font-medium text-slate-700 dark:text-slate-300">Aucun résultat disponible</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Les graphiques s'afficheront une fois des résultats enregistrés.
         </p>
       </div>
     );
@@ -88,80 +89,65 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
       {/* Statistiques rapides */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800"
-          >
-            <div className="flex items-center gap-2 mb-2">
+          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-blue-500">
+            <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
               <Icon name="TestTube" size={18} className="text-blue-600 dark:text-blue-400" />
-              <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Total</p>
             </div>
-            <p className="text-2xl font-black text-blue-900 dark:text-blue-100">{stats.total}</p>
-          </motion.div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Total</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800"
-          >
-            <div className="flex items-center gap-2 mb-2">
+          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-emerald-500">
+            <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
               <Icon name="CheckCircle" size={18} className="text-emerald-600 dark:text-emerald-400" />
-              <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Normaux</p>
             </div>
-            <p className="text-2xl font-black text-emerald-900 dark:text-emerald-100">{stats.normaux}</p>
-          </motion.div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Normaux</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.normaux}</p>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 rounded-xl p-4 border border-amber-200 dark:border-amber-800"
-          >
-            <div className="flex items-center gap-2 mb-2">
+          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-amber-500">
+            <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
               <Icon name="AlertTriangle" size={18} className="text-amber-600 dark:text-amber-400" />
-              <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">Anormaux</p>
             </div>
-            <p className="text-2xl font-black text-amber-900 dark:text-amber-100">{stats.anormaux}</p>
-          </motion.div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Anormaux</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.anormaux}</p>
+            </div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-900/10 rounded-xl p-4 border border-rose-200 dark:border-rose-800"
-          >
-            <div className="flex items-center gap-2 mb-2">
+          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-rose-500">
+            <div className="w-9 h-9 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
               <Icon name="AlertCircle" size={18} className="text-rose-600 dark:text-rose-400" />
-              <p className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase">Critiques</p>
             </div>
-            <p className="text-2xl font-black text-rose-900 dark:text-rose-100">{stats.critiques}</p>
-          </motion.div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Critiques</p>
+              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.critiques}</p>
+            </div>
+          </div>
         </div>
       )}
 
       {/* Graphique en barres - Interprétation */}
       {interpretationData.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6"
-        >
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
           <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
             <Icon name="BarChart3" size={18} className="text-primary" />
             Répartition des interprétations
           </h4>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={interpretationData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-30" />
               <XAxis dataKey="name" stroke="#64748b" />
               <YAxis stroke="#64748b" />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#fff',
+                  backgroundColor: 'var(--tooltip-bg, #fff)',
                   border: '1px solid #e2e8f0',
-                  borderRadius: '8px'
+                  borderRadius: '12px'
                 }}
               />
               <Bar 
@@ -184,7 +170,7 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
               />
             </BarChart>
           </ResponsiveContainer>
-        </motion.div>
+        </div>
       )}
 
       {/* Graphiques de tendance par paramètre */}
@@ -194,27 +180,24 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
             <Icon name="TrendingUp" size={18} className="text-primary" />
             Évolution dans le temps
           </h4>
-          {Object.entries(chartData).map(([parametre, data], idx) => (
-            <motion.div
+          {Object.entries(chartData).map(([parametre, data]) => (
+            <div
               key={parametre}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
             >
               <h5 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
                 {parametre}
               </h5>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" className="dark:opacity-30" />
                   <XAxis dataKey="date" stroke="#64748b" />
                   <YAxis stroke="#64748b" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#fff',
+                      backgroundColor: 'var(--tooltip-bg, #fff)',
                       border: '1px solid #e2e8f0',
-                      borderRadius: '8px'
+                      borderRadius: '12px'
                     }}
                   />
                   <Line
@@ -247,7 +230,7 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
                   )}
                 </LineChart>
               </ResponsiveContainer>
-            </motion.div>
+            </div>
           ))}
         </div>
       )}

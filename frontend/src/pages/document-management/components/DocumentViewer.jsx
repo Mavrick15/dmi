@@ -55,7 +55,7 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
       onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
     >
       <div
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-6xl max-h-[calc(100vh-3rem)] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-6xl max-h-[calc(100vh-3rem)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* En-tête */}
@@ -135,7 +135,7 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
             />
           )}
           {!isImage && !isPdf && (
-            <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-8 flex flex-col items-center justify-center text-center">
+            <div className="w-full max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-8 flex flex-col items-center justify-center text-center">
               <Icon name="FileText" size={40} className="text-slate-300 dark:text-slate-600 mb-3" />
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Aperçu non disponible pour ce type de fichier.</p>
               <Button size="sm" onClick={() => onDownload?.(document)}>Télécharger</Button>

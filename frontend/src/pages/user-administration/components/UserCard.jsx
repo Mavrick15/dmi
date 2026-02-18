@@ -72,16 +72,6 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
   // Génération des initiales (sécurité si user.name est vide)
   const initials = (user.name || user.nomComplet || '?').charAt(0).toUpperCase();
 
-  const getGradientBg = () => {
-    const role = user.role?.toLowerCase() || '';
-    if (role.includes('docteur') || role.includes('medecin')) return 'from-blue-50 via-white to-blue-50/50 dark:from-blue-950/30 dark:via-slate-900 dark:to-blue-950/20';
-    if (role.includes('admin')) return 'from-purple-50 via-white to-purple-50/50 dark:from-purple-950/30 dark:via-slate-900 dark:to-purple-950/20';
-    if (role.includes('infirmiere') || role.includes('nurse')) return 'from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-emerald-950/20';
-    if (role.includes('pharmacien') || role.includes('pharma')) return 'from-teal-50 via-white to-teal-50/50 dark:from-teal-950/30 dark:via-slate-900 dark:to-teal-950/20';
-    if (role.includes('gestionnaire')) return 'from-amber-50 via-white to-amber-50/50 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/20';
-    return 'from-slate-50 via-white to-slate-50/50 dark:from-slate-950/30 dark:via-slate-900 dark:to-slate-950/20';
-  };
-
   const getBorderColor = () => {
     const role = user.role?.toLowerCase() || '';
     if (role.includes('docteur') || role.includes('medecin')) return 'border-blue-100 dark:border-blue-900/50';
@@ -94,15 +84,14 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -4, scale: 1.02 }}
+      whileHover={{ y: -2, scale: 1.01 }}
       className={`
-        group relative bg-gradient-to-br ${getGradientBg()} border ${getBorderColor()} rounded-2xl
-        shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden
+        group relative bg-white dark:bg-slate-900 border ${getBorderColor()} rounded-xl
+        shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full overflow-hidden
         ${theme.borderTop} border-t-4
-        ${!isActive ? 'opacity-75 grayscale-[0.5]' : ''}
+        ${!isActive ? 'opacity-75' : ''}
       `}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
       {!isActive && (
         <div className="absolute top-3 right-3 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide border border-slate-200 dark:border-slate-700">
@@ -117,10 +106,10 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
               <Image 
                 src={user.avatar} 
                 alt={user.name} 
-                className="w-14 h-14 rounded-2xl object-cover shadow-sm border border-slate-100 dark:border-slate-700" 
+                className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-700" 
               />
             ) : (
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold shadow-sm ${theme.bg} ${theme.color}`}>
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold ${theme.bg} ${theme.color} border border-slate-200 dark:border-slate-700`}>
                 {initials}
               </div>
             )}
@@ -144,7 +133,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 border border-blue-200/50 dark:border-blue-800/50">
                <Icon name="Mail" size={14} />
              </div>
              <span className="truncate font-medium" title={user.email}>{user.email}</span>
@@ -154,7 +143,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+             <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0 border border-purple-200/50 dark:border-purple-800/50">
                <Icon name="Building2" size={14} />
              </div>
              <span className="truncate font-medium">{user.department || user.nom_etablissement || 'Général'}</span>
@@ -164,7 +153,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white flex-shrink-0 shadow-sm">
+             <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0 border border-emerald-200/50 dark:border-emerald-800/50">
                <Icon name="Phone" size={14} />
              </div>
              <span className="truncate font-medium">{user.phone || user.telephone || 'N/A'}</span>
@@ -172,7 +161,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
         </div>
       </div>
 
-      <div className="relative px-4 py-3 bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900/50 dark:to-slate-800/30 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center z-10">
+      <div className="relative px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center z-10">
         <div className="text-[10px] font-medium text-slate-400 dark:text-slate-500 flex flex-col">
           <span>Dernière connexion</span>
           <span className="text-slate-600 dark:text-slate-300 font-semibold">{user.lastLogin || 'Jamais'}</span>

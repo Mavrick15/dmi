@@ -15,7 +15,6 @@ import { usePatientsList } from '../../../hooks/usePatients';
 import { useDepartments } from '../../../hooks/useAdmin';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../../lib/axios';
-import { Loader2 } from 'lucide-react';
 import { ANALYSE_TEMPLATES, getAllTemplates } from './AnalyseTemplates';
 
 const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, defaultPatientId = null }) => {
@@ -44,7 +43,19 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
 
   const patients = Array.isArray(patientsData?.data) ? patientsData.data : (Array.isArray(patientsData) ? patientsData : []);
   const templates = getAllTemplates();
-  
+
+  const typeAnalyseLabel = (type) => {
+    const labels = {
+      hematologie: 'Hématologie',
+      biochimie: 'Biochimie',
+      serologie: 'Sérologie',
+      microbiologie: 'Microbiologie',
+      imagerie: 'Imagerie',
+      autre: 'Autre'
+    };
+    return labels[type] || type;
+  };
+
   // Pré-remplir le patient si fourni via query params
   useEffect(() => {
     const patientIdFromUrl = searchParams.get('patientId') || defaultPatientId;
@@ -99,10 +110,10 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-          <Icon name="TestTube" size={20} className="text-white" />
+        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-xl flex items-center justify-center">
+          <Icon name="TestTube" size={20} className="text-blue-600 dark:text-blue-400" />
         </div>
-        <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        <span className="text-base font-bold text-slate-900 dark:text-white">
           Prescrire une analyse
         </span>
       </div>
@@ -111,7 +122,10 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
         {/* Templates rapides */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300">
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+              <span className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon name="FileText" size={16} className="text-primary" />
+              </span>
               Templates rapides
             </label>
             <Button
@@ -120,32 +134,74 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
               size="sm"
               iconName={showTemplates ? "ChevronUp" : "ChevronDown"}
               onClick={() => setShowTemplates(!showTemplates)}
-              className="text-xs"
+              className="text-xs rounded-xl"
             >
               {showTemplates ? 'Masquer' : 'Afficher'}
             </Button>
           </div>
           {showTemplates && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl max-h-48 overflow-y-auto">
-              {Array.isArray(templates) && templates.map((template) => (
-                <button
-                  key={template.name}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl max-h-48 overflow-y-auto">
+              {Array.isArray(templates) && templates.length === 0 ? (
+                <div className="col-span-full py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                  Aucun template disponible
+                </div>
+              ) : (
+                templates.map((template) => (
+                  <button
+                    key={template.name}
+                    type="button"
+                    onClick={() => handleTemplateSelect(template)}
+                    className={`p-3 text-xs text-left rounded-xl border transition-all ${
+                      selectedTemplate?.name === template.name
+                        ? 'bg-primary text-white border-primary border-l-4 border-l-primary'
+                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-primary/50'
+                    }`}
+                  >
+                    <div className="font-semibold truncate">{template.name}</div>
+                    <div className={`text-xs mt-1 truncate ${
+                      selectedTemplate?.name === template.name ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'
+                    }`}>
+                      {typeAnalyseLabel(template.typeAnalyse)}
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          )}
+
+          {selectedTemplate && (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 border-l-4 border-l-primary">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Icon name="FileText" size={18} className="text-primary" />
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">Template sélectionné</span>
+                </div>
+                <Button
                   type="button"
-                  onClick={() => handleTemplateSelect(template)}
-                  className={`p-2 text-xs text-left rounded-lg border transition-all ${
-                    selectedTemplate?.name === template.name
-                      ? 'bg-primary text-white border-primary'
-                      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-primary'
-                  }`}
-                >
-                  <div className="font-semibold truncate">{template.name}</div>
-                  <div className={`text-xs mt-1 truncate ${
-                    selectedTemplate?.name === template.name ? 'text-white/80' : 'text-slate-500'
-                  }`}>
-                    {template.typeAnalyse}
-                  </div>
-                </button>
-              ))}
+                  variant="ghost"
+                  size="sm"
+                  iconName="X"
+                  onClick={() => setSelectedTemplate(null)}
+                  className="text-slate-500 hover:text-slate-700 rounded-xl"
+                  title="Désélectionner"
+                />
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">{selectedTemplate.description}</p>
+              {selectedTemplate.parametres?.length > 0 && (
+                <ul className="space-y-1.5 text-xs">
+                  {selectedTemplate.parametres.map((p, i) => (
+                    <li key={i} className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                      <span className="font-medium">{p.parametre}</span>
+                      {p.unite && <span className="text-slate-500 dark:text-slate-400">({p.unite})</span>}
+                      {p.valeurNormaleMin != null && p.valeurNormaleMax != null && (
+                        <span className="text-slate-500 dark:text-slate-400">
+                          — Normale : {p.valeurNormaleMin}–{p.valeurNormaleMax}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>
@@ -261,8 +317,8 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin mr-2" size={16} />
-                  Enregistrement...
+                  <Icon name="Loader2" size={16} className="animate-spin mr-2" />
+                  Enregistrement…
                 </>
               ) : (
                 'Prescrire'

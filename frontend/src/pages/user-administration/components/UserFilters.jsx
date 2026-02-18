@@ -26,7 +26,7 @@ const UserFilters = ({ filters, onFilterChange, hideRoleFilter = false }) => {
   const inputClass = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-sm";
 
   return (
-    <div className="bg-slate-100 dark:bg-slate-900/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 mb-8 flex flex-col gap-4 transition-colors duration-300">
+    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-8 flex flex-col gap-4 transition-colors duration-300">
       
       <div className="flex flex-col md:flex-row gap-4 items-center">
         

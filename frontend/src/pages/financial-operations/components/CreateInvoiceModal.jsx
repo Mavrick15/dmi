@@ -14,7 +14,6 @@ import { useAnalysesByPatient } from '../../../hooks/useAnalyses';
 import { useQuery } from '@tanstack/react-query';
 import { useFinanceMutations } from '../../../hooks/useFinance';
 import api from '../../../lib/axios';
-import { Loader2 } from 'lucide-react';
 
 const CreateInvoiceModal = ({ isOpen, onClose }) => {
   const { hasPermission } = usePermissions();
@@ -272,7 +271,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
     >
       {showPreview ? (
         <div className="space-y-6">
-          <div className="bg-gradient-to-br from-primary/10 to-blue-50 dark:from-primary/20 dark:to-blue-900/20 rounded-2xl p-6 border border-primary/20">
+          <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white">
                 <Icon name="FileText" size={24} />
@@ -284,7 +283,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6">
             {/* Informations patient */}
             <div>
               <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Patient</h4>
@@ -333,7 +332,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Montant payé</span>
                   <span className="text-lg font-bold text-emerald-600">{formatCurrency(parseFloat(formData.montantPaye || 0))}</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl border-2 border-amber-200 dark:border-amber-800">
+                <div className="flex justify-between items-center p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-700">
                   <span className="text-base font-bold text-slate-700 dark:text-slate-300">Reste à payer</span>
                   <span className={`text-xl font-bold ${resteAPayer > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>
                     {formatCurrency(resteAPayer)}
@@ -405,7 +404,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
           </label>
           {loadingPatients ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 className="animate-spin text-primary" size={20} />
+              <Icon name="Loader2" size={20} className="animate-spin text-primary" />
             </div>
           ) : (
             <Select
@@ -415,7 +414,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                 { value: '', label: 'Sélectionner un patient' },
                 ...patientOptions
               ]}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
             />
           )}
         </div>
@@ -435,7 +434,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               { value: 'traitement', label: 'Traitement' },
               { value: 'autre', label: 'Autre' }
             ]}
-            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
           />
         </div>
 
@@ -452,7 +451,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             </label>
             {loadingConsultations ? (
               <div className="flex items-center justify-center py-4">
-                <Loader2 className="animate-spin text-primary" size={20} />
+                <Icon name="Loader2" size={20} className="animate-spin text-primary" />
                 <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">Chargement des consultations...</span>
               </div>
             ) : consultations.length === 0 ? (
@@ -502,7 +501,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                       };
                     }).filter(Boolean) : [])
                 ]}
-                buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
               />
             )}
 
@@ -613,7 +612,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               onChange={(e) => handleChange('montantTotal', e.target.value)}
               placeholder="0.00"
               iconName="DollarSign"
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -629,7 +628,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               onChange={(e) => handleChange('montantPaye', e.target.value)}
               placeholder="0.00"
               iconName="Wallet"
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
             />
           </div>
         </div>
@@ -671,7 +670,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               type="date"
               value={formData.dateEmission}
               onChange={(e) => handleChange('dateEmission', e.target.value)}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -684,7 +683,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               value={formData.dateEcheance}
               onChange={(e) => handleChange('dateEcheance', e.target.value)}
               min={formData.dateEmission}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
               placeholder="30 jours par défaut"
             />
           </div>
@@ -700,7 +699,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             onChange={(e) => handleChange('notes', e.target.value)}
             placeholder="Notes supplémentaires sur la facture..."
             rows={3}
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
           />
         </div>
       </form>

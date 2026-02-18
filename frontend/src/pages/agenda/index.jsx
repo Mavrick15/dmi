@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -49,6 +49,8 @@ const getStatutStyle = (statut) => {
   return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
 };
 
+const APPOINTMENTS_PER_PAGE = 10;
+
 const Agenda = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -61,6 +63,8 @@ const Agenda = () => {
   const [establishmentId, setEstablishmentId] = useState('');
   const [medecinId, setMedecinId] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [listPage, setListPage] = useState(1);
+  const [dayViewPage, setDayViewPage] = useState(1);
 
   const { data: establishmentsData } = useEstablishments({ limit: 100 });
   const establishmentsList = useMemo(() => {
@@ -133,8 +137,16 @@ const Agenda = () => {
     deleteAppointment.mutate(id);
   };
 
+  useEffect(() => {
+    setListPage(1);
+  }, [viewMode, establishmentId, medecinId, statusFilter, selectedDate, appointments.length]);
+
+  useEffect(() => {
+    setDayViewPage(1);
+  }, [selectedDate, appointments.length]);
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Helmet>
         <title>Agenda | MediCore</title>
         <meta name="description" content="Agenda des rendez-vous - Vue globale par date, médecin et statut." />
@@ -147,17 +159,13 @@ const Agenda = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary border border-primary/10">
-              <Icon name="CalendarDays" size={24} />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+              <Icon name="CalendarDays" size={22} />
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                Agenda
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
-                Rendez-vous par date, médecin et statut
-              </p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Agenda</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Rendez-vous par date, médecin et statut</p>
             </div>
           </div>
           <PermissionGuard requiredPermission="appointment_create">
@@ -178,7 +186,7 @@ const Agenda = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm mb-6"
+          className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm mb-6"
         >
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap w-full sm:w-auto">Période</label>
@@ -288,8 +296,9 @@ const Agenda = () => {
 
         {/* Contenu */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-24">
-            <Icon name="Loader2" size={32} className="animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+            <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
           </div>
         ) : appointments.length === 0 ? (
           <EmptyState
@@ -307,6 +316,9 @@ const Agenda = () => {
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
             getStatutStyle={getStatutStyle}
+            pageSize={APPOINTMENTS_PER_PAGE}
+            currentPage={dayViewPage}
+            onPageChange={setDayViewPage}
           />
         ) : (
           <ListView
@@ -315,6 +327,10 @@ const Agenda = () => {
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
             getStatutStyle={getStatutStyle}
+            sortByLastFirst
+            pageSize={APPOINTMENTS_PER_PAGE}
+            currentPage={listPage}
+            onPageChange={setListPage}
           />
         )}
       </main>
@@ -327,7 +343,7 @@ function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getSta
   const medecinName = apt.medecin?.user?.nomComplet || apt.medecinName || '—';
   const motif = apt.motif || apt.type || null;
   return (
-    <div className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden ${compact ? 'p-3' : 'p-4'} shadow-sm hover:shadow-md transition-shadow`}>
+    <div className={`rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden ${compact ? 'p-3' : 'p-4'} shadow-sm hover:shadow-md transition-shadow`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="font-medium text-slate-900 dark:text-white">{formatDate(apt.dateHeure)}</div>
@@ -356,24 +372,42 @@ function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getSta
   );
 }
 
-function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getStatutStyle }) {
-  const sorted = useMemo(
-    () => [...appointments].sort((a, b) => new Date(a.dateHeure) - new Date(b.dateHeure)),
-    [appointments]
-  );
+function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getStatutStyle, sortByLastFirst = true, title, pageSize = 12, currentPage = 1, onPageChange }) {
+  const sorted = useMemo(() => {
+    const list = [...appointments].sort((a, b) => {
+      const dateA = a?.dateHeure ? new Date(a.dateHeure).getTime() : 0;
+      const dateB = b?.dateHeure ? new Date(b.dateHeure).getTime() : 0;
+      return dateB - dateA;
+    });
+    return sortByLastFirst ? list : list.reverse();
+  }, [appointments, sortByLastFirst]);
+
+  const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+  const start = (currentPage - 1) * pageSize;
+  const paginated = useMemo(() => sorted.slice(start, start + pageSize), [sorted, start, pageSize]);
 
   return (
     <>
+      <div className="mb-4 flex items-center gap-2 text-slate-500 dark:text-slate-400">
+        <Icon name="Clock" size={16} className="text-primary" />
+        <span className="text-xs font-medium">Les plus récents en premier</span>
+      </div>
+      {title && (
+        <div className="mb-4 flex items-center gap-2">
+          <Icon name="Clock" size={18} className="text-primary" />
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h2>
+        </div>
+      )}
       {/* Tableau : visible à partir de md */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="hidden md:block rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+        className="hidden md:block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+              <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Date & Heure</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Patient</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Médecin</th>
@@ -383,10 +417,10 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
               </tr>
             </thead>
             <tbody>
-              {sorted.map((apt) => (
+              {paginated.map((apt) => (
                 <tr
                   key={apt.id}
-                  className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
+                  className="border-b border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"
                 >
                   <td className="px-6 py-4">
                     <div className="font-medium text-slate-900 dark:text-white">{formatDate(apt.dateHeure)}</div>
@@ -418,7 +452,7 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
       </motion.div>
       {/* Cartes : mobile */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="md:hidden space-y-3">
-        {sorted.map((apt) => (
+        {paginated.map((apt) => (
           <AppointmentCard
             key={apt.id}
             apt={apt}
@@ -430,6 +464,45 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
           />
         ))}
       </motion.div>
+
+      {/* Pagination : toujours visible dès qu'il y a au moins un rendez-vous */}
+      {sorted.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-b-xl p-4">
+          <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{start + 1}</span>
+            {' – '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{Math.min(start + pageSize, sorted.length)}</span>
+            {' sur '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{sorted.length}</span>
+            {sorted.length > 0 && ' (10 par page)'}
+          </p>
+          <div className="flex items-center gap-2 order-1 sm:order-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange && onPageChange((p) => Math.max(1, p - 1))}
+              disabled={currentPage <= 1}
+              className="rounded-xl"
+            >
+              <Icon name="ChevronLeft" size={16} className="mr-1" />
+              Précédent
+            </Button>
+            <span className="px-3 py-1.5 text-sm font-medium bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+              Page {currentPage} / {totalPages}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange && onPageChange((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage >= totalPages}
+              className="rounded-xl"
+            >
+              Suivant
+              <Icon name="ChevronRight" size={16} className="ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -438,7 +511,7 @@ const TIMELINE_START_H = 7;
 const TIMELINE_END_H = 20;
 const SLOT_HEIGHT_PX = 52;
 
-function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, onDelete, getStatutStyle }) {
+function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, onDelete, getStatutStyle, pageSize = 12, currentPage = 1, onPageChange }) {
   const dayAppointments = useMemo(() => {
     const key = selectedDate;
     return appointments
@@ -449,8 +522,15 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
       .sort((a, b) => new Date(a.dateHeure) - new Date(b.dateHeure));
   }, [appointments, selectedDate]);
 
+  const totalDayPages = Math.max(1, Math.ceil(dayAppointments.length / pageSize));
+  const startDay = (currentPage - 1) * pageSize;
+  const paginatedDayAppointments = useMemo(
+    () => dayAppointments.slice(startDay, startDay + pageSize),
+    [dayAppointments, startDay, pageSize]
+  );
+
   const blocks = useMemo(() => {
-    return dayAppointments.map((apt) => {
+    return paginatedDayAppointments.map((apt) => {
       const start = new Date(apt.dateHeure);
       const duration = apt.dureeMinutes || 30;
       const startH = start.getHours() + start.getMinutes() / 60 + start.getSeconds() / 3600;
@@ -463,17 +543,19 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
       );
       return { apt, top, height: Math.max(20, height) };
     });
-  }, [dayAppointments]);
+  }, [paginatedDayAppointments]);
 
   const totalHeight = (TIMELINE_END_H - TIMELINE_START_H + 1) * SLOT_HEIGHT_PX;
   const hours = Array.from({ length: TIMELINE_END_H - TIMELINE_START_H + 1 }, (_, i) => TIMELINE_START_H + i);
 
   if (dayAppointments.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center">
-        <Icon name="Calendar" size={48} className="mx-auto text-slate-300 dark:text-slate-600 mb-4" />
-        <p className="text-slate-600 dark:text-slate-400">Aucun rendez-vous ce jour-là.</p>
-        <p className="text-sm text-slate-500 dark:text-slate-500 mt-1">Sélectionnez une autre date ou créez un rendez-vous.</p>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 text-center">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
+          <Icon name="Calendar" size={28} className="text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucun rendez-vous ce jour-là.</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Sélectionnez une autre date ou créez un rendez-vous.</p>
       </div>
     );
   }
@@ -482,15 +564,20 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
     >
-      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
           {formatDate(dayAppointments[0]?.dateHeure)} — Vue timeline
         </p>
+        {dayAppointments.length > pageSize && (
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            {startDay + 1} – {Math.min(startDay + pageSize, dayAppointments.length)} sur {dayAppointments.length}
+          </span>
+        )}
       </div>
       <div className="flex">
-        <div className="w-14 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 py-1">
+        <div className="w-14 flex-shrink-0 border-r border-slate-200 dark:border-slate-700 py-1">
           {hours.map((h) => (
             <div
               key={h}
@@ -505,7 +592,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
           {hours.slice(0, -1).map((h) => (
             <div
               key={h}
-              className="absolute left-0 right-0 border-t border-slate-100 dark:border-slate-800"
+              className="absolute left-0 right-0 border-t border-slate-100 dark:border-slate-700"
               style={{ top: (h - TIMELINE_START_H) * SLOT_HEIGHT_PX }}
             />
           ))}
@@ -560,6 +647,30 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
           ))}
         </div>
       </div>
+      {dayAppointments.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+          <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{startDay + 1}</span>
+            {' – '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{Math.min(startDay + pageSize, dayAppointments.length)}</span>
+            {' sur '}
+            <span className="font-semibold text-slate-700 dark:text-slate-300">{dayAppointments.length}</span>
+          </p>
+          <div className="flex items-center gap-2 order-1 sm:order-2">
+            <Button variant="outline" size="sm" onClick={() => onPageChange((p) => Math.max(1, p - 1))} disabled={currentPage <= 1} className="rounded-xl">
+              <Icon name="ChevronLeft" size={16} className="mr-1" />
+              Précédent
+            </Button>
+            <span className="px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+              Page {currentPage} / {totalDayPages}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => onPageChange((p) => Math.min(totalDayPages, p + 1))} disabled={currentPage >= totalDayPages} className="rounded-xl">
+              Suivant
+              <Icon name="ChevronRight" size={16} className="ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

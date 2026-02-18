@@ -109,7 +109,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
       >
         {/* En-tête */}
         <div className="flex items-center justify-between gap-4 p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
@@ -136,7 +136,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto p-5 space-y-5 min-h-0">
           {/* Statut actuel */}
           {document.status && (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-4">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Statut actuel</p>
@@ -238,7 +238,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
                   return (
                     <div
                       key={approval.id}
-                      className="p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50"
+                      className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50"
                     >
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <div className="flex items-center gap-3 min-w-0">

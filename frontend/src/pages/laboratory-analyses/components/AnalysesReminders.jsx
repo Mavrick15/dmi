@@ -6,7 +6,6 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import { useAnalysesList } from '../../../hooks/useAnalyses';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 /**
  * Composant pour afficher les rappels d'analyses en attente
@@ -89,15 +88,16 @@ const AnalysesReminders = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="animate-spin text-primary" size={24} />
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
+        <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
+        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
     );
   }
 
   if (reminders.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
         <Icon name="CheckCircle" size={48} className="mx-auto text-emerald-500 mb-4" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
           Aucun rappel
@@ -112,30 +112,30 @@ const AnalysesReminders = () => {
   const getPriorityConfig = (priority) => {
     const configs = {
       critical: {
-        color: 'from-rose-500 to-red-600',
-        bg: 'from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20',
-        border: 'border-rose-300 dark:border-rose-700',
+        color: 'bg-rose-500',
+        bg: 'bg-rose-50 dark:bg-rose-900/20',
+        border: 'border-rose-200 dark:border-rose-700',
         text: 'text-rose-700 dark:text-rose-300',
         label: 'CRITIQUE'
       },
       high: {
-        color: 'from-orange-500 to-amber-600',
-        bg: 'from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20',
-        border: 'border-orange-300 dark:border-orange-700',
+        color: 'bg-orange-500',
+        bg: 'bg-orange-50 dark:bg-orange-900/20',
+        border: 'border-orange-200 dark:border-orange-700',
         text: 'text-orange-700 dark:text-orange-300',
         label: 'ÉLEVÉE'
       },
       medium: {
-        color: 'from-amber-500 to-yellow-600',
-        bg: 'from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20',
-        border: 'border-amber-300 dark:border-amber-700',
+        color: 'bg-amber-500',
+        bg: 'bg-amber-50 dark:bg-amber-900/20',
+        border: 'border-amber-200 dark:border-amber-700',
         text: 'text-amber-700 dark:text-amber-300',
         label: 'MOYENNE'
       },
       low: {
-        color: 'from-blue-500 to-indigo-600',
-        bg: 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20',
-        border: 'border-blue-300 dark:border-blue-700',
+        color: 'bg-blue-500',
+        bg: 'bg-blue-50 dark:bg-blue-900/20',
+        border: 'border-blue-200 dark:border-blue-700',
         text: 'text-blue-700 dark:text-blue-300',
         label: 'FAIBLE'
       }
@@ -167,7 +167,7 @@ const AnalysesReminders = () => {
               key={priority}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`bg-gradient-to-br ${config.bg} rounded-xl p-3 border-2 ${config.border}`}
+              className={`${config.bg} rounded-xl p-3 border ${config.border}`}
             >
               <div className="flex items-center gap-2 mb-1">
                 <Icon name="Bell" size={16} className={config.text} />
@@ -191,13 +191,13 @@ const AnalysesReminders = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className={`rounded-xl p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${config.bg} ${config.border}`}
+              className={`rounded-xl p-4 border transition-all cursor-pointer hover:shadow-md ${config.bg} ${config.border}`}
               onClick={() => navigate(`/analyses-laboratoire?analyseId=${analyse.id}`)}
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br ${config.color} text-white`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} text-white`}>
                       <Icon name="Bell" size={20} />
                     </div>
                     <div>

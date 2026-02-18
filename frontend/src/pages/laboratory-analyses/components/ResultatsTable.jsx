@@ -17,17 +17,20 @@ const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
 
   if (!resultats || resultats.length === 0) {
     return (
-      <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-8 text-center">
-        <Icon name="FileText" size={32} className="mx-auto text-slate-400 mb-2" />
-        <p className="text-sm text-slate-600 dark:text-slate-400">
-          Aucun résultat enregistré
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center border-l-4 border-l-primary">
+        <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <Icon name="FileText" size={28} className="text-slate-500 dark:text-slate-400" />
+        </div>
+        <p className="font-medium text-slate-700 dark:text-slate-300">Aucun résultat enregistré</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Les résultats s'afficheront après saisie ou import.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">

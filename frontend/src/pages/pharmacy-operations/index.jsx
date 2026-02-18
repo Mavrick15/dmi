@@ -320,10 +320,10 @@ const PharmacyOperations = () => {
   ];
 
   const quickActions = [
-    { id: 1, title: "Nouvelle commande", description: "Créer une commande fournisseur", icon: "ShoppingCart", color: "from-blue-500 to-blue-600", action: () => toggleModal('order', true) },
-    { id: 2, title: "Réception stock", description: "Enregistrer une livraison", icon: "PackageCheck", color: "from-emerald-500 to-emerald-600", action: () => toggleModal('receive', true) },
-    { id: 3, title: "Inventaire physique", description: "Démarrer un comptage", icon: "ClipboardList", color: "from-amber-500 to-amber-600", action: () => toggleModal('inventory', true) },
-    { id: 4, title: "Nouveau Médicament", description: "Ajouter un produit de base", icon: "Pill", color: "from-violet-500 to-violet-600", action: handleOpenAddMedication }
+    { id: 1, title: 'Nouvelle commande', description: 'Créer une commande fournisseur', icon: 'ShoppingCart', color: 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800', action: () => toggleModal('order', true) },
+    { id: 2, title: 'Réception stock', description: 'Enregistrer une livraison', icon: 'PackageCheck', color: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800', action: () => toggleModal('receive', true) },
+    { id: 3, title: 'Inventaire physique', description: 'Démarrer un comptage', icon: 'ClipboardList', color: 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800', action: () => toggleModal('inventory', true) },
+    { id: 4, title: 'Nouveau médicament', description: 'Ajouter un produit', icon: 'Pill', color: 'bg-violet-500/20 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800', action: handleOpenAddMedication }
   ];
 
   // --- VARIANTES D'ANIMATION ---
@@ -442,24 +442,16 @@ const PharmacyOperations = () => {
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         <div className="space-y-8">
           
-          {/* En-tête */}
-          <div>
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-4 mb-6"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-              >
-                <Icon name="Pill" size={24} />
-              </motion.div>
-              <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">Opérations Pharmaceutiques</h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">Centre de commande intelligent pour la gestion des stocks et fournisseurs</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+                <Icon name="Pill" size={22} />
               </div>
-            </motion.div>
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Opérations pharmaceutiques</h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Stocks, commandes et fournisseurs</p>
+              </div>
+            </div>
           </div>
 
           {/* KPI Cards - Affichés en premier sur toutes les pages */}
@@ -474,38 +466,34 @@ const PharmacyOperations = () => {
           {/* Actions Rapides */}
           <div>
             {/* QUICK ACTIONS GRID */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {Array.isArray(quickActions) && quickActions.map((action) => {
                 if (!action || typeof action !== 'object') return null;
                 return (
-                  <button 
-                    key={action.id} 
-                    onClick={action.action} 
-                    className="group relative overflow-hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 text-left"
+                  <button
+                    key={action.id}
+                    type="button"
+                    onClick={action.action}
+                    className="group flex items-start gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-primary/30 transition-all text-left"
                   >
-                    <div className="flex items-start gap-4 relative z-10">
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center text-white shadow-md flex-shrink-0`}>
-                        <Icon name={action.icon} size={22} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-bold text-slate-800 dark:text-white group-hover:text-primary dark:group-hover:text-blue-400 transition-colors mb-0.5">
-                          {action.title}
-                        </h3>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                          {action.description}
-                        </p>
-                      </div>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${action.color}`}>
+                      <Icon name={action.icon} size={20} />
                     </div>
-                    <div className="absolute inset-0 bg-slate-50 dark:bg-slate-800/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                        {action.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{action.description}</p>
+                    </div>
                   </button>
                 );
               }).filter(Boolean)}
             </div>
           </div>
 
-          {/* Navigation Onglets (Fluidité & Style) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Onglets */}
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               
               <div className="flex space-x-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl overflow-x-auto custom-scrollbar">
                 {Array.isArray(tabs) && tabs.map((tab) => {
@@ -541,25 +529,11 @@ const PharmacyOperations = () => {
               </div>
 
               <div className="flex items-center space-x-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  iconName="RefreshCw" 
-                  className="dark:text-slate-400 dark:hover:bg-slate-800" 
-                  onClick={handleRefresh} 
-                  disabled={loading}
-                >
+                <Button variant="ghost" size="sm" className="rounded-xl" iconName="RefreshCw" onClick={handleRefresh} disabled={loading}>
                   Actualiser
                 </Button>
                 <PermissionGuard requiredPermission="audit_view">
-                  <Button 
-                    variant="default" 
-                    size="sm" 
-                    iconName="Download" 
-                    disabled={!hasPermission('audit_view')} 
-                    className="shadow-lg shadow-primary/20"
-                    onClick={handleExport}
-                  >
+                  <Button variant="default" size="sm" className="rounded-xl" iconName="Download" disabled={!hasPermission('audit_view')} onClick={handleExport}>
                     Exporter
                   </Button>
                 </PermissionGuard>
@@ -572,39 +546,22 @@ const PharmacyOperations = () => {
             {renderTabContent()}
           </div>
 
-          {/* ZONE D'URGENCE (RESTAURÉE) */}
-          <div className="bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 rounded-2xl p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-rose-100 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
-                  <Icon name="AlertTriangle" size={24} />
+          {/* Zone d'urgence */}
+          <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-900/20 p-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-200 dark:border-rose-800">
+                  <Icon name="AlertTriangle" size={20} />
                 </div>
                 <div>
-                  <h3 className="font-bold text-rose-900 dark:text-rose-100">Zone d'urgence</h3>
-                  <p className="text-sm text-rose-700 dark:text-rose-300/80">Accès rapide aux fonctions critiques en cas de rupture de stock ou d'incident.</p>
+                  <h3 className="font-bold text-slate-900 dark:text-white">Zone d'urgence</h3>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Rupture de stock, contact fournisseur, commande express.</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button 
-                  variant="outline" 
-                  className="bg-white dark:bg-slate-900 border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/30"
-                  iconName="Phone"
-                >
-                  Contacter fournisseur
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="bg-white dark:bg-slate-900 border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-900/30"
-                  iconName="AlertCircle"
-                >
-                  Signaler rupture
-                </Button>
-                <Button 
-                  className="bg-rose-600 hover:bg-rose-700 text-white border-transparent shadow-lg shadow-rose-500/20"
-                  iconName="Zap"
-                >
-                  Commande express
-                </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" className="rounded-xl border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300" iconName="Phone">Contacter fournisseur</Button>
+                <Button variant="outline" size="sm" className="rounded-xl border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300" iconName="AlertCircle">Signaler rupture</Button>
+                <Button size="sm" className="rounded-xl bg-rose-600 hover:bg-rose-700 text-white" iconName="Zap">Commande express</Button>
               </div>
             </div>
           </div>

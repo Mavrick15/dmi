@@ -15,11 +15,11 @@ import PatientAnalysesHistory from './PatientAnalysesHistory';
 const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) => {
   const { hasPermission } = usePermissions();
   const [activeTab, setActiveTab] = useState('overview');
-  
+
   // Utiliser React Query pour récupérer les données à jour du patient
   const patientId = patient?.id;
   const { data: freshPatientData, refetch: refetchPatient, isLoading: isLoadingPatient } = usePatientDetails(patientId);
-  
+
   // Utiliser les données fraîches si disponibles, sinon utiliser le patient passé en props
   const currentPatient = freshPatientData || patient;
   const isMinimalPatient = patient && typeof patient === 'object' && Object.keys(patient).length <= 1 && 'id' in patient;
@@ -48,9 +48,9 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
   // --- Fonction pour normaliser et formater les allergies ---
   const normalizeAllergies = (allergies) => {
     if (!allergies) return '';
-    
+
     let allergiesArray = [];
-    
+
     // Si c'est déjà un tableau
     if (Array.isArray(allergies)) {
       allergiesArray = allergies
@@ -61,7 +61,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
     // Si c'est une chaîne
     else if (typeof allergies === 'string') {
       let cleaned = allergies.trim();
-      
+
       // Si la chaîne commence par [ et finit par ], c'est du JSON
       if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
         try {
@@ -116,16 +116,16 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
         .map(a => typeof a === 'string' ? a.trim() : String(a).trim())
         .filter(a => a !== '');
     }
-    
+
     // Retourner une chaîne formatée (séparée par des virgules), sans crochets ni accolades
     if (allergiesArray.length === 0) return '';
-    
+
     // Joindre les éléments avec des virgules et s'assurer qu'il n'y a pas de caractères indésirables
     const result = allergiesArray
       .map(a => String(a).trim().replace(/[\[\]{}"]/g, '')) // Nettoyer chaque élément
       .filter(a => a !== '')
       .join(', ');
-    
+
     return result;
   };
 
@@ -174,11 +174,11 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
 
   // Mock de données pour la timeline si vide
   if (data.medicalHistory.length === 0 || (data.medicalHistory.length === 1 && data.medicalHistory[0].date === 'Passé')) {
-     data.medicalHistory = [
-        { date: '2024-10-15', type: 'Consultation', title: 'Douleur thoracique', doctor: 'Dr. Sarah Chen' },
-        { date: '2024-08-20', type: 'Examen', title: 'Prise de sang annuelle', doctor: 'Labo Central' },
-        ...data.medicalHistory
-     ];
+    data.medicalHistory = [
+      { date: '2024-10-15', type: 'Consultation', title: 'Douleur thoracique', doctor: 'Dr. Sarah Chen' },
+      { date: '2024-08-20', type: 'Examen', title: 'Prise de sang annuelle', doctor: 'Labo Central' },
+      ...data.medicalHistory
+    ];
   }
 
   const tabs = [
@@ -314,14 +314,14 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
         )}
 
         <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-5">
-           <h4 className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-3">Assurance</h4>
-           <div className="flex justify-between items-end">
-              <div>
-                 <p className="text-sm font-bold text-blue-900 dark:text-blue-100">{data.insurance}</p>
-                 <p className="text-xs text-blue-600 dark:text-blue-400 font-mono mt-0.5">{data.insuranceNumber}</p>
-              </div>
-              <Icon name="ShieldCheck" className="text-blue-300 dark:text-blue-700" size={32} />
-           </div>
+          <h4 className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider mb-3">Assurance</h4>
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-sm font-bold text-blue-900 dark:text-blue-100">{data.insurance}</p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 font-mono mt-0.5">{data.insuranceNumber}</p>
+            </div>
+            <Icon name="ShieldCheck" className="text-blue-300 dark:text-blue-700" size={32} />
+          </div>
         </div>
       </div>
 
@@ -329,10 +329,10 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
       <div className="lg:col-span-2 space-y-6">
         {/* Constantes */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-           <div className="p-3 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 rounded-xl text-center">
-              <span className="text-xs text-rose-600 dark:text-rose-400 font-bold block mb-1">Groupe</span>
-              <span className="text-xl font-black text-rose-700 dark:text-rose-300">{data.bloodType}</span>
-           </div>
+          <div className="p-3 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 rounded-xl text-center">
+            <span className="text-xs text-rose-600 dark:text-rose-400 font-bold block mb-1">Groupe</span>
+            <span className="text-xl font-black text-rose-700 dark:text-rose-300">{data.bloodType}</span>
+          </div>
         </div>
 
         {/* Informations médicales supplémentaires */}
@@ -401,117 +401,117 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
   );
 
   const modalContent = (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 overflow-y-auto"
     >
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
         className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[85vh] my-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800"
       >
-        
+
         {/* En-tête Global */}
         <div className="bg-white dark:bg-slate-900 p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-6 items-center sm:items-start relative">
-            <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors"><Icon name="X" size={24}/></button>
-            
-            <div className="relative flex-shrink-0">
-                <Image src={data.avatar} alt={data.name} className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-lg border-4 border-white dark:border-slate-800" />
-                <span className={`absolute -bottom-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white rounded-full ${data.status === 'Active' ? 'bg-emerald-500' : 'bg-slate-400'}`}>
-                    {data.status}
-                </span>
+          <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors"><Icon name="X" size={24} /></button>
+
+          <div className="relative flex-shrink-0">
+            <Image src={data.avatar} alt={data.name} className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover shadow-lg border-4 border-white dark:border-slate-800" />
+            <span className={`absolute -bottom-2 -right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white rounded-full ${data.status === 'Active' ? 'bg-emerald-500' : 'bg-slate-400'}`}>
+              {data.status}
+            </span>
+          </div>
+
+          <div className="flex-1 text-center sm:text-left space-y-1">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{data.name}</h2>
+            <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded"><Icon name="Fingerprint" size={12} /> {data.id}</span>
+              <span className="hidden sm:inline">•</span>
+              <span>{data.age}</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="capitalize">{data.gender}</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Né(e) le {data.birthDate}</span>
             </div>
 
-            <div className="flex-1 text-center sm:text-left space-y-1">
-                <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{data.name}</h2>
-                <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-                    <span className="flex items-center gap-1 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded"><Icon name="Fingerprint" size={12}/> {data.id}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span>{data.age}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span className="capitalize">{data.gender}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span>Né(e) le {data.birthDate}</span>
-                </div>
-                
-                <div className="flex justify-center sm:justify-start gap-3 mt-4 pt-2">
-                    <PermissionGuard requiredPermission="appointment_create">
-                      <Button variant="default" size="sm" iconName="CalendarPlus" onClick={() => onSchedule(currentPatient)} disabled={!hasPermission('appointment_create')} className="shadow-lg shadow-primary/20">Nouveau RDV</Button>
-                    </PermissionGuard>
-                    <PermissionGuard requiredPermission="patient_edit">
-                      <Button variant="outline" size="sm" iconName="Edit" onClick={() => onEdit(currentPatient)} disabled={!hasPermission('patient_edit')} className="dark:border-slate-700 dark:text-slate-200">Modifier</Button>
-                    </PermissionGuard>
-                </div>
+            <div className="flex justify-center sm:justify-start gap-3 mt-4 pt-2">
+              <PermissionGuard requiredPermission="appointment_create">
+                <Button variant="default" size="sm" iconName="CalendarPlus" onClick={() => onSchedule(currentPatient)} disabled={!hasPermission('appointment_create')} className="shadow-lg shadow-primary/20">Nouveau RDV</Button>
+              </PermissionGuard>
+              <PermissionGuard requiredPermission="patient_edit">
+                <Button variant="outline" size="sm" iconName="Edit" onClick={() => onEdit(currentPatient)} disabled={!hasPermission('patient_edit')} className="dark:border-slate-700 dark:text-slate-200">Modifier</Button>
+              </PermissionGuard>
             </div>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
         <div className="relative flex border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 px-6 overflow-x-auto custom-scrollbar">
-            {tabs.map(tab => (
-                <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`
                         relative flex items-center gap-2 px-4 py-4 text-sm font-medium border-b-2 transition-colors whitespace-nowrap z-10
                         ${activeTab === tab.id ? 'text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}
                     `}
-                >
-                    <Icon name={tab.icon} size={18} />
-                    {tab.label}
-                    {activeTab === tab.id && (
-                        <motion.div
-                            layoutId="activeTabIndicator"
-                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                            transition={{
-                                type: "spring",
-                                stiffness: 380,
-                                damping: 30,
-                                mass: 0.5
-                            }}
-                        />
-                    )}
-                </button>
-            ))}
+            >
+              <Icon name={tab.icon} size={18} />
+              {tab.label}
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="activeTabIndicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                  transition={{
+                    type: "spring",
+                    stiffness: 380,
+                    damping: 30,
+                    mass: 0.5
+                  }}
+                />
+              )}
+            </button>
+          ))}
         </div>
 
         {/* Content Body - Avec transitions fluides et hauteur fixe */}
         <div className="flex-1 overflow-hidden bg-slate-50/30 dark:bg-black/20 relative">
-            <div className="h-full overflow-y-auto p-6 md:p-8 custom-scrollbar">
-                <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                        key={activeTab}
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{
-                            duration: 0.2,
-                            ease: [0.4, 0, 0.2, 1] // ease-out
-                        }}
-                        className="w-full"
-                    >
-                        {activeTab === 'overview' && renderOverviewTab()}
-                        {activeTab === 'medical' && <MedicalRecord patient={currentPatient} />}
-                        {activeTab === 'analyses' && <PatientAnalysesHistory patient={currentPatient} />}
-                        {activeTab === 'appointments' && (
-                            <AppointmentsList 
-                                patient={currentPatient}
-                                onSelectAppointment={(appointment) => {
-                                    // Optionnel : action quand on sélectionne un rendez-vous
-                                    if (process.env.NODE_ENV === 'development') {
-                                      console.log('Rendez-vous sélectionné:', appointment);
-                                    }
-                                }}
-                            />
-                        )}
-                        {activeTab === 'documents' && <DocumentsList patient={currentPatient} />}
-                    </motion.div>
-                </AnimatePresence>
-            </div>
+          <div className="h-full overflow-y-auto p-6 md:p-8 custom-scrollbar">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{
+                  duration: 0.2,
+                  ease: [0.4, 0, 0.2, 1] // ease-out
+                }}
+                className="w-full"
+              >
+                {activeTab === 'overview' && renderOverviewTab()}
+                {activeTab === 'medical' && <MedicalRecord patient={currentPatient} />}
+                {activeTab === 'analyses' && <PatientAnalysesHistory patient={currentPatient} />}
+                {activeTab === 'appointments' && (
+                  <AppointmentsList
+                    patient={currentPatient}
+                    onSelectAppointment={(appointment) => {
+                      // Optionnel : action quand on sélectionne un rendez-vous
+                      if (process.env.NODE_ENV === 'development') {
+                        console.log('Rendez-vous sélectionné:', appointment);
+                      }
+                    }}
+                  />
+                )}
+                {activeTab === 'documents' && <DocumentsList patient={currentPatient} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </motion.div>
     </motion.div>

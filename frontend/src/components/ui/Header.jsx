@@ -613,7 +613,7 @@ const Header = () => {
   const handleNewPatient = () => navigate('/gestion-patients?action=nouveau');
   const handleEmergencyConsultation = () => navigate('/console-clinique?mode=urgence');
   const getThemeIcon = () => actualTheme==='light'?'Sun':actualTheme==='dark'?'Moon':'Monitor';
-  const getThemeLabel = () => theme==='light'?'Mode Clair':theme==='dark'?'Mode Sombre':'Mode Système';
+  const getThemeLabel = () => theme==='light'?'Mode Clair':theme==='dark'?'Mode Sombre':theme==='auto'?'Mode Auto (jour/nuit)':'Mode Système';
 
 
   const menuVariants={ hidden:{opacity:0,y:-10}, visible:{opacity:1,y:0,transition:{duration:0.2,ease:'easeOut'}}, exit:{opacity:0,y:-10,transition:{duration:0.15,ease:'easeIn'}} };

@@ -6,7 +6,6 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import { useAnalysesList } from '../../../hooks/useAnalyses';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 /**
  * Composant pour afficher les alertes critiques (valeurs anormales)
@@ -102,15 +101,16 @@ const CriticalAlerts = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-8">
-        <Loader2 className="animate-spin text-primary" size={24} />
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
+        <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
+        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
     );
   }
 
   if (criticalResults.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-8 text-center">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
         <Icon name="CheckCircle" size={48} className="mx-auto text-emerald-500 mb-4" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
           Aucune alerte critique
@@ -132,7 +132,7 @@ const CriticalAlerts = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 rounded-xl p-4 border-2 border-rose-200 dark:border-rose-800"
+          className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-4 border border-rose-200 dark:border-rose-700"
         >
           <div className="flex items-center gap-2 mb-2">
             <Icon name="AlertCircle" size={20} className="text-rose-600 dark:text-rose-400" />
@@ -145,7 +145,7 @@ const CriticalAlerts = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border-2 border-amber-200 dark:border-amber-800"
+          className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700"
         >
           <div className="flex items-center gap-2 mb-2">
             <Icon name="AlertTriangle" size={20} className="text-amber-600 dark:text-amber-400" />
@@ -167,10 +167,10 @@ const CriticalAlerts = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className={`rounded-xl p-4 border-2 transition-all cursor-pointer hover:shadow-lg ${
+              className={`rounded-xl p-4 border transition-all cursor-pointer hover:shadow-md ${
                 isCritique
-                  ? 'bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 border-rose-300 dark:border-rose-700'
-                  : 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-300 dark:border-amber-700'
+                  ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-700'
+                  : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700'
               }`}
               onClick={() => navigate(`/analyses-laboratoire?analyseId=${analyse.id}`)}
             >

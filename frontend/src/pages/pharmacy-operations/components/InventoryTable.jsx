@@ -8,8 +8,6 @@ import Select from '../../../components/ui/Select';
 import Icon from '../../../components/AppIcon';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
-import EmptyState from '../../../components/ui/EmptyState';
-import { Loader2, AlertCircle } from 'lucide-react'; 
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../contexts/CurrencyContext'; 
 
@@ -134,13 +132,15 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
 
      if (detailsLoading) {
         return (
-             <tr className='col-span-full bg-slate-50 dark:bg-slate-800/50'>
-                <td colSpan={6} className="p-8 text-center text-slate-500">
-                    <Loader2 className="animate-spin inline mr-2" size={20}/> 
-                    Chargement de l'historique...
+             <tr className="col-span-full bg-slate-50 dark:bg-slate-800/50">
+                <td colSpan={6} className="p-6 text-center">
+                  <div className="flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
+                    <Icon name="Loader2" size={20} className="animate-spin" />
+                    Chargement de l'historique…
+                  </div>
                 </td>
              </tr>
-        )
+        );
      }
 
      return (
@@ -190,7 +190,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                             </table>
                         </div>
                     ) : (
-                        <div className="text-center p-6 text-slate-400 bg-white dark:bg-slate-800 rounded-lg border border-dashed border-slate-200 dark:border-slate-700">
+                        <div className="text-center p-6 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-sm">
                             Aucun mouvement de stock enregistré pour ce produit.
                         </div>
                     )}
@@ -228,7 +228,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
     const config = configs[status] || configs.normal;
     
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border ${config.color}`}>
+      <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wide border ${config.color}`}>
         {config.label}
       </span>
     );
@@ -238,10 +238,10 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
 
   // --- RENDER PRINCIPAL ---
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
       
       {/* 1. Header & Filtres */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
@@ -293,25 +293,34 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
             {isLoading ? (
                <tr>
-                  <td colSpan={6} className="p-12 text-center text-slate-500">
-                      <div className="flex flex-col items-center justify-center">
-                        <Loader2 className="animate-spin text-primary mb-3" size={32}/>
-                        <p>Chargement de l'inventaire...</p>
-                      </div>
+                  <td colSpan={6} className="p-12">
+                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-10">
+                      <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                      <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement de l'inventaire…</p>
+                    </div>
                   </td>
                </tr>
             ) : isError ? (
                 <tr>
-                    <td colSpan={6} className="p-12 text-center text-rose-500">
-                        <AlertCircle className="inline mb-2" size={32} />
-                        <p>Erreur lors du chargement des données. Veuillez réessayer.</p>
+                    <td colSpan={6} className="p-12">
+                      <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-900/20 flex flex-col items-center justify-center gap-3 py-10">
+                        <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                          <Icon name="AlertCircle" size={24} className="text-rose-600 dark:text-rose-400" />
+                        </div>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300 text-center">Erreur lors du chargement. Veuillez réessayer.</p>
+                      </div>
                     </td>
                 </tr>
             ) : items.length === 0 ? (
                <tr>
-                   <td colSpan={6} className="p-12 text-center text-slate-400">
-                       <Icon name="PackageX" size={48} className="mx-auto mb-3 opacity-50" />
-                       <p>Aucun médicament trouvé.</p>
+                   <td colSpan={6} className="p-12">
+                     <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                       <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                         <Icon name="PackageX" size={28} className="text-slate-400 dark:text-slate-500" />
+                       </div>
+                       <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun médicament trouvé</p>
+                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Modifiez les filtres ou ajoutez un médicament.</p>
+                     </div>
                    </td>
                </tr>
             ) : (
@@ -412,48 +421,24 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
 
       {/* 3. Footer & Pagination */}
       {!isLoading && !isError && totalItems > 0 && (
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col sm:flex-row items-center justify-between gap-4">
              <PermissionGuard requiredPermission="medication_create">
-               <Button 
-                  variant="default" 
-                  size="sm" 
-                  iconName="Pill" 
-                  iconPosition="left" 
-                  onClick={onOpenAddMedication}
-                  disabled={!hasPermission('medication_create')}
-                  className="shadow-md shadow-primary/20"
-                >
-                  Ajouter Médicament
-                </Button>
+               <Button variant="default" size="sm" iconName="Pill" onClick={onOpenAddMedication} disabled={!hasPermission('medication_create')} className="rounded-xl">
+                 Ajouter médicament
+               </Button>
              </PermissionGuard>
-
              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Affichage {startIndex + 1}-{Math.min(endIndex, totalItems)} sur {totalItems}
+                {startIndex + 1}-{Math.min(endIndex, totalItems)} sur {totalItems}
              </span>
-             
              <div className="flex items-center gap-2">
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    disabled={page <= 1} 
-                    onClick={() => setPage(p => Math.max(1, p - 1))} 
-                    className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                >
-                    Précédent
+                <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="rounded-xl">
+                  Précédent
                 </Button>
-                
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                   Page {page} / {totalPages}
                 </span>
-                
-                <Button 
-                    variant="outline" 
-                    size="sm" 
-                    disabled={page >= totalPages} 
-                    onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
-                    className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                >
-                    Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
+                <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="rounded-xl">
+                  Suivant <Icon name="ChevronRight" size={14} className="ml-1" />
                 </Button>
              </div>
           </div>

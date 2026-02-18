@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
-import EmptyState from '../../../components/ui/EmptyState';
 import Modal from '../../../components/ui/Modal';
 import Input from '../../../components/ui/Input';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
-import api from '../../../lib/axios';
 import { useToast } from '../../../contexts/ToastContext';
 import { usePatientDocuments, useDocumentMutations } from '../../../hooks/useDocuments';
-import { Loader2, Upload, FileText, Download, Eye, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const DocumentsList = ({ patient }) => {
   const { hasPermission } = usePermissions();
@@ -127,16 +124,26 @@ const DocumentsList = ({ patient }) => {
 
   const getCategoryColor = (category) => {
     switch (category) {
-      case 'medical':
-        return 'primary';
-      case 'prescription':
-        return 'success';
-      case 'lab':
-        return 'info';
-      case 'imaging':
-        return 'warning';
-      default:
-        return 'default';
+      case 'medical': return 'primary';
+      case 'prescription': return 'success';
+      case 'lab': return 'info';
+      case 'imaging': return 'warning';
+      default: return 'default';
+    }
+  };
+
+  const getCategoryLabel = (category) => {
+    const map = { medical: 'Médical', prescription: 'Prescription', lab: 'Laboratoire', imaging: 'Imagerie', other: 'Autre' };
+    return map[category] || category || 'Médical';
+  };
+
+  const getCategoryAccent = (category) => {
+    switch (category) {
+      case 'medical': return 'bg-primary';
+      case 'prescription': return 'bg-emerald-500';
+      case 'lab': return 'bg-blue-500';
+      case 'imaging': return 'bg-amber-500';
+      default: return 'bg-slate-400 dark:bg-slate-500';
     }
   };
 
@@ -144,11 +151,18 @@ const DocumentsList = ({ patient }) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('fr-FR', {
       day: '2-digit',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const formatFileSize = (bytes) => {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes} o`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
   };
 
   const getFileIcon = (fileName) => {
@@ -170,23 +184,33 @@ const DocumentsList = ({ patient }) => {
 
   if (loadingDocuments) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="animate-spin text-primary" size={36} />
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des documents...</p>
       </div>
     );
   }
 
+  const totalCount = allDocuments.length;
+
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-            <Icon name="Folder" size={20} className="text-white" />
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
+            <Icon name="Folder" size={22} className="text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Documents</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Gestion des documents médicaux</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Documents</h3>
+              {totalCount > 0 && (
+                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/15 dark:bg-primary/25 text-primary">
+                  {totalCount} {totalCount === 1 ? 'fichier' : 'fichiers'}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Documents médicaux du patient</p>
           </div>
         </div>
         <PermissionGuard requiredPermission="document_upload">
@@ -195,7 +219,7 @@ const DocumentsList = ({ patient }) => {
             iconName="Upload"
             disabled={!patient}
             size="sm"
-            className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg shadow-primary/20"
+            className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
           >
             Uploader
           </Button>
@@ -205,146 +229,150 @@ const DocumentsList = ({ patient }) => {
       {/* Content */}
       <div className="w-full">
         {documents.length === 0 ? (
-          <EmptyState
-            icon="FolderX"
-            title="Aucun document"
-            description="Aucun document enregistré pour ce patient."
-            action={null}
-            actionLabel=""
-          />
+          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+              <Icon name="FolderX" size={28} className="text-slate-400 dark:text-slate-500" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-5">
+              Aucun document enregistré pour ce patient. Uploadez un fichier pour commencer.
+            </p>
+            <PermissionGuard requiredPermission="document_upload">
+              {patient && (
+                <Button
+                  onClick={() => setIsUploadModalOpen(true)}
+                  variant="outline"
+                  size="sm"
+                  disabled={!hasPermission('document_upload')}
+                  iconName="Upload"
+                  className="rounded-xl"
+                >
+                  Uploader un document
+                </Button>
+              )}
+            </PermissionGuard>
+          </div>
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <AnimatePresence mode="wait">
                 {Array.isArray(documents) && documents.map((document, idx) => (
-              <motion.div
-                key={document.id}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: idx * 0.05, duration: 0.3 }}
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:shadow-xl hover:shadow-primary/5 dark:hover:shadow-primary/10 transition-all overflow-hidden"
-              >
-                {/* Gradient overlay au hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:via-primary/3 group-hover:to-primary/0 transition-all duration-500 pointer-events-none rounded-2xl" />
-                
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-4 flex-1">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="w-14 h-14 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20"
-                      >
-                        <Icon name={getFileIcon(document.originalName || document.title)} size={28} className="text-white" />
-                      </motion.div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-xl text-slate-900 dark:text-white mb-2 truncate group-hover:text-primary transition-colors">
-                          {document.title || document.originalName}
-                        </h4>
-                        <div className="flex items-center gap-3 flex-wrap mb-3">
-                          <Badge variant={getCategoryColor(document.category)} size="sm" className="shadow-sm">
-                            <Icon name="Folder" size={12} className="mr-1" />
-                            {document.category || 'medical'}
-                          </Badge>
-                          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                            <Icon name="Calendar" size={12} />
-                            {formatDate(document.createdAt)}
-                          </div>
-                          {document.uploader?.nomComplet && (
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                              <Icon name="User" size={12} />
-                              {document.uploader.nomComplet}
-                            </div>
-                          )}
-                          {document.fileSize && (
-                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                              <Icon name="Database" size={12} />
-                              {(document.fileSize / 1024).toFixed(2)} KB
-                            </div>
-                          )}
+                  <motion.div
+                    key={document.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.04, duration: 0.25 }}
+                    className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all"
+                  >
+                    {/* Barre d'accent par catégorie */}
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 shrink-0 ${getCategoryAccent(document.category)}`} />
+
+                    <div className="flex-1 min-w-0 pl-4 pr-4 py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                      {/* Icône + titre */}
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="shrink-0 w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
+                          <Icon name={getFileIcon(document.originalName || document.title)} size={20} className="text-primary" />
                         </div>
-                        {document.description && (
-                          <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
-                            {document.description}
-                          </p>
-                        )}
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-slate-900 dark:text-white truncate">
+                            {document.title || document.originalName}
+                          </h4>
+                          <div className="flex items-center gap-2 flex-wrap mt-1">
+                            <Badge variant={getCategoryColor(document.category)} size="sm" className="text-xs">
+                              {getCategoryLabel(document.category)}
+                            </Badge>
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                              <Icon name="Calendar" size={10} className="inline mr-0.5" />
+                              {formatDate(document.createdAt)}
+                            </span>
+                            {(document.fileSize || document.size) && (
+                              <span className="text-xs text-slate-500 dark:text-slate-400">
+                                {formatFileSize(document.fileSize || document.size)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-2 ml-4">
-                      {document.previewUrl && (
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-1 shrink-0">
+                        {document.previewUrl && (
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handlePreview(document.id)}
                             title="Prévisualiser"
-                            className="hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400"
+                            className="rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400"
                           >
-                            <Eye size={18} />
+                            <Icon name="Eye" size={18} />
                           </Button>
-                        </motion.div>
-                      )}
-                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDownload(document.id, document.originalName || document.title)}
                           title="Télécharger"
-                          className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-600 dark:hover:text-emerald-400"
+                          className="rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
                         >
-                          <Download size={18} />
+                          <Icon name="Download" size={18} />
                         </Button>
-                      </motion.div>
-                      <PermissionGuard requiredPermission="document_delete">
-                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                        <PermissionGuard requiredPermission="document_delete">
                           <Button
                             variant="ghost"
                             size="icon"
                             onClick={() => handleDelete(document.id, document.title || document.originalName)}
                             disabled={!hasPermission('document_delete')}
-                            className="hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-600 hover:text-rose-700"
                             title="Supprimer"
+                            className="rounded-lg hover:bg-rose-50 dark:hover:bg-rose-900/20 text-rose-600 dark:text-rose-400"
                           >
-                            <Trash2 size={18} />
+                            <Icon name="Trash2" size={18} />
                           </Button>
-                        </motion.div>
-                      </PermissionGuard>
+                        </PermissionGuard>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </motion.div>
+
+                    {document.description && (
+                      <div className="px-4 pb-4 pt-0">
+                        <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700">
+                          <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{document.description}</p>
+                        </div>
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
               </AnimatePresence>
             </div>
 
             {/* Pagination */}
             {allDocuments.length > documentsPerPage && (
-              <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Affichage de <span className="font-bold text-slate-900 dark:text-white">{startIndex + 1}</span> à{' '}
-                  <span className="font-bold text-slate-900 dark:text-white">
-                    {Math.min(endIndex, allDocuments.length)}
-                  </span>{' '}
-                  sur <span className="font-bold text-slate-900 dark:text-white">{allDocuments.length}</span> documents
-                </div>
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
+                <p className="text-sm text-slate-500 dark:text-slate-400 order-2 sm:order-1">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{startIndex + 1}</span>
+                  {' – '}
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{Math.min(endIndex, allDocuments.length)}</span>
+                  {' sur '}
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{allDocuments.length}</span>
+                  {' documents'}
+                </p>
+                <div className="flex items-center gap-2 order-1 sm:order-2">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
+                    className="rounded-xl"
                   >
                     <Icon name="ChevronLeft" size={16} className="mr-1" />
                     Précédent
                   </Button>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 flex-wrap justify-center">
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                        className={`min-w-[2.25rem] px-2 py-1.5 rounded-xl text-sm font-medium transition-all ${
                           currentPage === page
-                            ? 'bg-primary text-white shadow-lg shadow-primary/20'
+                            ? 'bg-primary text-white shadow-md'
                             : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                         }`}
                       >
@@ -357,6 +385,7 @@ const DocumentsList = ({ patient }) => {
                     size="sm"
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
+                    className="rounded-xl"
                   >
                     Suivant
                     <Icon name="ChevronRight" size={16} className="ml-1" />
@@ -418,7 +447,7 @@ const DocumentsList = ({ patient }) => {
                   animate={uploadFile ? { scale: [1, 1.1, 1] } : {}}
                   className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/20"
                 >
-                  <Upload size={28} className="text-white" />
+                  <Icon name="Upload" size={28} className="text-white" />
                 </motion.div>
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   {uploadFile ? (

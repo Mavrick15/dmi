@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
-import { Calculator, Info } from 'lucide-react';
 
 const MedicalCalculators = ({ onClose }) => {
   const [activeCalculator, setActiveCalculator] = useState('bmi');
@@ -443,7 +442,7 @@ const MedicalCalculators = ({ onClose }) => {
       </div>
 
       {/* Contenu du calculateur */}
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
         {activeLabel && (
           <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
             <Icon name={calculators.find(c => c.id === activeCalculator)?.icon || 'Activity'} size={16} className="text-primary dark:text-blue-400" />

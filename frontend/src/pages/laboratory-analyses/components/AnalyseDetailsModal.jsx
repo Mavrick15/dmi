@@ -15,7 +15,6 @@ import ValidateResultatModal from './ValidateResultatModal';
 import AnalyseQRCode from './AnalyseQRCode';
 import { generateAnalyseResultsPDF } from '../../../utils/analysePdfGenerator';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
   const { hasPermission } = usePermissions();
@@ -107,27 +106,28 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
     <>
       <Modal isOpen={isOpen} onClose={onClose} title={
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-10 h-10 bg-indigo-500 rounded-xl flex items-center justify-center">
             <Icon name="FileText" size={20} className="text-white" />
           </div>
           <div>
             <span className="text-base font-bold text-slate-900 dark:text-white">Analyse </span>
-            <span className="text-base font-mono font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-base font-mono font-bold text-indigo-600 dark:text-indigo-400">
               {analyse.numeroAnalyse}
             </span>
           </div>
         </div>
       } size="lg" className="max-h-[85vh]">
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="animate-spin text-primary" size={32} />
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-12">
+            <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
           </div>
         ) : (
           <div className="space-y-4 overflow-y-auto max-h-[calc(85vh-200px)] pr-2">
             {/* 1. Patient et Médecin - Acteurs principaux */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {analyse.patient && (
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-emerald-100 dark:border-slate-700">
+                <div className="bg-emerald-50 dark:bg-slate-800/50 rounded-xl p-4 border border-emerald-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-3">
                     <Icon name="User" size={16} className="text-emerald-600 dark:text-emerald-400" />
                     <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -148,7 +148,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
               )}
 
               {analyse.medecin && (
-                <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-indigo-100 dark:border-slate-700">
+                <div className="bg-indigo-50 dark:bg-slate-800/50 rounded-xl p-4 border border-indigo-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-3">
                     <Icon name="UserCheck" size={16} className="text-indigo-600 dark:text-indigo-400" />
                     <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -171,7 +171,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 2. Informations de l'analyse */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-purple-100 dark:border-slate-700">
+              <div className="bg-purple-50 dark:bg-slate-800/50 rounded-xl p-4 border border-purple-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="Tag" size={16} className="text-purple-600 dark:text-purple-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -183,7 +183,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                 </p>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-blue-100 dark:border-slate-700">
+              <div className="bg-blue-50 dark:bg-slate-800/50 rounded-xl p-4 border border-blue-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="Info" size={16} className="text-blue-600 dark:text-blue-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -195,7 +195,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                 </Badge>
               </div>
 
-              <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-amber-100 dark:border-slate-700">
+              <div className="bg-amber-50 dark:bg-slate-800/50 rounded-xl p-4 border border-amber-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="AlertCircle" size={16} className="text-amber-600 dark:text-amber-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -210,7 +210,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 3. Dates et Service */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="md:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="Calendar" size={16} className="text-slate-600 dark:text-slate-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -242,7 +242,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
               </div>
 
               {analyse.laboratoire && (
-                <div className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-cyan-100 dark:border-slate-700">
+                <div className="bg-cyan-50 dark:bg-slate-800/50 rounded-xl p-4 border border-cyan-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-3">
                     <Icon name="Building2" size={16} className="text-cyan-600 dark:text-cyan-400" />
                     <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -258,9 +258,9 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 4. Notes de prescription */}
             {analyse.notesPrescription && (
-              <div className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-yellow-100 dark:border-slate-700">
+              <div className="bg-amber-50 dark:bg-slate-800/50 rounded-xl p-4 border border-amber-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon name="FileText" size={16} className="text-yellow-600 dark:text-yellow-400" />
+                  <Icon name="FileText" size={16} className="text-amber-600 dark:text-amber-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
                     Notes de prescription
                   </h4>
@@ -273,7 +273,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 5. Consultation liée */}
             {analyse.consultation && (
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-purple-100 dark:border-slate-700">
+              <div className="bg-purple-50 dark:bg-slate-800/50 rounded-xl p-4 border border-purple-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="Stethoscope" size={16} className="text-purple-600 dark:text-purple-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -310,11 +310,11 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
             )}
 
             {/* 6. Résultats d'analyse */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-slate-800 dark:to-slate-800 rounded-xl p-5 border border-blue-200 dark:border-slate-700">
+            <div className="bg-blue-50 dark:bg-slate-800/50 rounded-xl p-5 border border-blue-200 dark:border-slate-700">
               {/* En-tête de section */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
                     <Icon name="ClipboardCheck" size={20} className="text-white" />
                   </div>
                   <div>

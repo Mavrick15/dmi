@@ -5,12 +5,20 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
-import EmptyState from '../../../components/ui/EmptyState';
 import api from '../../../lib/axios';
 import { usePatientDetails } from '../../../hooks/usePatients';
-import { useAnalysesByPatient } from '../../../hooks/useAnalyses';
-import { normalizeApiResponse, extractData } from '../../../utils/apiNormalizers';
+import { normalizeApiResponse } from '../../../utils/apiNormalizers';
 import { Loader2 } from 'lucide-react';
+
+const EmptyBlock = ({ icon, title, description, className = '' }) => (
+  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
+    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+      <Icon name={icon} size={28} className="text-slate-400 dark:text-slate-500" />
+    </div>
+    <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
+    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm">{description}</p>
+  </div>
+);
 
 const MedicalRecord = ({ patient }) => {
   const [activeTab, setActiveTab] = useState('consultations');
@@ -98,158 +106,131 @@ const MedicalRecord = ({ patient }) => {
   const renderConsultations = () => {
     if (loadingConsultations) {
       return (
-        <div className="flex justify-center py-12">
-          <Loader2 className="animate-spin text-primary" size={32} />
+        <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+          <Loader2 className="animate-spin text-primary" size={36} />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des consultations...</p>
         </div>
       );
     }
 
     if (consultations.length === 0) {
-      return (
-        <EmptyState
-          icon="FileText"
-          title="Aucune consultation"
-          description="Aucune consultation enregistrée pour ce patient."
-        />
-      );
+      return <EmptyBlock icon="Stethoscope" title="Aucune consultation" description="Aucune consultation enregistrée pour ce patient." />;
     }
 
     return (
-      <div className="space-y-5">
+      <div className="space-y-4">
         {Array.isArray(consultations) && consultations.map((consultation, idx) => (
           <motion.div
             key={consultation.id}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: idx * 0.05, duration: 0.3 }}
-            whileHover={{ y: -2, scale: 1.01 }}
-            className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:shadow-xl hover:shadow-primary/5 dark:hover:shadow-primary/10 transition-all duration-300 overflow-hidden"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.04, duration: 0.25 }}
+            className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all"
           >
-            {/* Gradient overlay au hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/3 group-hover:via-primary/2 group-hover:to-primary/0 transition-all duration-500 pointer-events-none rounded-2xl" />
-            
-            <div className="relative z-10">
-            <div className="flex items-start justify-between mb-5">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3 flex-wrap">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                    <Icon name="Stethoscope" size={20} className="text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-xl text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                      Consultation du {formatDate(consultation.dateConsultation)}
-                    </h4>
-                    {consultation.motifPrincipal && (
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                        <span className="font-semibold">Motif:</span> {consultation.motifPrincipal}
-                      </p>
-                    )}
-                  </div>
+            <div className="absolute left-0 top-0 bottom-0 w-1 shrink-0 bg-primary rounded-l-xl" />
+            <div className="relative z-10 flex-1 pl-4 pr-4 py-4">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Stethoscope" size={20} className="text-primary" />
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  {consultation.medecinName && (
-                    <Badge variant="primary" size="sm" className="shadow-sm">
-                      <Icon name="User" size={12} className="mr-1" />
-                      {consultation.medecinName}
-                    </Badge>
-                  )}
-                  {consultation.dureeConsultation && (
-                    <Badge variant="info" size="sm" className="shadow-sm">
-                      <Icon name="Clock" size={12} className="mr-1" />
-                      {consultation.dureeConsultation} min
-                    </Badge>
+                <div className="min-w-0">
+                  <h4 className="font-bold text-slate-900 dark:text-white">
+                    {formatDate(consultation.dateConsultation)}
+                  </h4>
+                  {consultation.motifPrincipal && (
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 truncate">
+                      {consultation.motifPrincipal}
+                    </p>
                   )}
                 </div>
               </div>
+              <div className="flex items-center gap-2 flex-wrap shrink-0">
+                {consultation.medecinName && (
+                  <Badge variant="primary" size="sm" className="text-xs">
+                    <Icon name="User" size={10} className="mr-1" />
+                    {consultation.medecinName}
+                  </Badge>
+                )}
+                {consultation.dureeConsultation && (
+                  <Badge variant="info" size="sm" className="text-xs">
+                    <Icon name="Clock" size={10} className="mr-1" />
+                    {consultation.dureeConsultation} min
+                  </Badge>
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               {consultation.vitalSigns && (
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="relative p-4 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md transition-all"
-                >
-                  <div className="absolute top-2 right-2 w-8 h-8 bg-blue-200/50 dark:bg-blue-800/30 rounded-lg flex items-center justify-center">
-                    <Icon name="Activity" size={16} className="text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <h5 className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase mb-3 tracking-wider">Constantes Vitales</h5>
-                  <div className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                    {consultation.vitalSigns.temperature && (
-                      <div className="flex items-center gap-2">
-                        <Icon name="Activity" size={14} className="text-blue-500" />
-                        <span className="font-semibold">Temp:</span> {formatVitalValue(consultation.vitalSigns.temperature)}°C
-                      </div>
+                <div className="p-3 rounded-xl bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                  <h5 className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase mb-2 flex items-center gap-1.5">
+                    <Icon name="Activity" size={12} />
+                    Constantes
+                  </h5>
+                  <div className="text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                    {consultation.vitalSigns.temperature != null && (
+                      <span className="mr-3">Temp: {formatVitalValue(consultation.vitalSigns.temperature)}°C</span>
                     )}
                     {consultation.vitalSigns.bloodPressure && (
-                      <div className="flex items-center gap-2">
-                        <Icon name="Activity" size={14} className="text-blue-500" />
-                        <span className="font-semibold">TA:</span> {consultation.vitalSigns.bloodPressure} mmHg
-                      </div>
+                      <span className="mr-3">TA: {consultation.vitalSigns.bloodPressure}</span>
                     )}
-                    {consultation.vitalSigns.heartRate && (
-                      <div className="flex items-center gap-2">
-                        <Icon name="Heart" size={14} className="text-blue-500" />
-                        <span className="font-semibold">FC:</span> {formatVitalValue(consultation.vitalSigns.heartRate)} bpm
-                      </div>
+                    {consultation.vitalSigns.heartRate != null && (
+                      <span>FC: {formatVitalValue(consultation.vitalSigns.heartRate)} bpm</span>
                     )}
                   </div>
-                </motion.div>
+                </div>
               )}
-
               {consultation.diagnosticPrincipal && (
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="relative p-4 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 rounded-xl border border-emerald-200 dark:border-emerald-800 shadow-sm hover:shadow-md transition-all"
-                >
-                  <div className="absolute top-2 right-2 w-8 h-8 bg-emerald-200/50 dark:bg-emerald-800/30 rounded-lg flex items-center justify-center">
-                    <Icon name="FileCheck" size={16} className="text-emerald-600 dark:text-emerald-400" />
-                  </div>
-                  <h5 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase mb-3 tracking-wider">Diagnostic</h5>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">{consultation.diagnosticPrincipal}</p>
-                </motion.div>
+                <div className="p-3 rounded-xl bg-emerald-50/80 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                  <h5 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase mb-1 flex items-center gap-1.5">
+                    <Icon name="FileCheck" size={12} />
+                    Diagnostic
+                  </h5>
+                  <p className="text-sm text-slate-700 dark:text-slate-300">{consultation.diagnosticPrincipal}</p>
+                </div>
               )}
             </div>
 
             {consultation.examenPhysique && (
-              <div className="mb-5 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                <h5 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-3 flex items-center gap-2">
-                  <Icon name="Eye" size={14} />
-                  Examen Physique
+              <div className="mb-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h5 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1.5 flex items-center gap-1.5">
+                  <Icon name="Eye" size={12} />
+                  Examen physique
                 </h5>
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{consultation.examenPhysique}</p>
               </div>
             )}
 
             {consultation.planTraitement && (
-              <div className="mb-5 p-4 bg-amber-50/50 dark:bg-amber-900/10 rounded-xl border border-amber-200 dark:border-amber-800/50">
-                <h5 className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase mb-3 flex items-center gap-2">
-                  <Icon name="Pill" size={14} />
-                  Plan de Traitement
+              <div className="mb-3 p-3 rounded-xl bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                <h5 className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase mb-1.5 flex items-center gap-1.5">
+                  <Icon name="Pill" size={12} />
+                  Plan de traitement
                 </h5>
                 <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{consultation.planTraitement}</p>
               </div>
             )}
 
             {Array.isArray(consultation.requestedExams) && consultation.requestedExams.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 self-center">Examens:</span>
-                {consultation.requestedExams.map((exam, idx) => (
-                  <Badge key={idx} variant="info" size="sm" className="shadow-sm">
-                    <Icon name="TestTube" size={12} className="mr-1" />
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 self-center mr-1">Examens:</span>
+                {consultation.requestedExams.map((exam, i) => (
+                  <Badge key={i} variant="info" size="sm" className="text-xs">
+                    <Icon name="TestTube" size={10} className="mr-0.5" />
                     {exam}
                   </Badge>
                 ))}
               </div>
             )}
-            
-            {/* Lien vers Analyses Labo */}
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+
+            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
               <Button
                 variant="ghost"
                 size="sm"
                 iconName="TestTube"
                 onClick={() => navigate(`/analyses-laboratoire?patientId=${patient?.id}`)}
-                className="w-full"
+                className="rounded-xl w-full"
               >
                 Voir les analyses de ce patient
               </Button>
@@ -264,73 +245,63 @@ const MedicalRecord = ({ patient }) => {
   const renderHistory = () => {
     if (loadingDetails) {
       return (
-        <div className="flex justify-center py-12">
-          <Loader2 className="animate-spin text-primary" size={32} />
+        <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+          <Loader2 className="animate-spin text-primary" size={36} />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du dossier...</p>
         </div>
       );
     }
 
-    // Debug: vérifier les données disponibles
     const birthDateValue = patientData?.birthDate || patientData?.dateNaissance || patientData?.birth_date || patientData?.date_naissance;
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -2 }}
-          className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-blue-50/50 dark:from-blue-900/0 dark:to-blue-900/10 group-hover:from-blue-50/50 group-hover:to-blue-100/50 dark:group-hover:from-blue-900/10 dark:group-hover:to-blue-900/20 transition-all duration-300 rounded-2xl" />
-          <div className="relative z-10">
-            <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Icon name="FileText" size={20} className="text-white" />
-              </div>
-              Antécédents Médicaux
-            </h4>
-            <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
-              {patientData?.medicalHistory || patientData?.antecedentsMedicaux || 'Aucun antécédent médical enregistré.'}
-            </p>
+          <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+              <Icon name="FileText" size={20} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <h4 className="font-bold text-slate-900 dark:text-white">Antécédents médicaux</h4>
           </div>
+          <p className="p-4 text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+            {patientData?.medicalHistory || patientData?.antecedentsMedicaux || 'Aucun antécédent médical enregistré.'}
+          </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ y: -2 }}
-          className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all overflow-hidden"
+          transition={{ delay: 0.05 }}
+          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/0 to-emerald-50/50 dark:from-emerald-900/0 dark:to-emerald-900/10 group-hover:from-emerald-50/50 group-hover:to-emerald-100/50 dark:group-hover:from-emerald-900/10 dark:group-hover:to-emerald-900/20 transition-all duration-300 rounded-2xl" />
-          <div className="relative z-10">
-            <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-5 flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <Icon name="Heart" size={20} className="text-white" />
-              </div>
-              Informations Générales
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              {[
-                { label: 'Groupe Sanguin', value: patientData?.bloodType || patientData?.groupeSanguin || 'Non renseigné', icon: 'Activity' },
-                { label: 'Date de Naissance', value: formatDateOnly(birthDateValue), icon: 'Calendar' },
-                { label: 'Assurance', value: patientData?.insurance || patientData?.assuranceMaladie || 'Non renseigné', icon: 'ShieldCheck' },
-                { label: 'Contact Urgence', value: patientData?.contactUrgenceNom ? `${patientData.contactUrgenceNom} - ${patientData.contactUrgenceTelephone || ''}` : 'Non renseigné', icon: 'Phone' },
-              ].map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="p-4 bg-white dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30 transition-all"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Icon name={item.icon} size={16} className="text-primary" />
-                    <span className="font-semibold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">{item.label}</span>
-                  </div>
-                  <p className="text-slate-900 dark:text-white font-medium">{item.value}</p>
-                </motion.div>
-              ))}
+          <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <Icon name="Heart" size={20} className="text-emerald-600 dark:text-emerald-400" />
             </div>
+            <h4 className="font-bold text-slate-900 dark:text-white">Informations générales</h4>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 text-sm">
+            {[
+              { label: 'Groupe sanguin', value: patientData?.bloodType || patientData?.groupeSanguin || 'Non renseigné', icon: 'Activity' },
+              { label: 'Date de naissance', value: formatDateOnly(birthDateValue), icon: 'Calendar' },
+              { label: 'Assurance', value: patientData?.insurance || patientData?.assuranceMaladie || 'Non renseigné', icon: 'ShieldCheck' },
+              { label: 'Contact urgence', value: patientData?.contactUrgenceNom ? `${patientData.contactUrgenceNom} – ${patientData.contactUrgenceTelephone || ''}` : 'Non renseigné', icon: 'Phone' },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700"
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Icon name={item.icon} size={14} className="text-primary" />
+                  <span className="font-semibold text-slate-600 dark:text-slate-400 text-xs uppercase tracking-wide">{item.label}</span>
+                </div>
+                <p className="text-slate-900 dark:text-white font-medium">{item.value}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
@@ -342,7 +313,7 @@ const MedicalRecord = ({ patient }) => {
 
     if (allergies.length === 0) {
       return (
-        <EmptyState
+        <EmptyBlock
           icon="CheckCircle"
           title="Aucune allergie enregistrée"
           description="Aucune allergie connue pour ce patient."
@@ -351,29 +322,28 @@ const MedicalRecord = ({ patient }) => {
     }
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {Array.isArray(allergies) && allergies.map((allergy, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            whileHover={{ scale: 1.02, x: 4 }}
-            className="group relative bg-gradient-to-r from-rose-50 to-rose-100/50 dark:from-rose-900/20 dark:to-rose-900/10 border-2 border-rose-200 dark:border-rose-800 rounded-2xl p-5 flex items-center gap-4 shadow-sm hover:shadow-lg hover:shadow-rose-500/10 transition-all overflow-hidden"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05 }}
+            className="flex overflow-hidden rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/80 dark:bg-rose-900/20 hover:shadow-md transition-all"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-rose-500/0 to-rose-500/0 group-hover:from-rose-500/5 group-hover:to-rose-500/0 transition-all duration-300" />
-            <div className="relative z-10 w-12 h-12 bg-gradient-to-br from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20 flex-shrink-0">
-              <Icon name="AlertTriangle" size={24} className="text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-lg text-rose-900 dark:text-rose-100">{allergy.name || allergy}</p>
-              {allergy.severity && (
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="error" size="sm" className="shadow-sm">
+            <div className="w-1 shrink-0 bg-rose-500" />
+            <div className="flex items-center gap-3 p-4 flex-1">
+              <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0">
+                <Icon name="AlertTriangle" size={20} className="text-rose-600 dark:text-rose-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-semibold text-rose-900 dark:text-rose-100">{allergy.name || allergy}</p>
+                {allergy.severity && (
+                  <Badge variant="error" size="sm" className="mt-1.5 text-xs">
                     Sévérité: {allergy.severity}
                   </Badge>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </motion.div>
         ))}
@@ -405,7 +375,7 @@ const MedicalRecord = ({ patient }) => {
 
     if (allVitals.length === 0) {
       return (
-        <EmptyState
+        <EmptyBlock
           icon="Activity"
           title="Aucune constante vitale"
           description="Aucune constante vitale enregistrée pour ce patient."
@@ -413,51 +383,49 @@ const MedicalRecord = ({ patient }) => {
       );
     }
 
+    const vitalItems = [
+      { key: 'temperature', label: 'Temp.', value: '°C', icon: 'Activity', color: 'text-rose-500' },
+      { key: 'bloodPressure', label: 'TA', value: '', icon: 'Activity', color: 'text-blue-500' },
+      { key: 'heartRate', label: 'FC', value: ' bpm', icon: 'Heart', color: 'text-rose-500' },
+      { key: 'respiratoryRate', label: 'FR', value: '/min', icon: 'Activity', color: 'text-emerald-500' },
+      { key: 'oxygenSaturation', label: 'SpO2', value: '%', icon: 'Activity', color: 'text-blue-500' },
+      { key: 'weight', label: 'Poids', value: ' kg', icon: 'Scale', color: 'text-purple-500' },
+      { key: 'height', label: 'Taille', value: ' cm', icon: 'Ruler', color: 'text-indigo-500' },
+      { key: 'bmi', label: 'IMC', value: '', icon: 'Activity', color: 'text-amber-500' },
+    ];
+
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {Array.isArray(allVitals) && allVitals.map((vital, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
-            whileHover={{ scale: 1.02, y: -2 }}
-            className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all overflow-hidden"
+            transition={{ delay: idx * 0.04 }}
+            className="flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-all"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:to-primary/0 transition-all duration-300 rounded-2xl" />
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
-                    <Icon name="Activity" size={16} className="text-primary" />
-                  </div>
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    {formatDate(vital.date)}
-                  </span>
+            <div className="w-1 shrink-0 bg-primary" />
+            <div className="flex-1 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                  <Icon name="Activity" size={14} className="text-primary" />
                 </div>
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {formatDate(vital.date)}
+                </span>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  { key: 'temperature', label: 'Température', value: vital.temperature, unit: '°C', icon: 'Activity', color: 'text-rose-500' },
-                  { key: 'bloodPressure', label: 'Tension', value: vital.bloodPressure, unit: '', icon: 'Activity', color: 'text-blue-500' },
-                  { key: 'heartRate', label: 'FC', value: vital.heartRate, unit: ' bpm', icon: 'Heart', color: 'text-rose-500' },
-                  { key: 'respiratoryRate', label: 'FR', value: vital.respiratoryRate, unit: '/min', icon: 'Activity', color: 'text-emerald-500' },
-                  { key: 'oxygenSaturation', label: 'SpO2', value: vital.oxygenSaturation, unit: '%', icon: 'Activity', color: 'text-blue-500' },
-                  { key: 'weight', label: 'Poids', value: vital.weight, unit: ' kg', icon: 'Scale', color: 'text-purple-500' },
-                  { key: 'height', label: 'Taille', value: vital.height, unit: ' cm', icon: 'Ruler', color: 'text-indigo-500' },
-                  { key: 'bmi', label: 'IMC', value: vital.bmi, unit: ' kg/m²', icon: 'Activity', color: 'text-amber-500' },
-                ].filter(item => vital[item.key]).map((item) => (
-                  <motion.div
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {vitalItems.filter(item => vital[item.key] != null && vital[item.key] !== '').map((item) => (
+                  <div
                     key={item.key}
-                    whileHover={{ scale: 1.1 }}
-                    className="text-center p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30 transition-all"
+                    className="text-center p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700"
                   >
-                    <Icon name={item.icon} size={18} className={`mx-auto mb-2 ${item.color}`} />
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-semibold">{item.label}</p>
-                    <p className="font-bold text-lg text-slate-900 dark:text-white">
-                      {formatVitalValue(vital[item.key])}{item.unit}
+                    <Icon name={item.icon} size={16} className={`mx-auto mb-1 ${item.color}`} />
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase">{item.label}</p>
+                    <p className="font-bold text-sm text-slate-900 dark:text-white">
+                      {formatVitalValue(vital[item.key])}{item.value}
                     </p>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -469,10 +437,10 @@ const MedicalRecord = ({ patient }) => {
 
   if (!patient) {
     return (
-      <EmptyState
+      <EmptyBlock
         icon="UserX"
         title="Aucun patient sélectionné"
-        description="Veuillez sélectionner un patient pour afficher son dossier médical."
+        description="Sélectionnez un patient pour afficher son dossier médical."
       />
     );
   }
@@ -480,36 +448,27 @@ const MedicalRecord = ({ patient }) => {
   return (
     <div className="w-full">
       {/* Tabs */}
-      <div className="flex gap-2 mb-8 overflow-x-auto custom-scrollbar pb-2">
+      <div className="flex gap-2 mb-6 overflow-x-auto custom-scrollbar pb-2">
         {tabs.map((tab) => (
           <motion.button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`relative flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap border ${
               activeTab === tab.id
-                ? 'bg-gradient-to-r from-primary to-blue-600 text-white shadow-lg shadow-primary/30'
-                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                ? 'bg-primary text-white border-primary shadow-md'
+                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700'
             }`}
           >
-            <Icon name={tab.icon} size={18} className={activeTab === tab.id ? 'text-white' : ''} />
+            <Icon name={tab.icon} size={16} className={activeTab === tab.id ? 'text-white' : ''} />
             {tab.label}
-            {tab.count !== null && (
+            {tab.count !== null && tab.count > 0 && (
               <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                activeTab === tab.id
-                  ? 'bg-white/25 text-white backdrop-blur-sm'
-                  : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                activeTab === tab.id ? 'bg-white/25' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}>
                 {tab.count}
               </span>
-            )}
-            {activeTab === tab.id && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-600/20 rounded-xl -z-10"
-                transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-              />
             )}
           </motion.button>
         ))}

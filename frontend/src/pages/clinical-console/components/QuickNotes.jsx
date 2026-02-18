@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { useQuickNotes, useQuickNotesMutations } from '../../../hooks/useClinicalTools';
-import { Loader2, Plus, X, Edit2 } from 'lucide-react';
 
 const QuickNotes = ({ onInsertNote, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -56,8 +55,9 @@ const QuickNotes = ({ onInsertNote, onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+        <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
     );
   }

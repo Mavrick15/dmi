@@ -14,7 +14,6 @@ import { usePatientStats } from '../../hooks/usePatients';
 import { useDashboardData } from '../../hooks/useDashboard';
 import { useNotifications, useNotificationMutations } from '../../hooks/useNotifications';
 import api from '../../lib/axios';
-import { Loader2 } from 'lucide-react';
 import AnimatedModal from '../../components/ui/AnimatedModal';
 
 // Sous-composants
@@ -409,15 +408,12 @@ const ClinicalConsole = () => {
             {/* En-tête Page */}
             <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-                >
-                  <Icon name="Stethoscope" size={24} />
-                </motion.div>
+                <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+                  <Icon name="Stethoscope" size={22} />
+                </div>
                 <div>
-                  <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">Console Clinique</h1>
-                  <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">Espace de travail médical unifié</p>
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Console Clinique</h1>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Espace de travail médical unifié</p>
                 </div>
               </div>
 
@@ -448,7 +444,7 @@ const ClinicalConsole = () => {
                         initial="hidden" 
                         animate="visible" 
                         exit="exit" 
-                        className="absolute top-full right-0 mt-3 w-[420px] bg-white dark:bg-slate-900 backdrop-blur-xl border-2 border-slate-200/80 dark:border-slate-700/80 rounded-3xl shadow-2xl z-50 overflow-hidden ring-2 ring-slate-200/50 dark:ring-slate-700/50"
+                        className="absolute top-full right-0 mt-3 w-[420px] bg-white dark:bg-slate-900 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
                       >
                         <div className="p-4 border-b border-slate-200/60 dark:border-slate-700/60 bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-800/30">
                           <div className="flex items-center justify-between gap-3">
@@ -494,11 +490,9 @@ const ClinicalConsole = () => {
                         </div>
                         <div className="max-h-[650px] overflow-y-auto custom-scrollbar">
                           {loadingNotifications ? (
-                            <div className="flex flex-col items-center justify-center py-12">
-                              <div className="p-3 rounded-full bg-rose-500/10 dark:bg-rose-500/20 mb-3">
-                                <Loader2 className="animate-spin text-rose-500" size={24} />
-                              </div>
-                              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement...</span>
+                            <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2">
+                              <Icon name="Loader2" size={24} className="animate-spin text-primary mb-3" />
+                              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
                             </div>
                           ) : notificationsError ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center">

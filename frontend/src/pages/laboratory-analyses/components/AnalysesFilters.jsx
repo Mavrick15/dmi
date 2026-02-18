@@ -68,25 +68,13 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
   const activeFiltersCount = Object.keys(localFilters).filter(key => localFilters[key] && localFilters[key] !== '').length;
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl md:rounded-3xl shadow-xl backdrop-blur-sm relative overflow-hidden" 
-      style={{ overflow: 'visible' }}
-    >
-      {/* Decorative background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-transparent dark:from-blue-950/20 dark:via-indigo-950/10 pointer-events-none" />
-      
-      <div className="relative p-4 md:p-6" style={{ overflow: 'visible' }}>
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+      <div className="p-4 md:p-5">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 10 }}
-              className="w-10 h-10 bg-gradient-to-br from-primary/10 to-blue-500/10 rounded-xl flex items-center justify-center"
-            >
-              <Icon name="Filter" size={20} className="text-primary" />
-            </motion.div>
+            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary border border-primary/20 flex items-center justify-center">
+              <Icon name="Filter" size={20} />
+            </div>
             <div>
               <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Filtres de recherche</h3>
               {activeFiltersCount > 0 && (
@@ -108,13 +96,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
               >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconName="X"
-                  onClick={handleReset}
-                  className="text-xs hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 transition-all"
-                >
+                <Button variant="ghost" size="sm" className="rounded-xl text-xs hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/20" iconName="RotateCcw" onClick={handleReset}>
                   Réinitialiser
                 </Button>
               </motion.div>
@@ -150,7 +132,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                   size="sm"
                   iconName="Search"
                   onClick={handleSearchSubmit}
-                  className="h-10 px-3 md:px-4 shadow-lg shadow-primary/20"
+                  className="h-10 px-3 md:px-4 rounded-xl"
                   title="Rechercher"
                 />
               </motion.div>
@@ -212,7 +194,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-700/50"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700"
             >
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -273,20 +255,12 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
         </AnimatePresence>
 
         <div className="mt-4 flex justify-end">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              variant="ghost"
-              size="sm"
-              iconName={isExpanded ? "ChevronUp" : "ChevronDown"}
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-xs font-semibold text-primary hover:bg-primary/10 transition-all"
-            >
-              {isExpanded ? 'Moins de filtres' : 'Plus de filtres'}
-            </Button>
-          </motion.div>
+          <Button variant="ghost" size="sm" className="rounded-xl text-xs font-semibold text-primary hover:bg-primary/10" iconName={isExpanded ? "ChevronUp" : "ChevronDown"} onClick={() => setIsExpanded(!isExpanded)}>
+            {isExpanded ? 'Moins de filtres' : 'Plus de filtres'}
+          </Button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

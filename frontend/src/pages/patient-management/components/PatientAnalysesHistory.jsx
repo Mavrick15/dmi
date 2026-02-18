@@ -5,11 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
-import EmptyState from '../../../components/ui/EmptyState';
 import ResultatsChart from '../../laboratory-analyses/components/ResultatsChart';
 import { useAnalysesByPatient } from '../../../hooks/useAnalyses';
 import api from '../../../lib/axios';
 import { Loader2 } from 'lucide-react';
+
+const EmptyBlock = ({ icon, title, description, action, className = '' }) => (
+  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
+    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+      <Icon name={icon} size={28} className="text-slate-400 dark:text-slate-500" />
+    </div>
+    <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
+    <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-5">{description}</p>
+    {action}
+  </div>
+);
 
 const PatientAnalysesHistory = ({ patient }) => {
   const navigate = useNavigate();
@@ -55,6 +65,16 @@ const PatientAnalysesHistory = ({ patient }) => {
       en_attente_validation: { variant: 'warning', label: 'En attente' }
     };
     return badges[statut] || { variant: 'info', label: statut };
+  };
+
+  const getStatutAccent = (statut) => {
+    switch (statut) {
+      case 'terminee': return 'bg-emerald-500';
+      case 'en_cours': return 'bg-amber-500';
+      case 'annulee': return 'bg-rose-500';
+      case 'en_attente_validation': return 'bg-amber-400';
+      default: return 'bg-blue-500';
+    }
   };
 
   const formatDate = (dateString) => {
@@ -104,26 +124,31 @@ const PatientAnalysesHistory = ({ patient }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="animate-spin text-primary" size={36} />
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses...</p>
       </div>
     );
   }
 
   if (!analyses || analyses.length === 0) {
     return (
-      <EmptyState
+      <EmptyBlock
         icon="TestTube"
         title="Aucune analyse"
         description="Aucune analyse médicale n'a été prescrite pour ce patient."
         action={
-          <Button
-            variant="primary"
-            iconName="Plus"
-            onClick={() => navigate(`/analyses-laboratoire?patientId=${patient?.id}&prescribe=true`)}
-          >
-            Prescrire une analyse
-          </Button>
+          patient && (
+            <Button
+              variant="outline"
+              size="sm"
+              iconName="Plus"
+              onClick={() => navigate(`/analyses-laboratoire?patientId=${patient?.id}&prescribe=true`)}
+              className="rounded-xl"
+            >
+              Prescrire une analyse
+            </Button>
+          )
         }
       />
     );
@@ -135,184 +160,145 @@ const PatientAnalysesHistory = ({ patient }) => {
     : [];
 
   return (
-    <div className="space-y-6">
-      {/* Statistiques globales */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="TestTube" size={18} className="text-blue-600 dark:text-blue-400" />
-            <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Total</p>
+    <div className="space-y-5">
+      {/* Statistiques */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-3 border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icon name="TestTube" size={16} className="text-blue-600 dark:text-blue-400" />
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Total</p>
           </div>
-          <p className="text-2xl font-black text-blue-900 dark:text-blue-100">{stats.total}</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">{stats.total}</p>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="CheckCircle" size={18} className="text-emerald-600 dark:text-emerald-400" />
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">Terminées</p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="rounded-xl p-3 border border-emerald-200 dark:border-emerald-800 bg-emerald-50/80 dark:bg-emerald-900/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icon name="CheckCircle" size={16} className="text-emerald-600 dark:text-emerald-400" />
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Terminées</p>
           </div>
-          <p className="text-2xl font-black text-emerald-900 dark:text-emerald-100">{stats.terminees}</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">{stats.terminees}</p>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 rounded-xl p-4 border border-amber-200 dark:border-amber-800"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="Clock" size={18} className="text-amber-600 dark:text-amber-400" />
-            <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">En cours</p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl p-3 border border-amber-200 dark:border-amber-800 bg-amber-50/80 dark:bg-amber-900/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icon name="Clock" size={16} className="text-amber-600 dark:text-amber-400" />
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">En cours</p>
           </div>
-          <p className="text-2xl font-black text-amber-900 dark:text-amber-100">{stats.enCours}</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">{stats.enCours}</p>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-900/10 rounded-xl p-4 border border-indigo-200 dark:border-indigo-800"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="TrendingUp" size={18} className="text-indigo-600 dark:text-indigo-400" />
-            <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">Complétion</p>
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="rounded-xl p-3 border border-indigo-200 dark:border-indigo-800 bg-indigo-50/80 dark:bg-indigo-900/20">
+          <div className="flex items-center gap-2 mb-1">
+            <Icon name="TrendingUp" size={16} className="text-indigo-600 dark:text-indigo-400" />
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">Complétion</p>
           </div>
-          <p className="text-2xl font-black text-indigo-900 dark:text-indigo-100">{stats.tauxCompletion}%</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">{stats.tauxCompletion}%</p>
         </motion.div>
       </div>
 
       {/* Graphiques de tendance */}
       {historiqueResultats.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6"
+          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
         >
-          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
-            <Icon name="TrendingUp" size={18} className="text-primary" />
-            Évolution des résultats dans le temps
+          <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+            <Icon name="TrendingUp" size={16} className="text-primary" />
+            Évolution des résultats
           </h4>
-          <ResultatsChart 
-            resultats={resultatsForSelected} 
-            historique={historiqueResultats}
-          />
+          <ResultatsChart resultats={resultatsForSelected} historique={historiqueResultats} />
         </motion.div>
       )}
 
-      {/* Liste des analyses par type */}
-      <div className="space-y-6">
+      {/* Liste par type */}
+      <div className="space-y-4">
         {analysesByType && typeof analysesByType === 'object' && Object.entries(analysesByType).map(([type, analysesType]) => (
           <motion.div
             key={type}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="text-lg font-bold text-slate-900 dark:text-white capitalize">
-                {type.replace('_', ' ')} ({analysesType.length})
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
+              <Icon name="TestTube" size={16} className="text-primary" />
+              <h4 className="font-bold text-slate-900 dark:text-white capitalize">
+                {type.replace(/_/g, ' ')}
               </h4>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">({analysesType.length})</span>
             </div>
 
-            <div className="space-y-3">
+            <div className="divide-y divide-slate-200 dark:divide-slate-700">
               {Array.isArray(analysesType) && analysesType.map((analyse, idx) => {
                 const statutBadge = getStatutBadge(analyse.statut);
-                const hasResultats = analyse.statut === 'terminee' && 
-                  historiqueResultats.find(h => h.analyseId === analyse.id)?.resultats?.length > 0;
-                
+                const isSelected = selectedAnalyse?.id === analyse.id;
+
                 return (
                   <motion.div
                     key={analyse.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className={`bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border transition-all cursor-pointer ${
-                      selectedAnalyse?.id === analyse.id 
-                        ? 'border-primary ring-2 ring-primary/20' 
-                        : 'border-slate-200 dark:border-slate-700 hover:border-primary/50'
-                    }`}
-                    onClick={() => setSelectedAnalyse(selectedAnalyse?.id === analyse.id ? null : analyse)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: idx * 0.03 }}
+                    className={`flex overflow-hidden transition-all cursor-pointer ${isSelected ? 'bg-primary/5 dark:bg-primary/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                    onClick={() => setSelectedAnalyse(isSelected ? null : analyse)}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Icon name="TestTube" size={20} className="text-primary" />
-                          <div>
-                            <h5 className="font-semibold text-slate-900 dark:text-white">
-                              {analyse.numeroAnalyse}
-                            </h5>
-                            {analyse.notesPrescription && (
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
-                                {analyse.notesPrescription}
-                              </p>
+                    <div className={`w-1 shrink-0 ${getStatutAccent(analyse.statut)}`} />
+                    <div className="flex-1 min-w-0 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="shrink-0 w-9 h-9 rounded-lg bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
+                          <Icon name="TestTube" size={16} className="text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-900 dark:text-white truncate">{analyse.numeroAnalyse}</p>
+                          <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex-wrap">
+                            <span><Icon name="Calendar" size={10} className="inline mr-0.5" />{formatDate(analyse.datePrescription)}</span>
+                            {analyse.dateResultat && (
+                              <span className="text-emerald-600 dark:text-emerald-400"><Icon name="CheckCircle" size={10} className="inline mr-0.5" />{formatDate(analyse.dateResultat)}</span>
                             )}
+                            {analyse.laboratoire && <span><Icon name="Building" size={10} className="inline mr-0.5" />{analyse.laboratoire}</span>}
                           </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mt-3">
-                          <div className="flex items-center gap-1">
-                            <Icon name="Calendar" size={14} />
-                            <span>Prescrite: {formatDate(analyse.datePrescription)}</span>
-                          </div>
-                          {analyse.dateResultat && (
-                            <div className="flex items-center gap-1">
-                              <Icon name="CheckCircle" size={14} className="text-emerald-500" />
-                              <span>Résultat: {formatDate(analyse.dateResultat)}</span>
-                            </div>
-                          )}
-                          {analyse.laboratoire && (
-                            <div className="flex items-center gap-1">
-                              <Icon name="Building" size={14} />
-                              <span>{analyse.laboratoire}</span>
-                            </div>
+                          {analyse.notesPrescription && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 italic line-clamp-1">{analyse.notesPrescription}</p>
                           )}
                         </div>
-
-                        {hasResultats && selectedAnalyse?.id === analyse.id && (
-                          <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-                            <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
-                              Résultats disponibles
-                            </p>
-                            <ResultatsChart 
-                              resultats={historiqueResultats.find(h => h.analyseId === analyse.id)?.resultats || []}
-                              historique={historiqueResultats.filter(h => h.analyseId === analyse.id)}
-                            />
-                          </div>
-                        )}
                       </div>
-
-                      <div className="flex items-center gap-3 ml-4">
-                        <Badge variant={statutBadge.variant} size="sm">
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant={statutBadge.variant} size="sm" className="text-xs">
                           {statutBadge.label}
                         </Badge>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            iconName="Eye"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/analyses-laboratoire?analyseId=${analyse.id}`);
-                            }}
-                          >
-                            Voir
-                          </Button>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          iconName="Eye"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/analyses-laboratoire?analyseId=${analyse.id}`);
+                          }}
+                          className="rounded-lg"
+                        >
+                          Voir
+                        </Button>
                       </div>
                     </div>
                   </motion.div>
                 );
               })}
             </div>
+
+            {/* Résultats dépliés pour l'analyse sélectionnée dans ce groupe */}
+            {Array.isArray(analysesType) && analysesType.some(a => a.id === selectedAnalyse?.id) && (() => {
+              const analyse = analysesType.find(a => a.id === selectedAnalyse?.id);
+              const res = historiqueResultats.find(h => h.analyseId === analyse?.id)?.resultats;
+              if (!analyse || !res?.length) return null;
+              return (
+                <div className="px-4 pb-4 pt-0 border-t border-slate-200 dark:border-slate-700">
+                  <div className="pl-4 mt-3">
+                    <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Résultats</p>
+                    <ResultatsChart
+                      resultats={res}
+                      historique={historiqueResultats.filter(h => h.analyseId === analyse.id)}
+                    />
+                  </div>
+                </div>
+              );
+            })()}
           </motion.div>
         ))}
       </div>

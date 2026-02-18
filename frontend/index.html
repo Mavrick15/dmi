@@ -26,6 +26,18 @@
   <!-- Rocket Web Scripts supprimés pour éviter les erreurs CORS -->
   <!-- Ces scripts de tracking Rocket.new ne sont pas nécessaires et causent des erreurs CORS -->
   <!-- Si vous avez besoin de tracking, utilisez plutôt Google Analytics ou un autre service -->
+
+  <!-- Thème initial (jour/nuit ou préférence) pour éviter un flash avant le chargement de React -->
+  <script>
+    (function() {
+      var stored = localStorage.getItem('medical-theme') || 'auto';
+      var hour = new Date().getHours();
+      var isDay = hour >= 7 && hour < 20;
+      var dark = stored === 'dark' || (stored === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches) || (stored === 'auto' && !isDay);
+      document.documentElement.classList.add(dark ? 'dark' : 'light');
+      document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+    })();
+  </script>
 </head>
 
 <body class="bg-slate-50 dark:bg-slate-950">

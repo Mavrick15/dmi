@@ -74,7 +74,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3">
@@ -108,7 +108,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Les documents ne peuvent être partagés qu&apos;avec des médecins. Chaque médecin concerné sera notifié.</p>
 
           {/* Permission */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Niveau d'accès</p>
             <Select
               options={[
@@ -122,7 +122,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Médecins (sélection individuelle) */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
             <p className="text-sm font-bold text-slate-900 dark:text-white px-4 pt-4 pb-2">Médecins</p>
             <div className="max-h-44 overflow-y-auto px-4 pb-4">
               {users.length > 0 ? (
@@ -155,7 +155,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Rôles (docteurs uniquement) */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Partager avec un rôle</p>
             <div className="flex flex-wrap gap-2">
               {ROLES_DOCTEURS.map((role) => (
@@ -176,7 +176,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Expiration */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Expiration (optionnel)</p>
             <Input
               type="datetime-local"

@@ -8,7 +8,6 @@ import Modal from '../../../components/ui/Modal';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useResultatsMutations } from '../../../hooks/useResultats';
-import { Loader2 } from 'lucide-react';
 
 const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [] }) => {
   const { hasPermission } = usePermissions();
@@ -117,7 +116,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+        <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
           <Icon name="ClipboardCheck" size={20} className="text-white" />
         </div>
         <span className="text-base font-bold text-slate-900 dark:text-white">
@@ -126,7 +125,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
       </div>
     } size="lg" className="max-h-[85vh]">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-800 dark:to-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700 max-h-[50vh] overflow-y-auto">
+        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-200 dark:border-slate-700 max-h-[50vh] overflow-y-auto">
           <div className="space-y-3">
             {Array.isArray(resultats) && resultats.map((resultat, index) => (
               <motion.div
@@ -273,8 +272,8 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="animate-spin mr-2" size={14} />
-                    Enregistrement...
+                    <Icon name="Loader2" size={14} className="animate-spin mr-2" />
+                    Enregistrement…
                   </>
                 ) : (
                   'Enregistrer'

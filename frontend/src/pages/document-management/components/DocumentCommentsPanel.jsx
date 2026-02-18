@@ -58,8 +58,9 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
       {/* Comments List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
         {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+            <Icon name="Loader2" size={28} className="animate-spin text-primary mb-2" />
+            <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
           </div>
         ) : count > 0 ? (
           comments.map((comment) => {
@@ -69,7 +70,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
             return (
               <div
                 key={comment.id}
-                className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4"
+                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
@@ -92,7 +93,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
           }).filter(Boolean)
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
               <Icon name="MessageSquare" size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucun commentaire</p>
@@ -114,7 +115,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
               }
             }}
             placeholder="Ajouter un commentaire..."
-            className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-white text-sm resize-none placeholder:text-slate-400"
+            className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-white text-sm resize-none placeholder:text-slate-400"
             rows={3}
           />
           <PermissionGuard requiredPermission="document_comment">

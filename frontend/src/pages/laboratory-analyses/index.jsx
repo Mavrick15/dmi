@@ -8,7 +8,6 @@ import Button from '../../components/ui/Button';
 import PermissionGuard from '../../components/PermissionGuard';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useToast } from '../../contexts/ToastContext';
-import { Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAnalysesList, useAnalysesStats, useAnalysesMutations } from '../../hooks/useAnalyses';
 import api from '../../lib/axios';
@@ -22,8 +21,6 @@ import AnalysesFilters from './components/AnalysesFilters';
 // Composants lazy-loaded
 const AnalysesKanban = lazy(() => import('./components/AnalysesKanban'));
 const AnalysesAdvancedStats = lazy(() => import('./components/AnalysesAdvancedStats'));
-const CriticalAlerts = lazy(() => import('./components/CriticalAlerts'));
-const AnalysesReminders = lazy(() => import('./components/AnalysesReminders'));
 const AnalysesCalendar = lazy(() => import('./components/AnalysesCalendar'));
 const PrescribeAnalyseModal = lazy(() => import('./components/PrescribeAnalyseModal'));
 const AnalyseDetailsModal = lazy(() => import('./components/AnalyseDetailsModal'));
@@ -39,8 +36,6 @@ const LaboratoryAnalyses = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState(localStorage.getItem('analysesViewMode') || 'list'); // 'list', 'kanban' ou 'calendar'
   const [showAdvancedStats, setShowAdvancedStats] = useState(false);
-  const [showCriticalAlerts, setShowCriticalAlerts] = useState(false);
-  const [showReminders, setShowReminders] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [analyseToCancel, setAnalyseToCancel] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -170,77 +165,46 @@ const LaboratoryAnalyses = () => {
   // Mémoriser les filtres pour éviter les re-renders inutiles
   const memoizedFilters = useMemo(() => filters, [filters]);
 
-  // --- RENDER ---
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans flex flex-col">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans flex flex-col">
         <Header />
-        <div className="flex-1 flex flex-col items-center justify-center pt-20">
-          <Loader2 className="animate-spin text-primary" size={32} />
-          <p className="mt-4 text-slate-500 dark:text-slate-400">Chargement des analyses...</p>
+        <div className="flex-1 flex flex-col items-center justify-center pt-24 px-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 border-l-4 border-l-primary p-12 flex flex-col items-center justify-center gap-4">
+            <Icon name="Loader2" size={36} className="animate-spin text-primary" />
+            <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses…</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 font-sans relative overflow-hidden">
-      {/* Effets de fond décoratifs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl"></div>
-      </div>
-      
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Helmet>
         <title>Analyses - MediCore</title>
         <meta name="description" content="Gestion des analyses et résultats de laboratoire." />
       </Helmet>
-
       <Header />
-      
-      <main className="relative z-10 pt-28 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-16">
-        <div className="space-y-10">
-          {/* En-tête */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 md:gap-6 bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-xl border border-slate-200/50 dark:border-slate-800/50"
-          >
-            <div className="flex items-center gap-4 md:gap-6">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-              >
-                <Icon name="Activity" size={24} />
-              </motion.div>
+
+      <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+                <Icon name="TestTube" size={22} />
+              </div>
               <div>
-                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
-                  Analyses
-                </h1>
-                <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
-                  Gestion des prescriptions et résultats
-                </p>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Analyses laboratoire</h1>
+                <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Prescriptions et résultats</p>
               </div>
             </div>
-
             <PermissionGuard requiredPermission="analyses_create">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="primary"
-                  iconName="FilePlus"
-                  onClick={handlePrescribe}
-                  disabled={!hasPermission('analyses_create')}
-                >
-                  Analyse
-                </Button>
-              </motion.div>
+              <Button variant="primary" size="sm" iconName="TestTube" className="rounded-xl" onClick={handlePrescribe} disabled={!hasPermission('analyses_create')} title="Prescrire une analyse">
+                Nouvelle analyse
+              </Button>
             </PermissionGuard>
-          </motion.div>
+          </div>
 
           {/* Statistiques */}
           <div className="space-y-4">
@@ -248,54 +212,10 @@ const LaboratoryAnalyses = () => {
               <>
                 <AnalysesStats stats={stats} />
                 <div className="flex justify-between items-center gap-2">
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      iconName={showReminders ? "ChevronUp" : "ChevronDown"}
-                      onClick={() => setShowReminders(!showReminders)}
-                      className="text-xs"
-                    >
-                      {showReminders ? 'Masquer' : 'Afficher'} rappels
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      iconName={showCriticalAlerts ? "ChevronUp" : "ChevronDown"}
-                      onClick={() => setShowCriticalAlerts(!showCriticalAlerts)}
-                      className="text-xs"
-                    >
-                      {showCriticalAlerts ? 'Masquer' : 'Afficher'} alertes
-                    </Button>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    iconName={showAdvancedStats ? "ChevronUp" : "ChevronDown"}
-                    onClick={() => setShowAdvancedStats(!showAdvancedStats)}
-                    className="text-xs"
-                  >
-                    {showAdvancedStats ? 'Masquer' : 'Afficher'} statistiques
-                  </Button>
+                  <Button variant="ghost" size="sm" className="rounded-xl text-xs" iconName={showAdvancedStats ? "ChevronUp" : "ChevronDown"} onClick={() => setShowAdvancedStats(!showAdvancedStats)}>
+                  {showAdvancedStats ? 'Masquer' : 'Afficher'} statistiques
+                </Button>
                 </div>
-                {showReminders && (
-                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Icon name="Bell" size={20} className="text-amber-500" />
-                      Rappels Automatiques
-                    </h3>
-                    <AnalysesReminders />
-                  </div>
-                )}
-                {showCriticalAlerts && (
-                  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Icon name="AlertCircle" size={20} className="text-rose-500" />
-                      Alertes Critiques
-                    </h3>
-                    <CriticalAlerts />
-                  </div>
-                )}
                 {showAdvancedStats && (
                   <AnalysesAdvancedStats analyses={memoizedAnalyses} stats={stats} />
                 )}
@@ -309,9 +229,8 @@ const LaboratoryAnalyses = () => {
             onFiltersChange={handleFiltersChange}
           />
 
-          {/* Toggle View Mode */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
               <button
                 onClick={() => {
                   setViewMode('list');
@@ -370,8 +289,9 @@ const LaboratoryAnalyses = () => {
             />
           ) : viewMode === 'kanban' ? (
             <Suspense fallback={
-              <div className="flex justify-center items-center py-20">
-                <Loader2 className="animate-spin text-primary" size={32} />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+                <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du kanban…</span>
               </div>
             }>
               <AnalysesKanban
@@ -384,8 +304,9 @@ const LaboratoryAnalyses = () => {
             </Suspense>
           ) : (
             <Suspense fallback={
-              <div className="flex justify-center items-center py-20">
-                <Loader2 className="animate-spin text-primary" size={32} />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+                <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du calendrier…</span>
               </div>
             }>
               <AnalysesCalendar />

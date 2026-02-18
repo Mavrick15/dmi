@@ -1,91 +1,48 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 
 const AnalysesStats = ({ stats }) => {
   if (!stats) return null;
 
+  const themeStyles = {
+    blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', icon: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' },
+    indigo: { bg: 'bg-indigo-50 dark:bg-indigo-900/20', border: 'border-indigo-200 dark:border-indigo-800', icon: 'bg-indigo-500/20 text-indigo-600 dark:text-indigo-400' },
+    emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
+    amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', icon: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' }
+  };
+
   const statCards = [
-    {
-      id: 'total',
-      title: 'Total analyses',
-      value: stats.total || 0,
-      icon: 'TestTube',
-      color: 'from-blue-500 to-blue-600',
-      trend: null
-    },
-    {
-      id: 'prescrite',
-      title: 'Prescrites',
-      value: stats.parStatut?.find(s => s.statut === 'prescrite')?.count || 0,
-      icon: 'FileText',
-      color: 'from-indigo-500 to-indigo-600',
-      trend: null
-    },
-    {
-      id: 'terminee',
-      title: 'Terminées',
-      value: stats.parStatut?.find(s => s.statut === 'terminee')?.count || 0,
-      icon: 'CheckCircle',
-      color: 'from-emerald-500 to-emerald-600',
-      trend: null
-    },
-    {
-      id: 'en_cours',
-      title: 'En cours',
-      value: stats.parStatut?.find(s => s.statut === 'en_cours')?.count || 0,
-      icon: 'Clock',
-      color: 'from-amber-500 to-amber-600',
-      trend: null
-    }
+    { id: 'total', title: 'Total analyses', value: stats.total || 0, icon: 'TestTube', theme: 'blue' },
+    { id: 'prescrite', title: 'Prescrites', value: stats.parStatut?.find(s => s.statut === 'prescrite')?.count || 0, icon: 'FileText', theme: 'indigo' },
+    { id: 'terminee', title: 'Terminées', value: stats.parStatut?.find(s => s.statut === 'terminee')?.count || 0, icon: 'CheckCircle', theme: 'emerald' },
+    { id: 'en_cours', title: 'En cours', value: stats.parStatut?.find(s => s.statut === 'en_cours')?.count || 0, icon: 'Clock', theme: 'amber' }
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      {statCards.map((card, idx) => (
-        <motion.div
-          key={card.id}
-          initial={{ opacity: 0, y: 30, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: idx * 0.1, type: "spring", stiffness: 100 }}
-          whileHover={{ y: -8, scale: 1.02 }}
-          className="relative overflow-hidden bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-200/50 dark:border-slate-800/50 group"
-        >
-          {/* Gradient background effect */}
-          <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-          
-          {/* Decorative circles */}
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-full opacity-20 group-hover:opacity-30 transition-opacity"></div>
-          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-full opacity-10 group-hover:opacity-20 transition-opacity"></div>
-          
-          <div className="relative flex items-center justify-between">
-            <div className="flex-1 z-10">
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                {card.title}
-              </p>
-              <p className="text-4xl font-black text-slate-900 dark:text-white mb-2 bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                {card.value.toLocaleString('fr-FR')}
-              </p>
-              {card.trend !== null && (
-                <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${card.trend >= 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
-                  <span>{card.trend >= 0 ? '↑' : '↓'}</span>
-                  <span>{Math.abs(card.trend)}%</span>
-                </div>
-              )}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      {statCards.map((card) => {
+        const style = themeStyles[card.theme] || themeStyles.blue;
+        return (
+          <div
+            key={card.id}
+            className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+          >
+            <div className="flex items-center justify-between gap-3 mb-2">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.icon}`}>
+                <Icon name={card.icon} size={20} />
+              </div>
             </div>
-            <motion.div
-              whileHover={{ rotate: 10, scale: 1.1 }}
-              className={`relative w-16 h-16 bg-gradient-to-br ${card.color} rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 z-10`}
-            >
-              <div className="absolute inset-0 bg-white/20 rounded-2xl"></div>
-              <Icon name={card.icon} size={32} className="text-white relative z-10" />
-            </motion.div>
+            <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
+              {card.value.toLocaleString('fr-FR')}
+            </p>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              {card.title}
+            </p>
           </div>
-        </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 };
 
 export default React.memo(AnalysesStats);
-

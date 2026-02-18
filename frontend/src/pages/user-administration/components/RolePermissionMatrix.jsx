@@ -7,7 +7,6 @@ import { usePermissions } from '../../../hooks/usePermissions';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { usePermissionMutations } from '../../../hooks/useAdmin';
 import { useToast } from '../../../contexts/ToastContext';
-import { Loader2 } from 'lucide-react';
 import api from '../../../lib/axios';
 
 const RolePermissionMatrix = ({ onSave, onCancel }) => {
@@ -249,7 +248,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
   const hasChanges = JSON.stringify((Array.isArray(permissions) ? permissions : []).sort()) !== JSON.stringify((Array.isArray(initialPermissions) ? initialPermissions : []).sort());
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[880px] animate-fade-in">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[880px] animate-fade-in">
       
       {/* Sidebar Roles */}
       <div className="w-full md:w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col">
@@ -336,9 +335,9 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
           {loadingPermissions ? (
-            <div className="flex flex-col items-center justify-center h-64">
-              <Loader2 className="animate-spin text-primary mb-4" size={32} />
-              <p className="text-sm text-slate-500">Chargement des permissions...</p>
+            <div className="flex flex-col items-center justify-center h-64 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+              <Icon name="Loader2" size={32} className="animate-spin text-primary mb-4" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Chargement des permissions…</p>
             </div>
           ) : permissionCategories.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64">

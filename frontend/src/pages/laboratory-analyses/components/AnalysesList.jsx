@@ -5,9 +5,7 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
-import EmptyState from '../../../components/ui/EmptyState';
 import AnalyseQRCode from './AnalyseQRCode';
-import { Loader2 } from 'lucide-react';
 
 const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDelete, onPageChange }) => {
   const { hasPermission } = usePermissions();
@@ -72,27 +70,30 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+        <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses…</span>
       </div>
     );
   }
 
   if (!Array.isArray(analyses) || analyses.length === 0) {
     return (
-      <EmptyState
-        icon="TestTube"
-        title="Aucune analyse"
-        description="Aucune analyse trouvée avec les filtres sélectionnés."
-      />
+      <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+          <Icon name="TestTube" size={28} className="text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune analyse</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Modifiez les filtres ou prescrivez une analyse.</p>
+      </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl md:rounded-3xl shadow-xl overflow-hidden backdrop-blur-sm">
-      <div className="overflow-x-auto -mx-2 md:mx-0">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gradient-to-r from-slate-50 via-blue-50/50 to-indigo-50/50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 border-b-2 border-slate-200 dark:border-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
             <tr>
               <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 N°
@@ -136,12 +137,12 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                     x: 6,
                     boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
                   }}
-                  className="hover:bg-gradient-to-r hover:from-blue-50/60 hover:via-indigo-50/40 hover:to-purple-50/40 dark:hover:from-slate-800/90 dark:hover:via-slate-800/70 dark:hover:to-slate-800/90 transition-all duration-300 border-b border-slate-100 dark:border-slate-800/50 group cursor-pointer"
+                  className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800 group cursor-pointer"
                 >
                   <td className="px-6 py-5 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-                        <Icon name={getTypeIcon(analyse.typeAnalyse)} size={18} className="text-white" />
+                      <div className="w-10 h-10 bg-primary/20 text-primary rounded-xl flex items-center justify-center border border-primary/20">
+                        <Icon name={getTypeIcon(analyse.typeAnalyse)} size={18} />
                       </div>
                       <span className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg" title={`Numéro d'analyse: ${analyse.numeroAnalyse}`}>
                         {analyse.numeroAnalyse}
@@ -150,7 +151,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-md">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold border border-emerald-200 dark:border-emerald-800">
                         {analyse.patient?.name && typeof analyse.patient.name === 'string' ? analyse.patient.name.charAt(0).toUpperCase() : 'P'}
                       </div>
                       <div>
@@ -266,20 +267,14 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
 
       {/* Pagination */}
       {meta && meta.total > 0 && (
-        <div className="px-6 py-5 border-t-2 border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-slate-900 dark:to-slate-800">
+        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-slate-700 dark:text-slate-300 font-medium">
-              Affichage de <span className="font-bold text-blue-600 dark:text-blue-400">{meta.from || 0}</span> à <span className="font-bold text-blue-600 dark:text-blue-400">{meta.to || 0}</span> sur <span className="font-bold text-indigo-600 dark:text-indigo-400">{meta.total || 0}</span> analyses
+            <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+              {meta.from || 0}-{meta.to || 0} sur {meta.total || 0}
             </div>
             {meta.lastPage > 1 && (
               <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconName="ChevronLeft"
-                  onClick={() => onPageChange && onPageChange(meta.currentPage - 1)}
-                  disabled={meta.currentPage === 1}
-                >
+                <Button variant="ghost" size="sm" className="rounded-xl" iconName="ChevronLeft" onClick={() => onPageChange?.(meta.currentPage - 1)} disabled={meta.currentPage === 1}>
                   Précédent
                 </Button>
                 <div className="flex items-center gap-1">
@@ -300,20 +295,14 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                         variant={meta.currentPage === pageNum ? "primary" : "ghost"}
                         size="sm"
                         onClick={() => onPageChange && onPageChange(pageNum)}
-                        className="min-w-[40px]"
+                        className="min-w-[40px] rounded-xl"
                       >
                         {pageNum}
                       </Button>
                     );
                   })}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconName="ChevronRight"
-                  onClick={() => onPageChange && onPageChange(meta.currentPage + 1)}
-                  disabled={meta.currentPage === meta.lastPage}
-                >
+                <Button variant="ghost" size="sm" className="rounded-xl" iconName="ChevronRight" onClick={() => onPageChange?.(meta.currentPage + 1)} disabled={meta.currentPage === meta.lastPage}>
                   Suivant
                 </Button>
               </div>

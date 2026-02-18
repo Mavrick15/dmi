@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
@@ -6,7 +6,6 @@ import AppointmentDetailsModal from './AppointmentDetailsModal';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
-import { X } from 'lucide-react';
 
 const STORAGE_KEY = 'hidden_appointments';
 
@@ -40,17 +39,17 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
   const getStatusStyle = (status) => {
     switch (status) {
       case 'confirmed':
-        return { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', label: 'Confirmé' };
+        return { accent: 'bg-emerald-500', card: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800', label: 'Confirmé' };
       case 'pending':
-        return { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-700 dark:text-amber-400', label: 'En attente' };
+        return { accent: 'bg-amber-500', card: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800', label: 'En attente' };
       case 'consulted':
-        return { bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', label: 'Consulter' };
+        return { accent: 'bg-blue-500', card: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800', label: 'En cours' };
       case 'cancelled':
-        return { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-700 dark:text-rose-400', label: 'Annulé' };
+        return { accent: 'bg-rose-500', card: 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800', label: 'Annulé' };
       case 'completed':
-        return { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-600 dark:text-slate-400', label: 'Terminé' };
+        return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700', label: 'Terminé' };
       default:
-        return { bg: 'bg-slate-50 dark:bg-slate-800', text: 'text-slate-500 dark:text-slate-400', label: status };
+        return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700', label: status };
     }
   };
 
@@ -79,67 +78,54 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
               const style = getStatusStyle(appointment?.status);
               
               return (
-                <motion.div 
-                  key={appointment?.id} 
+                <motion.div
+                  key={appointment?.id}
                   onClick={() => {
                     setSelectedAppointment(appointment);
                     setIsModalOpen(true);
                   }}
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  className="w-full flex items-start gap-3 p-3 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/5 border border-primary/20 dark:border-primary/30 shadow-sm hover:shadow-md transition-all cursor-pointer relative group"
-                  initial={{ opacity: 0, x: -10 }}
+                  className={`w-full flex items-start gap-3 p-3 rounded-xl border ${style.card} hover:shadow-md transition-all cursor-pointer relative group`}
+                  initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0 }}
                 >
-                  {/* Heure */}
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="p-2 rounded-lg bg-gradient-to-br from-primary to-blue-600 text-white flex-shrink-0 shadow-sm"
-                  >
-                    <Icon name="Clock" size={16} />
-                  </motion.div>
-
-                  {/* Détails */}
+                  <div className={`w-1 rounded-full self-stretch min-h-[2.5rem] shrink-0 ${style.accent}`} />
+                  <div className="p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 flex-shrink-0">
+                    <Icon name="Clock" size={16} className="text-slate-600 dark:text-slate-400" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
                       {appointment?.patient?.name}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-primary/70 dark:text-primary/60 font-medium">
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">
                         {appointment?.time}
                       </span>
                       {appointment?.type && (
                         <>
-                          <span className="text-[10px] text-primary/40 dark:text-primary/50">•</span>
-                          <span className="text-xs text-primary/60 dark:text-primary/50">
-                            {appointment?.type}
-                          </span>
+                          <span className="text-[10px] text-slate-400">•</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">{appointment?.type}</span>
                         </>
                       )}
                       {appointment?.room && (
                         <>
-                          <span className="text-[10px] text-primary/40 dark:text-primary/50">•</span>
-                          <span className="text-xs text-primary/60 dark:text-primary/50">
-                            Salle {appointment.room}
-                          </span>
+                          <span className="text-[10px] text-slate-400">•</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">Salle {appointment.room}</span>
                         </>
                       )}
                     </div>
                   </div>
-                  
-                  {/* Badge Statut */}
-                  <div className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide flex-shrink-0 ${style.bg} ${style.text}`}>
+                  <span className="text-[10px] font-bold uppercase tracking-wide flex-shrink-0 text-slate-600 dark:text-slate-400">
                     {style.label}
-                  </div>
-
-                  {/* Bouton de suppression pour les rendez-vous consultés */}
+                  </span>
                   {appointment?.status === 'consulted' && (
                     <button
+                      type="button"
                       onClick={(e) => handleRemoveAppointment(e, appointment.id)}
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 p-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Retirer de l'agenda"
                     >
-                      <X size={14} />
+                      <Icon name="X" size={14} />
                     </button>
                   )}
                 </motion.div>
@@ -147,21 +133,14 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
             }).filter(Boolean)}
           </div>
         ) : (
-          // État Vide
-          <div className="h-full flex flex-col items-center justify-center text-center py-12 text-slate-400 dark:text-slate-500">
-            <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
-              <Icon name="CalendarOff" size={24} className="opacity-50" />
+          <div className="flex flex-col items-center justify-center text-center py-10">
+            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+              <Icon name="CalendarOff" size={24} className="text-slate-400 dark:text-slate-500" />
             </div>
-            <p className="text-sm">Aucun rendez-vous aujourd'hui</p>
-            <p className="text-xs mt-1">Profitez-en pour mettre à jour vos dossiers.</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun rendez-vous aujourd'hui</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Profitez-en pour mettre à jour vos dossiers.</p>
             <PermissionGuard requiredPermission="appointment_create">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-4 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                onClick={onAddAppointment}
-                disabled={!hasPermission('appointment_create')}
-              >
+              <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={onAddAppointment} disabled={!hasPermission('appointment_create')}>
                 Ajouter un RDV
               </Button>
             </PermissionGuard>

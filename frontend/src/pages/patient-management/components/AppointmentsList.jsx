@@ -95,29 +95,40 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'urgente':
-        return 'error';
-      case 'elevee':
-        return 'warning';
-      case 'faible':
-        return 'info';
-      default:
-        return 'default';
+      case 'urgente': return 'error';
+      case 'elevee': return 'warning';
+      case 'faible': return 'info';
+      default: return 'default';
     }
+  };
+
+  const getPriorityLabel = (priority) => {
+    const map = { urgente: 'Urgente', elevee: 'Haute', faible: 'Basse', normale: 'Normale' };
+    return map[priority] || priority;
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'en_cours':
-        return 'success';
-      case 'programme':
-        return 'info';
-      case 'annule':
-        return 'error';
-      case 'termine':
-        return 'default';
-      default:
-        return 'default';
+      case 'en_cours': return 'success';
+      case 'programme': return 'info';
+      case 'annule': return 'error';
+      case 'termine': return 'default';
+      default: return 'default';
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    const map = { programme: 'Programmé', en_cours: 'En cours', termine: 'Terminé', annule: 'Annulé' };
+    return map[status] || status;
+  };
+
+  const getStatusAccent = (status) => {
+    switch (status) {
+      case 'en_cours': return 'bg-emerald-500';
+      case 'programme': return 'bg-blue-500';
+      case 'termine': return 'bg-slate-400 dark:bg-slate-500';
+      case 'annule': return 'bg-rose-500';
+      default: return 'bg-slate-300 dark:bg-slate-600';
     }
   };
 
@@ -130,41 +141,62 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
     });
   };
 
+  const formatDateShort = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('fr-FR', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short'
+    });
+  };
+
   if (loadingAppointments) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+        <Loader2 className="animate-spin text-primary" size={36} />
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des rendez-vous...</p>
       </div>
     );
   }
 
+  const count = Array.isArray(appointments) ? appointments.length : 0;
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === todayStr;
+
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-            <Icon name="Calendar" size={20} className="text-white" />
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
+            <Icon name="Calendar" size={22} className="text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Rendez-vous</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Gestion des rendez-vous du patient</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Rendez-vous</h3>
+              {count > 0 && (
+                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/15 dark:bg-primary/25 text-primary">
+                  {count} {count === 1 ? 'RDV' : 'RDV'}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              {isToday ? "Aujourd'hui" : formatDate(selectedDate)}
+            </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative">
-            <Input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-48"
-            />
-          </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-44 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl"
+          />
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setSelectedDate(new Date().toISOString().split('T')[0])}
-            className="border border-slate-200 dark:border-slate-700"
+            onClick={() => setSelectedDate(todayStr)}
+            className={`rounded-xl border ${isToday ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20' : 'border-slate-200 dark:border-slate-700'}`}
           >
             <Icon name="Calendar" size={14} className="mr-1.5" />
             Aujourd'hui
@@ -175,7 +207,7 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
               iconName="Plus"
               disabled={!patient || !hasPermission('appointment_create')}
               size="sm"
-              className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-lg shadow-primary/20"
+              className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
             >
               Nouveau RDV
             </Button>
@@ -186,15 +218,15 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
       {/* Content */}
       <div className="w-full">
         {appointments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6 border border-slate-200 dark:border-slate-700">
-              <Icon name="CalendarX" size={32} className="text-slate-400 dark:text-slate-500" />
+          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+              <Icon name="CalendarX" size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
               Aucun rendez-vous
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6">
-              Aucun rendez-vous trouvé pour le {formatDate(selectedDate)}.
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-5">
+              {formatDate(selectedDate)} — créez un rendez-vous pour ce patient.
             </p>
             <PermissionGuard requiredPermission="appointment_create">
               {patient && (
@@ -203,7 +235,8 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
                   variant="outline"
                   size="sm"
                   disabled={!hasPermission('appointment_create')}
-                  className="mt-4"
+                  iconName="Plus"
+                  className="rounded-xl"
                 >
                   Créer un rendez-vous
                 </Button>
@@ -211,102 +244,104 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
             </PermissionGuard>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Array.isArray(appointments) && appointments.map((appointment, idx) => (
               <motion.div
                 key={appointment.id}
-                initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: idx * 0.05, duration: 0.3 }}
-                whileHover={{ y: -4, scale: 1.01 }}
-                className="group relative bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 hover:shadow-xl hover:shadow-primary/5 dark:hover:shadow-primary/10 transition-all cursor-pointer overflow-hidden"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.04, duration: 0.25 }}
+                className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer"
                 onClick={() => onSelectAppointment && onSelectAppointment(appointment)}
               >
-                {/* Gradient overlay au hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:via-primary/3 group-hover:to-primary/0 transition-all duration-500 pointer-events-none rounded-2xl" />
-                
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3 flex-wrap">
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
-                          <Icon name="Clock" size={20} className="text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-xl text-slate-900 dark:text-white group-hover:text-primary transition-colors">
-                            {appointment.time} - {appointment.type}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-2 flex-wrap">
-                            <Badge variant={getPriorityColor(appointment.priority)} size="sm" className="shadow-sm">
-                              <Icon name={appointment.priority === 'urgente' ? 'AlertTriangle' : 'Info'} size={12} className="mr-1" />
-                              {appointment.priority}
-                            </Badge>
-                            <Badge variant={getStatusColor(appointment.status)} size="sm" className="shadow-sm">
-                              {appointment.status === 'programme' && <Icon name="Clock" size={12} className="mr-1" />}
-                              {appointment.status === 'en_cours' && <Icon name="CheckCircle" size={12} className="mr-1" />}
-                              {appointment.status === 'termine' && <Icon name="Check" size={12} className="mr-1" />}
-                              {appointment.status === 'annule' && <Icon name="X" size={12} className="mr-1" />}
-                              {appointment.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400 ml-16">
-                        <div className="flex items-center gap-2">
-                          <Icon name="User" size={14} className="text-slate-400" />
-                          <span className="font-semibold">Patient:</span> {appointment.patientName}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Icon name="UserCheck" size={14} className="text-slate-400" />
-                          <span className="font-semibold">Médecin:</span> {appointment.medecinName}
-                        </div>
-                        {appointment.notes && (
-                          <div className="mt-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                            <p className="text-slate-500 dark:text-slate-400 italic text-xs">
-                              {appointment.notes}
-                            </p>
-                          </div>
-                        )}
-                      </div>
+                {/* Barre d'accent par statut */}
+                <div className={`absolute left-0 top-0 bottom-0 w-1 shrink-0 ${getStatusAccent(appointment.status)}`} />
+
+                <div className="flex-1 min-w-0 pl-4 pr-4 py-4 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+                  {/* Heure + type */}
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="shrink-0 w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-700/50 flex items-center justify-center">
+                      <Icon name="Clock" size={18} className="text-primary" />
                     </div>
-                    <div className="flex flex-col gap-2 ml-4">
-                      {appointment.status === 'programme' && (
-                        <PermissionGuard requiredPermission="appointment_edit">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(appointment.id, 'en_cours');
-                            }}
-                            disabled={!hasPermission('appointment_edit')}
-                            className="border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                          >
-                            <Icon name="CheckCircle" size={14} className="mr-1.5" />
-                            Confirmer
-                          </Button>
-                        </PermissionGuard>
-                      )}
-                      {appointment.status !== 'annule' && appointment.status !== 'termine' && (
-                        <PermissionGuard requiredPermission="appointment_edit">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusChange(appointment.id, 'annule');
-                            }}
-                            disabled={!hasPermission('appointment_edit')}
-                            className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
-                          >
-                            <Icon name="X" size={14} className="mr-1.5" />
-                            Annuler
-                          </Button>
-                        </PermissionGuard>
-                      )}
+                    <div className="min-w-0">
+                      <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
+                        {appointment.time}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {appointment.type}
+                      </p>
                     </div>
                   </div>
+
+                  {/* Médecin + date si dispo */}
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 shrink-0">
+                    <Icon name="UserCheck" size={14} className="text-slate-400" />
+                    <span className="truncate max-w-[140px] sm:max-w-[180px]">{appointment.medecinName || '—'}</span>
+                  </div>
+
+                  {/* Badges priorité + statut */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge variant={getPriorityColor(appointment.priority)} size="sm" className="text-xs">
+                      {getPriorityLabel(appointment.priority)}
+                    </Badge>
+                    <Badge variant={getStatusColor(appointment.status)} size="sm" className="text-xs">
+                      {appointment.status === 'programme' && <Icon name="Clock" size={10} className="mr-1" />}
+                      {appointment.status === 'en_cours' && <Icon name="Play" size={10} className="mr-1" />}
+                      {appointment.status === 'termine' && <Icon name="Check" size={10} className="mr-1" />}
+                      {appointment.status === 'annule' && <Icon name="X" size={10} className="mr-1" />}
+                      {getStatusLabel(appointment.status)}
+                    </Badge>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-2 sm:ml-auto" onClick={(e) => e.stopPropagation()}>
+                    {appointment.status === 'programme' && (
+                      <PermissionGuard requiredPermission="appointment_edit">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(appointment.id, 'en_cours');
+                          }}
+                          disabled={!hasPermission('appointment_edit')}
+                          className="shrink-0 border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg"
+                        >
+                          <Icon name="CheckCircle" size={14} className="mr-1" />
+                          Démarrer
+                        </Button>
+                      </PermissionGuard>
+                    )}
+                    {appointment.status !== 'annule' && appointment.status !== 'termine' && (
+                      <PermissionGuard requiredPermission="appointment_edit">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusChange(appointment.id, 'annule');
+                          }}
+                          disabled={!hasPermission('appointment_edit')}
+                          className="shrink-0 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg"
+                        >
+                          <Icon name="X" size={14} className="mr-1" />
+                          Annuler
+                        </Button>
+                      </PermissionGuard>
+                    )}
+                  </div>
                 </div>
+
+                {/* Notes (repliable ou une ligne) */}
+                {appointment.notes && (
+                  <div className="px-4 pb-4 pt-0">
+                    <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700">
+                      <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                        {appointment.notes}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>

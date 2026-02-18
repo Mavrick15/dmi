@@ -57,7 +57,7 @@ const AllTransactionsModal = ({ isOpen, onClose, transactions = [] }) => {
                 <th className="text-center py-3 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
               {transactions.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center">

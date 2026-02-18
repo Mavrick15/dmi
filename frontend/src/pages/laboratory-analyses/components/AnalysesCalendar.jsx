@@ -7,7 +7,6 @@ import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import { useAnalysesList } from '../../../hooks/useAnalyses';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
 
 const AnalysesCalendar = () => {
   const navigate = useNavigate();
@@ -95,8 +94,9 @@ const AnalysesCalendar = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+        <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+        <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du calendrier…</span>
       </div>
     );
   }

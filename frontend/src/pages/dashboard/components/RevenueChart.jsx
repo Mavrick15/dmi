@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts';
-import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 
@@ -38,11 +37,7 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
       const change = previousValue ? ((value - previousValue) / previousValue) * 100 : null;
       
       return (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-2xl backdrop-blur-sm"
-        >
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-xl">
           <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">
             {label}
           </p>
@@ -65,7 +60,7 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
               Précédent: {formatCurrency(previousValue)}
             </p>
           )}
-        </motion.div>
+        </div>
       );
     }
     return null;
@@ -81,15 +76,13 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
 
   if (!dataArray || dataArray.length === 0) {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 bg-gradient-to-br from-slate-50 to-slate-100/50 dark:from-slate-900/50 dark:to-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800"
-      >
-        <Icon name="BarChart3" size={40} className="mb-3 opacity-50" />
-        <p className="text-sm font-medium">Aucune donnée financière disponible</p>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Les données apparaîtront ici une fois disponibles</p>
-      </motion.div>
+      <div className="h-full flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-8">
+        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+          <Icon name="BarChart3" size={28} className="text-slate-400 dark:text-slate-500" />
+        </div>
+        <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune donnée financière</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Les revenus apparaîtront ici une fois disponibles.</p>
+      </div>
     );
   }
 

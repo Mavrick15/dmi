@@ -48,7 +48,7 @@ const DocumentTagsModal = ({ document, isOpen, onClose }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -75,7 +75,7 @@ const DocumentTagsModal = ({ document, isOpen, onClose }) => {
         {/* Content */}
         <div className="p-6 space-y-5 flex-1 min-h-0">
           {/* Tags actuels */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Tags actuels</p>
             {tags.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -108,7 +108,7 @@ const DocumentTagsModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Ajouter un tag */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 shadow-sm">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Ajouter un tag</p>
             <div className="flex gap-2">
               <Input
@@ -138,7 +138,7 @@ const DocumentTagsModal = ({ document, isOpen, onClose }) => {
 
           {/* Tags suggérés */}
           {suggestedFiltered.length > 0 && (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
               <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Tags suggérés</p>
               <div className="flex flex-wrap gap-2">
                 {suggestedFiltered.map((tag, idx) => (

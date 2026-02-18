@@ -63,7 +63,7 @@ const ExportData = () => {
             key={option.id}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 hover:shadow-lg transition-all"
+            className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition-all"
           >
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-xl bg-primary/10 text-primary">

@@ -185,58 +185,45 @@ const Dashboard = () => {
       
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         
-        {/* En-tête (Toujours visible pour éviter le layout shift) */}
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8"
-        >
-          <div className="flex items-center gap-4">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-            >
-              <Icon name="LayoutDashboard" size={24} />
-            </motion.div>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+              <Icon name="LayoutDashboard" size={22} />
+            </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
-                Tableau de bord
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Tableau de bord</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                 {getWelcomeMessage(user?.role, user?.nomComplet)}
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <PermissionGuard requiredPermission="audit_view">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                  variant="outline" 
-                  iconName="Download" 
-                  className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-primary/30"
-                  onClick={() => exportPatients.mutateAsync({})}
-                  disabled={exportPatients.isPending || !hasPermission('audit_view')}
-                >
-                  {exportPatients.isPending ? 'Export...' : 'Rapport'}
-                </Button>
-              </motion.div>
+              <Button
+                variant="outline"
+                size="sm"
+                iconName="Download"
+                className="rounded-xl"
+                onClick={() => exportPatients.mutateAsync({})}
+                disabled={exportPatients.isPending || !hasPermission('audit_view')}
+              >
+                {exportPatients.isPending ? 'Export…' : 'Rapport'}
+              </Button>
             </PermissionGuard>
             <PermissionGuard requiredPermission="appointment_create">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button 
-                  variant="primary" 
-                  iconName="Plus" 
-                  onClick={() => navigate('/gestion-patients?action=rdv')} 
-                  className="shadow-lg shadow-primary/20 font-semibold"
-                  disabled={!hasPermission('appointment_create')}
-                >
-                  Rendez-vous
-                </Button>
-              </motion.div>
+              <Button
+                variant="primary"
+                size="sm"
+                iconName="Plus"
+                className="rounded-xl"
+                onClick={() => navigate('/gestion-patients?action=rdv')}
+                disabled={!hasPermission('appointment_create')}
+              >
+                Rendez-vous
+              </Button>
             </PermissionGuard>
           </div>
-        </motion.div>
+        </div>
 
         {/* Zone de Contenu Dynamique */}
         <AnimatePresence mode="wait">
@@ -248,19 +235,19 @@ const Dashboard = () => {
 
           {/* CAS 2 : Animation finie (ou déjà vue), mais données en cours de chargement */}
           {isAnimationDone && !isDataReady && (
-             <motion.div 
-                key="loader-simple"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center py-32 space-y-4"
-             >
-                <div className="relative">
-                  <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Icon name="Loader2" size={24} className="text-primary" />
-                  </div>
-                </div>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Mise à jour des données...</p>
-             </motion.div>
+            <motion.div
+              key="loader-simple"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden flex"
+            >
+              <div className="w-1.5 shrink-0 bg-primary self-stretch" />
+              <div className="flex-1 p-12 flex flex-col items-center justify-center gap-4">
+                <Icon name="Loader2" size={36} className="animate-spin text-primary" />
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Mise à jour des données…</p>
+              </div>
+            </motion.div>
           )}
 
           {/* CAS 3 : Tout est prêt */}
@@ -276,8 +263,8 @@ const Dashboard = () => {
               <div className="space-y-6">
                 {/* Section Patients & Consultations */}
                 <div>
-                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 ml-1">
-                    Patients & Consultations
+                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
+                    Patients & consultations
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <motion.div variants={itemVariants}>
@@ -325,8 +312,8 @@ const Dashboard = () => {
 
                 {/* Section Analyses Médicales */}
                 <div>
-                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 ml-1">
-                    Analyses Médicales
+                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
+                    Analyses médicales
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <motion.div variants={itemVariants}>
@@ -364,8 +351,8 @@ const Dashboard = () => {
 
                 {/* Section Finance & Alertes */}
                 <div>
-                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 ml-1">
-                    Finance & Alertes
+                  <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
+                    Finance & alertes
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                     <motion.div variants={itemVariants}>
@@ -394,24 +381,23 @@ const Dashboard = () => {
 
               {/* Section Accès Rapide */}
               <motion.div variants={itemVariants}>
-                <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4 ml-1">Accès Rapide</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">Accès rapide</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   {Array.isArray(quickActions) && quickActions.map((action, idx) => {
                     if (!action || typeof action !== 'object') return null;
                     return (
-                    <motion.button 
-                      key={idx}
-                      whileHover={{ scale: 1.02, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => navigate(action.route)}
-                      className="group flex flex-col items-start p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-primary/30 dark:hover:border-primary/30 transition-all duration-200 text-left"
-                    >
-                      <div className={`p-3 rounded-xl mb-3 ${action.color}`}>
-                        <Icon name={action.icon} size={24} />
-                      </div>
-                      <span className="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{action.title}</span>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">{action.subtitle}</span>
-                    </motion.button>
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => navigate(action.route)}
+                        className="group flex flex-col items-start p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left"
+                      >
+                        <div className={`p-2.5 rounded-xl mb-2 ${action.color}`}>
+                          <Icon name={action.icon} size={22} />
+                        </div>
+                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors text-sm">{action.title}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">{action.subtitle}</span>
+                      </button>
                     );
                   }).filter(Boolean)}
                 </div>
@@ -422,14 +408,11 @@ const Dashboard = () => {
                 <div className="xl:col-span-2 space-y-8">
                   {/* Graphique de revenus */}
                   <motion.div variants={itemVariants}>
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-                      <div className="flex justify-between items-center mb-8">
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
+                      <div className="flex justify-between items-center mb-4">
                         <div>
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Activité Financière</h3>
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white">Activité financière</h3>
                           <p className="text-sm text-slate-500 dark:text-slate-400">Revenus sur les 6 derniers mois</p>
-                        </div>
-                        <div className="flex bg-slate-50 dark:bg-slate-800 p-1 rounded-lg">
-                          <button className="px-3 py-1 text-xs font-medium bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded shadow-sm border border-slate-100 dark:border-slate-600">Graphique</button>
                         </div>
                       </div>
                       <div className="h-80 w-full">
@@ -451,82 +434,66 @@ const Dashboard = () => {
 
                 {/* Droite */}
                 <motion.div variants={itemVariants} className="space-y-6">
-                  {/* Agenda - Réduit à la moitié */}
-                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors" style={{ height: '350px' }}>
-                    <div className="flex justify-between items-center mb-6">
-                      <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">Agenda</h3>
-                      <Button variant="ghost" size="sm" iconName="ArrowRight" className="dark:text-slate-400 dark:hover:bg-slate-800">Voir tout</Button>
+                  {/* Agenda */}
+                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors" style={{ height: '350px' }}>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white">Agenda</h3>
+                      <Button variant="ghost" size="sm" iconName="ArrowRight" className="rounded-xl dark:text-slate-400 dark:hover:bg-slate-800">Voir tout</Button>
                     </div>
                     <div className="flex-1 overflow-hidden">
                       <AppointmentWidget appointments={dashboardData.appointments} onAddAppointment={() => navigate('/gestion-patients?action=rdv')} />
                     </div>
                   </div>
                   
-                  {/* Alerte système - Dans l'autre moitié */}
-                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors" style={{ height: '350px' }}>
-                    <div className="flex items-center justify-between mb-6">
+                  {/* Alertes système */}
+                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors" style={{ height: '350px' }}>
+                    <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                          <Icon name="AlertTriangle" size={20} className="text-amber-600 dark:text-amber-400" />
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <Icon name="AlertTriangle" size={18} className="text-amber-600 dark:text-amber-400" />
                           Alertes système
                         </h3>
                         {dashboardData?.alerts?.lowStock?.length > 0 && (
-                          <Badge variant="error" className="text-xs">
-                            {dashboardData.alerts.lowStock.length}
-                          </Badge>
+                          <Badge variant="error" className="text-xs">{dashboardData.alerts.lowStock.length}</Badge>
                         )}
                       </div>
                       {dashboardData?.alerts?.lowStock?.length > 0 && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="dark:text-slate-400 dark:hover:bg-slate-800"
-                          onClick={() => navigate('/operations-pharmacie')}
-                        >
+                        <Button variant="ghost" size="sm" className="rounded-xl dark:text-slate-400 dark:hover:bg-slate-800" onClick={() => navigate('/operations-pharmacie')}>
                           Voir tout
                         </Button>
                       )}
                     </div>
-                    <div className="flex-1 overflow-y-auto -mx-2 px-2 space-y-2 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar">
                       {Array.isArray(dashboardData?.alerts?.lowStock) && dashboardData.alerts.lowStock.length > 0 ? (
                         dashboardData.alerts.lowStock.map((alert, idx) => {
                           if (!alert || typeof alert !== 'object') return null;
                           return (
-                          <motion.div
-                            key={alert.id || idx}
-                            className="w-full flex items-start gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                          >
-                            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex-shrink-0">
-                              <Icon name="Package" size={16} />
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                                {alert.name}
-                              </p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-amber-700 dark:text-amber-300 font-medium">
-                                  Stock: {alert.stockActuel}
-                                </span>
-                                <span className="text-[10px] text-amber-300 dark:text-amber-700">•</span>
-                                <span className="text-xs text-amber-600 dark:text-amber-400">
-                                  Minimum: {alert.stockMinimum}
-                                </span>
+                            <div
+                              key={alert.id || idx}
+                              className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                            >
+                              <div className="w-1 rounded-full self-stretch min-h-[2rem] shrink-0 bg-amber-500" />
+                              <div className="p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 flex-shrink-0">
+                                <Icon name="Package" size={14} className="text-slate-600 dark:text-slate-400" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{alert.name}</p>
+                                <div className="flex items-center gap-2 mt-0.5 text-xs text-amber-700 dark:text-amber-300">
+                                  <span>Stock : {alert.stockActuel}</span>
+                                  <span className="text-slate-400">•</span>
+                                  <span>Minimum : {alert.stockMinimum}</span>
+                                </div>
                               </div>
                             </div>
-                          </motion.div>
                           );
                         }).filter(Boolean)
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center py-12 text-slate-400 dark:text-slate-500">
-                          <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-3">
-                            <Icon name="CheckCircle" size={24} className="opacity-50" />
+                        <div className="flex flex-col items-center justify-center text-center py-10">
+                          <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                            <Icon name="CheckCircle" size={24} className="text-slate-400 dark:text-slate-500" />
                           </div>
-                          <p className="text-sm">Aucune alerte</p>
-                          <p className="text-xs mt-1">Tout fonctionne correctement</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune alerte</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Tout fonctionne correctement.</p>
                         </div>
                       )}
                     </div>

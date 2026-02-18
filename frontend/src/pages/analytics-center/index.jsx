@@ -286,10 +286,10 @@ const AnalyticsCenter = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center py-24 text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 shadow-sm"
+            className="flex flex-col items-center justify-center py-24 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary shadow-sm"
           >
                 <Icon name="Loader2" size={48} className="animate-spin text-primary mb-4" />
-                <p>Chargement des données analytiques...</p>
+                <p className="text-sm font-medium">Chargement des données analytiques…</p>
           </motion.div>
         );
     }
@@ -339,7 +339,7 @@ const AnalyticsCenter = () => {
             ) : (
               <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
+                  <div key={i} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
                     <div className="animate-pulse">
                       <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3 mb-4"></div>
                       <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2"></div>
@@ -355,16 +355,16 @@ const AnalyticsCenter = () => {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
+              <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Évolution des revenus</h3>
                 {isLoadingRevenue ? (
-                  <div className="flex flex-col items-center justify-center h-[400px] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
+                  <div className="flex flex-col items-center justify-center h-[400px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
                     <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
-                    <p className="text-slate-400 dark:text-slate-500 text-sm">Chargement...</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Chargement…</p>
                   </div>
                 ) : !Array.isArray(revenueStats) || revenueStats.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-[400px] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
-                    <p className="text-slate-400 dark:text-slate-500 text-sm">Aucune donnée disponible</p>
+                  <div className="flex flex-col items-center justify-center h-[400px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Aucune donnée disponible</p>
                   </div>
                 ) : (
                   <div className="w-full" style={{ minHeight: '400px' }}>
@@ -541,7 +541,7 @@ const AnalyticsCenter = () => {
                 <button 
                   onClick={() => handleExportData('patients')}
                   disabled={!hasPermission('audit_view')}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icon name="Users" size={32} className="text-primary mb-3" />
                   <h3 className="font-bold text-slate-900 dark:text-white mb-1">Export Patients</h3>
@@ -552,7 +552,7 @@ const AnalyticsCenter = () => {
                 <button 
                   onClick={() => handleExportData('consultations')}
                   disabled={!hasPermission('audit_view')}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icon name="FileText" size={32} className="text-primary mb-3" />
                   <h3 className="font-bold text-slate-900 dark:text-white mb-1">Export Consultations</h3>
@@ -563,7 +563,7 @@ const AnalyticsCenter = () => {
                 <button 
                   onClick={() => handleExportData('invoices')}
                   disabled={!hasPermission('audit_view')}
-                  className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary transition-all text-left group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Icon name="DollarSign" size={32} className="text-primary mb-3" />
                   <h3 className="font-bold text-slate-900 dark:text-white mb-1">Export Factures</h3>
@@ -577,7 +577,7 @@ const AnalyticsCenter = () => {
         return (
           <motion.div 
             variants={contentVariants} initial="hidden" animate="visible" exit="exit"
-            className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 shadow-sm"
+            className="flex flex-col items-center justify-center py-24 text-center bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"
           >
             <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
                <Icon name="BarChart3" size={32} className="text-slate-400 dark:text-slate-500" />
@@ -592,7 +592,7 @@ const AnalyticsCenter = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Header />
       
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
@@ -606,7 +606,7 @@ const AnalyticsCenter = () => {
           <div className="flex items-center gap-4">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
+              className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary dark:text-blue-400 border border-slate-200 dark:border-slate-700 shadow-sm"
             >
               <Icon name="BarChart3" size={24} />
             </motion.div>
@@ -657,7 +657,7 @@ const AnalyticsCenter = () => {
             {/* Contenu Principal */}
             <div className="flex-1 w-full min-w-0">
                 {/* Navigation Onglets */}
-                <div className="relative flex overflow-x-auto pb-1 mb-6 border-b border-slate-200 dark:border-slate-800 gap-6">
+                <div className="relative flex overflow-x-auto pb-1 mb-6 border-b border-slate-200 dark:border-slate-700 gap-6">
                     <div className="flex space-x-6">
                         {Array.isArray(tabs) && tabs.map(tab => (
                             <motion.button 
@@ -703,7 +703,7 @@ const AnalyticsCenter = () => {
         </div>
 
         {/* Footer */}
-        <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+        <div className="pt-6 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
             <div className="flex items-center space-x-4">
                 <span>Dernière synchro: {new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</span>
                 <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>

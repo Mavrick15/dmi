@@ -15,7 +15,6 @@ import PaymentModal from './PaymentModal';
 import api from '../../../lib/axios';
 import { useToast } from '../../../contexts/ToastContext';
 import { generateInvoicePDF } from '../../../utils/pdfGenerator';
-import { Loader2 } from 'lucide-react';
 
 const InvoicesList = () => {
   const { hasPermission } = usePermissions();
@@ -143,7 +142,7 @@ const InvoicesList = () => {
     <>
       <div className="space-y-6">
         {/* Filtres et recherche */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
           <div className="flex flex-wrap items-end gap-4">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1">
             <div className={establishmentsList.length > 0 ? 'md:col-span-2' : 'md:col-span-2'}>
@@ -192,12 +191,15 @@ const InvoicesList = () => {
 
         {/* Liste des factures */}
         {isLoading ? (
-          <div className="flex justify-center items-center py-20">
-            <Loader2 className="animate-spin text-primary" size={40} />
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center py-20">
+            <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
         ) : invoices.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-12 text-center">
-            <Icon name="FileX" className="text-slate-400 mb-4 mx-auto" size={48} />
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-12 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+              <Icon name="FileX" className="text-slate-400" size={28} />
+            </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
               Aucune facture trouvée
             </h3>

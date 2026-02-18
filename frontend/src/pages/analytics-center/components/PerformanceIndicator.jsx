@@ -44,7 +44,7 @@ const PerformanceIndicator = ({
   const trendStyle = getTrendStyle(trend);
 
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-all duration-300 ${className}`}>
+    <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 ${className}`}>
       
       {/* Header : Titre et Badge de statut */}
       <div className="flex items-center justify-between mb-5">
@@ -95,7 +95,7 @@ const PerformanceIndicator = ({
       </div>
 
       {/* Footer : Métriques détaillées */}
-      <div className="grid grid-cols-3 gap-2 pt-5 mt-5 border-t border-slate-100 dark:border-slate-800">
+      <div className="grid grid-cols-3 gap-2 pt-5 mt-5 border-t border-slate-200 dark:border-slate-700">
         
         {/* KPI 1 : Écart Objectif */}
         <div className="text-center">
@@ -107,7 +107,7 @@ const PerformanceIndicator = ({
         
         {/* KPI 2 : Écart Référence */}
         {benchmark && (
-          <div className="text-center border-l border-slate-100 dark:border-slate-800">
+          <div className="text-center border-l border-slate-200 dark:border-slate-700">
             <div className="text-sm font-bold text-slate-700 dark:text-slate-200">
               {((current - benchmark) / benchmark * 100)?.toFixed(1)}%
             </div>
@@ -116,7 +116,7 @@ const PerformanceIndicator = ({
         )}
         
         {/* KPI 3 : Évolution (Trend) */}
-        <div className="text-center border-l border-slate-100 dark:border-slate-800">
+        <div className="text-center border-l border-slate-200 dark:border-slate-700">
           <div className={`text-sm font-bold flex items-center justify-center gap-1 ${trendStyle.color}`}>
             {trend === 'up' ? '+' : ''}{evolution ? `${evolution.toFixed(1)}%` : '-'}
             <Icon name={trendStyle.icon} size={14} />

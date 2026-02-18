@@ -8,8 +8,7 @@ import { usePermissions } from '../../../hooks/usePermissions';
 import RecentOrdersTable from './RecentOrdersTable';
 import { useToast } from '../../../contexts/ToastContext';
 import { useSuppliers } from '../../../hooks/usePharmacy';
-import { Loader2 } from 'lucide-react'; // Ajout pour l'icône de chargement
-import AddSupplierModal from './AddSupplierModal'; // <--- IMPORT MODALE AJOUT
+import AddSupplierModal from './AddSupplierModal';
 
 const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onReceiveOrder, onViewOrderDetails, onViewHistory, onViewSupplier, onCreateOrder }) => { 
   const { hasPermission } = usePermissions();
@@ -135,10 +134,10 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
   const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
       
       {/* Header with Tabs */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
@@ -150,7 +149,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
              </div>
           </div>
           <PermissionGuard requiredPermission="inventory_manage">
-            <Button variant="default" iconName="Plus" onClick={() => setIsAddModalOpen(true)} disabled={!hasPermission('inventory_manage')} className="shadow-lg shadow-primary/20">
+            <Button variant="default" size="sm" iconName="Plus" onClick={() => setIsAddModalOpen(true)} disabled={!hasPermission('inventory_manage')} className="rounded-xl">
               Nouveau fournisseur
             </Button>
           </PermissionGuard>
@@ -184,21 +183,24 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
           <div className="space-y-6 animate-fade-in">
 
             {loadingSuppliers ? (
-                 <div className="flex justify-center items-center h-48 text-primary">
-                    <Loader2 className="animate-spin" size={32} />
-                    <span className="ml-3 text-slate-500">Chargement des fournisseurs...</span>
+                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-12">
+                   <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des fournisseurs…</span>
                  </div>
             ) : suppliers.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
-                    <Icon name="SearchX" size={32} />
-                    <p className="mt-2 text-sm">Aucun fournisseur enregistré</p>
+                 <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                   <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                     <Icon name="Truck" size={28} className="text-slate-400 dark:text-slate-500" />
+                   </div>
+                   <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun fournisseur</p>
+                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Ajoutez un fournisseur pour commencer.</p>
                  </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
                   {Array.isArray(suppliers) && suppliers.map((supplier) => {
                     if (!supplier || typeof supplier !== 'object') return null;
                     return (
-                      <div key={supplier.id} className="group bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md hover:border-primary/30 transition-all duration-300">
+                      <div key={supplier.id} className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-4 hover:shadow-md hover:border-primary/30 transition-all">
                       
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -320,27 +322,13 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
             {/* Pagination */}
             {pagination.totalPages > 1 && (
               <div className="flex justify-center items-center gap-4 mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  iconName="ChevronLeft"
-                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
-                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                >
+                <Button variant="outline" size="sm" iconName="ChevronLeft" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="rounded-xl">
                   Précédent
                 </Button>
                 <span className="text-sm text-slate-700 dark:text-slate-300 font-medium">
                   Page {pagination.page} sur {pagination.totalPages} ({pagination.total} fournisseur{pagination.total > 1 ? 's' : ''})
                 </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  iconName="ChevronRight"
-                  onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
-                  disabled={currentPage === pagination.totalPages}
-                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                >
+                <Button variant="outline" size="sm" iconName="ChevronRight" onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))} disabled={currentPage === pagination.totalPages} className="rounded-xl">
                   Suivant
                 </Button>
               </div>

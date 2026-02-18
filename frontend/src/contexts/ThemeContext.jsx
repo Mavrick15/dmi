@@ -4,6 +4,18 @@ const THEME_MODES = {
   LIGHT: "light",
   DARK: "dark",
   SYSTEM: "system",
+  AUTO: "auto",
+};
+
+// Heure de début du "jour" (mode clair) et de la "nuit" (mode sombre)
+const DAY_START_HOUR = 7;   // 7h -> mode clair
+const NIGHT_START_HOUR = 20; // 20h -> mode sombre
+
+/** Thème basé sur l'heure locale : jour = clair, nuit = sombre */
+const getTimeBasedTheme = () => {
+  if (typeof window === "undefined") return "light";
+  const hour = new Date().getHours();
+  return (hour >= DAY_START_HOUR && hour < NIGHT_START_HOUR) ? THEME_MODES.LIGHT : THEME_MODES.DARK;
 };
 
 const ThemeContext = createContext({
@@ -22,7 +34,7 @@ export const useTheme = () => {
   return context;
 };
 
-export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.SYSTEM }) => {
+export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.AUTO }) => {
   // Initialisation avec récupération du localStorage
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
@@ -31,7 +43,16 @@ export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.SYSTEM }) =
     return defaultTheme;
   });
 
-  const [actualTheme, setActualTheme] = useState(THEME_MODES.LIGHT);
+  const [actualTheme, setActualTheme] = useState(() => {
+    if (typeof window === "undefined") return THEME_MODES.LIGHT;
+    const stored = localStorage.getItem("medical-theme") || defaultTheme;
+    if (stored === THEME_MODES.AUTO) return getTimeBasedTheme();
+    if (stored === THEME_MODES.SYSTEM) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? THEME_MODES.DARK : THEME_MODES.LIGHT;
+    }
+    if (stored === THEME_MODES.DARK || stored === THEME_MODES.LIGHT) return stored;
+    return THEME_MODES.LIGHT;
+  });
 
   // Détection du thème système
   const getSystemTheme = () => {
@@ -43,7 +64,7 @@ export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.SYSTEM }) =
     return THEME_MODES.LIGHT;
   };
 
-  // Effet 1 : Écouteur de changement système
+  // Effet 1 : Détermination du thème effectif (système, auto jour/nuit, ou fixe)
   useEffect(() => {
     const handleSystemChange = () => {
       if (theme === THEME_MODES.SYSTEM) {
@@ -51,17 +72,26 @@ export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.SYSTEM }) =
       }
     };
 
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    
-    // Initial set
     if (theme === THEME_MODES.SYSTEM) {
       setActualTheme(getSystemTheme());
-    } else {
-      setActualTheme(theme);
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      mediaQuery.addEventListener("change", handleSystemChange);
+      return () => mediaQuery.removeEventListener("change", handleSystemChange);
     }
+    if (theme === THEME_MODES.AUTO) {
+      setActualTheme(getTimeBasedTheme());
+      return undefined;
+    }
+    setActualTheme(theme);
+    return undefined;
+  }, [theme]);
 
-    mediaQuery.addEventListener("change", handleSystemChange);
-    return () => mediaQuery.removeEventListener("change", handleSystemChange);
+  // Effet 1b : En mode Auto, mettre à jour le thème à chaque minute (passage jour/nuit)
+  useEffect(() => {
+    if (theme !== THEME_MODES.AUTO) return;
+    const tick = () => setActualTheme(getTimeBasedTheme());
+    const id = setInterval(tick, 60 * 1000);
+    return () => clearInterval(id);
   }, [theme]);
 
   // Effet 2 : Application des classes CSS et du LocalStorage
@@ -79,12 +109,14 @@ export const ThemeProvider = ({ children, defaultTheme = THEME_MODES.SYSTEM }) =
     localStorage.setItem("medical-theme", theme);
   }, [theme, actualTheme]);
 
-  // Cycle : Light -> Dark -> System -> Light
+  // Cycle : Light -> Dark -> System -> Auto -> Light
   const toggleTheme = () => {
     if (theme === THEME_MODES.LIGHT) {
       setTheme(THEME_MODES.DARK);
     } else if (theme === THEME_MODES.DARK) {
       setTheme(THEME_MODES.SYSTEM);
+    } else if (theme === THEME_MODES.SYSTEM) {
+      setTheme(THEME_MODES.AUTO);
     } else {
       setTheme(THEME_MODES.LIGHT);
     }

@@ -87,7 +87,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-lg border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1 min-h-0">
           {/* Patient */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
               Patient concerné <span className="text-red-500">*</span>
             </p>
@@ -185,7 +185,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
           </div>
 
           {/* Tags */}
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 shadow-sm">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Tags (optionnel)</p>
             <div className="flex gap-2 mb-2">
               <input
@@ -224,7 +224,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
           {/* Watermark */}
           {selectedFile && selectedFile.type === 'application/pdf' && (
-            <div className="flex items-center gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
+            <div className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
               <input
                 type="checkbox"
                 id="watermark"
@@ -247,7 +247,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               tabIndex={0}
               onClick={() => fileInputRef.current?.click()}
               onKeyDown={(e) => e.key === 'Enter' && fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all group ${
+              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all group ${
                 selectedFile
                   ? 'border-emerald-500 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-900/10'
                   : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-800/50'

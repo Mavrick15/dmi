@@ -3,6 +3,26 @@ import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 
+const iconBoxClasses = {
+  blue: 'bg-blue-100 dark:bg-blue-900/30 border-blue-200/50 dark:border-blue-800/50',
+  emerald: 'bg-emerald-100 dark:bg-emerald-900/30 border-emerald-200/50 dark:border-emerald-800/50',
+  purple: 'bg-purple-100 dark:bg-purple-900/30 border-purple-200/50 dark:border-purple-800/50',
+  orange: 'bg-orange-100 dark:bg-orange-900/30 border-orange-200/50 dark:border-orange-800/50',
+  rose: 'bg-rose-100 dark:bg-rose-900/30 border-rose-200/50 dark:border-rose-800/50',
+  red: 'bg-red-100 dark:bg-red-900/30 border-red-200/50 dark:border-red-800/50',
+  amber: 'bg-amber-100 dark:bg-amber-900/30 border-amber-200/50 dark:border-amber-800/50',
+  teal: 'bg-teal-100 dark:bg-teal-900/30 border-teal-200/50 dark:border-teal-800/50',
+  indigo: 'bg-indigo-100 dark:bg-indigo-900/30 border-indigo-200/50 dark:border-indigo-800/50',
+  cyan: 'bg-cyan-100 dark:bg-cyan-900/30 border-cyan-200/50 dark:border-cyan-800/50',
+  violet: 'bg-violet-100 dark:bg-violet-900/30 border-violet-200/50 dark:border-violet-800/50',
+  pink: 'bg-pink-100 dark:bg-pink-900/30 border-pink-200/50 dark:border-pink-800/50',
+};
+const getIconBoxClass = (color) => iconBoxClasses[color] || iconBoxClasses.blue;
+const getIconClass = (color) => {
+  const map = { blue: 'text-blue-600 dark:text-blue-400', emerald: 'text-emerald-600 dark:text-emerald-400', purple: 'text-purple-600 dark:text-purple-400', orange: 'text-orange-600 dark:text-orange-400', rose: 'text-rose-600 dark:text-rose-400', red: 'text-red-600 dark:text-red-400', amber: 'text-amber-600 dark:text-amber-400', teal: 'text-teal-600 dark:text-teal-400', indigo: 'text-indigo-600 dark:text-indigo-400', cyan: 'text-cyan-600 dark:text-cyan-400', violet: 'text-violet-600 dark:text-violet-400', pink: 'text-pink-600 dark:text-pink-400' };
+  return map[color] || map.blue;
+};
+
 const QuickActions = ({ onActionSelect }) => {
   const [activeCategory, setActiveCategory] = useState('common');
 
@@ -15,30 +35,30 @@ const QuickActions = ({ onActionSelect }) => {
 
   const quickActions = {
     common: [
-      { id: 'vital-signs', title: 'Signes Vitaux', description: 'Tension, pouls, temp.', icon: 'Activity', color: 'from-blue-500 to-blue-600', shortcut: 'Ctrl+V' },
-      { id: 'prescription', title: 'Nouvelle Ordonnance', description: 'Prescription rapide', icon: 'FileText', color: 'from-emerald-500 to-emerald-600', shortcut: 'Ctrl+P' },
-      { id: 'lab-order', title: 'Analyses Bio.', description: 'Prescrire laboratoire', icon: 'TestTube', color: 'from-purple-500 to-purple-600', shortcut: 'Ctrl+L' },
-      { id: 'imaging', title: 'Imagerie', description: 'Radio, Echo, IRM', icon: 'Scan', color: 'from-orange-500 to-orange-600', shortcut: 'Ctrl+I' }
+      { id: 'vital-signs', title: 'Signes Vitaux', description: 'Tension, pouls, temp.', icon: 'Activity', color: 'blue', shortcut: 'Ctrl+V' },
+      { id: 'prescription', title: 'Nouvelle Ordonnance', description: 'Prescription rapide', icon: 'FileText', color: 'emerald', shortcut: 'Ctrl+P' },
+      { id: 'lab-order', title: 'Analyses Bio.', description: 'Prescrire laboratoire', icon: 'TestTube', color: 'purple', shortcut: 'Ctrl+L' },
+      { id: 'imaging', title: 'Imagerie', description: 'Radio, Echo, IRM', icon: 'Scan', color: 'orange', shortcut: 'Ctrl+I' }
     ],
     emergency: [
-      { id: 'emergency-protocol', title: 'Protocole Urgence', description: 'Activer procédure', icon: 'Siren', color: 'from-rose-500 to-rose-600', shortcut: 'F1' },
-      { id: 'cardiac-arrest', title: 'Arrêt Cardiaque', description: 'Protocole RCP', icon: 'Heart', color: 'from-red-600 to-red-700', shortcut: 'F2' },
-      { id: 'anaphylaxis', title: 'Anaphylaxie', description: 'Choc allergique', icon: 'AlertCircle', color: 'from-amber-500 to-amber-600', shortcut: 'F3' }
+      { id: 'emergency-protocol', title: 'Protocole Urgence', description: 'Activer procédure', icon: 'Siren', color: 'rose', shortcut: 'F1' },
+      { id: 'cardiac-arrest', title: 'Arrêt Cardiaque', description: 'Protocole RCP', icon: 'Heart', color: 'red', shortcut: 'F2' },
+      { id: 'anaphylaxis', title: 'Anaphylaxie', description: 'Choc allergique', icon: 'AlertCircle', color: 'amber', shortcut: 'F3' }
     ],
     prescriptions: [
-      { id: 'antibiotics', title: 'Antibiotiques', description: 'Prescription courante', icon: 'Pill', color: 'from-teal-500 to-teal-600', shortcut: 'Alt+A' },
-      { id: 'analgesics', title: 'Antalgiques', description: 'Gestion douleur', icon: 'Shield', color: 'from-indigo-500 to-indigo-600', shortcut: 'Alt+D' },
-      { id: 'chronic-meds', title: 'Renouvellement', description: 'Traitements chroniques', icon: 'RefreshCw', color: 'from-cyan-500 to-cyan-600', shortcut: 'Alt+C' }
+      { id: 'antibiotics', title: 'Antibiotiques', description: 'Prescription courante', icon: 'Pill', color: 'teal', shortcut: 'Alt+A' },
+      { id: 'analgesics', title: 'Antalgiques', description: 'Gestion douleur', icon: 'Shield', color: 'indigo', shortcut: 'Alt+D' },
+      { id: 'chronic-meds', title: 'Renouvellement', description: 'Traitements chroniques', icon: 'RefreshCw', color: 'cyan', shortcut: 'Alt+C' }
     ],
     referrals: [
-      { id: 'specialist', title: 'Spécialiste', description: 'Avis confrère', icon: 'UserCheck', color: 'from-violet-500 to-violet-600', shortcut: 'Ctrl+S' },
-      { id: 'physiotherapy', title: 'Kinésithérapie', description: 'Rééducation', icon: 'Dumbbell', color: 'from-emerald-500 to-emerald-600', shortcut: 'Ctrl+K' },
-      { id: 'psychology', title: 'Psychologie', description: 'Soutien mental', icon: 'Brain', color: 'from-pink-500 to-pink-600', shortcut: 'Ctrl+Y' }
+      { id: 'specialist', title: 'Spécialiste', description: 'Avis confrère', icon: 'UserCheck', color: 'violet', shortcut: 'Ctrl+S' },
+      { id: 'physiotherapy', title: 'Kinésithérapie', description: 'Rééducation', icon: 'Dumbbell', color: 'emerald', shortcut: 'Ctrl+K' },
+      { id: 'psychology', title: 'Psychologie', description: 'Soutien mental', icon: 'Brain', color: 'pink', shortcut: 'Ctrl+Y' }
     ]
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[780px]">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]">
       {/* Header */}
       <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
         <div className="flex items-center gap-2 mb-4">
@@ -79,10 +99,10 @@ const QuickActions = ({ onActionSelect }) => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               onClick={() => onActionSelect(action)}
-              className="group p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all text-left flex items-start gap-3"
+              className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all text-left flex items-start gap-3"
             >
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center text-white shrink-0`}>
-                <Icon name={action.icon} size={20} />
+              <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center border ${getIconBoxClass(action.color)}`}>
+                <Icon name={action.icon} size={20} className={getIconClass(action.color)} />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">

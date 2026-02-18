@@ -522,9 +522,15 @@ const UserAdministration = () => {
       />
 
       {loading ? (
-        <div className="flex justify-center py-20"><Icon name="Loader2" className="animate-spin text-primary" size={40} /></div>
+        <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+          <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
+          <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
+        </div>
       ) : (!Array.isArray(users) || users.length === 0) && searchQuery ? (
-        <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800"><Icon name="UserX" size={32} className="text-slate-400 mb-4 mx-auto" /><p className="text-slate-500">Aucun utilisateur trouvé pour cette recherche.</p></div>
+        <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3"><Icon name="UserX" size={28} className="text-slate-400" /></div>
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucun utilisateur trouvé pour cette recherche.</p>
+        </div>
       ) : (
         <div className="animate-fade-in">
              {viewMode === 'grid' ? (
@@ -598,12 +604,15 @@ const UserAdministration = () => {
         </div>
         
         {loading ? (
-           <div className="flex justify-center py-20"><Icon name="Loader2" className="animate-spin text-primary" size={40} /></div>
+           <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
+             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
+           </div>
         ) : establishments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
-              <div className="p-4 bg-white dark:bg-slate-800 rounded-full shadow-sm mb-4"><Icon name="Building2" size={32} className="text-slate-400" /></div>
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Aucun établissement</h3>
-              <Button variant="outline" className="mt-4" onClick={() => setIsEstablishmentModalOpen(true)}>Créer maintenant</Button>
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building2" size={28} className="text-slate-400" /></div>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun établissement</h3>
+              <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsEstablishmentModalOpen(true)}>Créer maintenant</Button>
           </div>
         ) : (
           <>
@@ -611,7 +620,7 @@ const UserAdministration = () => {
                 {Array.isArray(establishments) && establishments.map(etab => {
                     const style = getTypeStyle(etab.typeEtablissement);
                     return (
-                      <div key={etab.id} className={`group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-lg transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
+                      <div key={etab.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
                           <div className="flex justify-between items-start mb-4">
                               <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.bg} ${style.color}`}>
                                   <Icon name={style.icon} size={24} />
@@ -700,19 +709,22 @@ const UserAdministration = () => {
         </div>
         
         {loading ? (
-          <div className="flex justify-center py-20"><Icon name="Loader2" className="animate-spin text-primary" size={40} /></div>
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+            <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
+          </div>
         ) : departments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
-            <div className="p-4 bg-white dark:bg-slate-800 rounded-full shadow-sm mb-4"><Icon name="Building" size={32} className="text-slate-400" /></div>
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Aucun département</h3>
-            <Button variant="outline" className="mt-4" onClick={() => setIsDepartmentModalOpen(true)}>Créer maintenant</Button>
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building" size={28} className="text-slate-400" /></div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun département</h3>
+            <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsDepartmentModalOpen(true)}>Créer maintenant</Button>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {Array.isArray(departments) && departments.map(dept => {
                 return (
-                  <div key={dept.id} className={`group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-lg transition-all duration-300 border-l-4 ${!dept.actif ? 'opacity-60' : ''}`} style={{ borderLeftColor: dept.couleur || '#3B82F6' }}>
+                  <div key={dept.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${!dept.actif ? 'opacity-60' : ''}`} style={{ borderLeftColor: dept.couleur || '#3B82F6' }}>
                     <div className="flex justify-between items-start mb-4">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${dept.couleur || '#3B82F6'}20`, color: dept.couleur || '#3B82F6' }}>
                         <Icon name="Building" size={24} />
@@ -786,7 +798,7 @@ const UserAdministration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Header />
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         <motion.div
@@ -796,22 +808,12 @@ const UserAdministration = () => {
           className="mb-8"
         >
           <div className="flex items-center gap-4 mb-6">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.1, type: "spring", bounce: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              className="w-12 h-12 bg-primary/10 dark:bg-primary/20 rounded-2xl flex items-center justify-center text-primary dark:text-blue-400 border border-primary/10 dark:border-primary/20 shadow-sm"
-            >
-              <Icon name="Shield" size={24} />
-            </motion.div>
+            <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+              <Icon name="Shield" size={22} />
+            </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
-                Administration
-              </h1>
-              <p className="text-slate-600 dark:text-slate-400 text-lg font-medium">
-                Gestion des utilisateurs, permissions et sécurité
-              </p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Administration</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Gestion des utilisateurs, permissions et sécurité</p>
             </div>
           </div>
           
@@ -831,7 +833,7 @@ const UserAdministration = () => {
                             {isActive && (
                                 <motion.div
                                     layoutId="activeTabBackground"
-                                    className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-purple-500/10 dark:from-violet-500/20 dark:to-purple-500/20 rounded-lg shadow-sm border border-violet-200 dark:border-violet-800"
+                                    className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-lg border border-slate-200 dark:border-slate-700"
                                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                 />
                             )}

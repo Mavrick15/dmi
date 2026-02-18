@@ -6,8 +6,6 @@ import Input from '../../../components/ui/Input';
 import api from '../../../lib/axios'; 
 import { useToast } from '../../../contexts/ToastContext'; 
 import Pagination from '../../../components/ui/Pagination'; 
-import { Loader2, Search } from 'lucide-react';
-
 const AuditLogViewer = () => {
   // États
   const [filters, setFilters] = useState({ dateRange: '7days', action: 'all', search: '' });
@@ -142,7 +140,7 @@ const AuditLogViewer = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full animate-fade-in">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-full animate-fade-in">
       
       {/* Header & Filtres */}
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
@@ -159,7 +157,7 @@ const AuditLogViewer = () => {
         <div className="flex flex-col sm:flex-row gap-2 w-full xl:w-auto">
             <div className="relative flex-1 sm:w-64">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <Search size={16} />
+                    <Icon name="Search" size={16} />
                 </div>
                 <input 
                     type="text" 
@@ -193,9 +191,9 @@ const AuditLogViewer = () => {
       {/* Tableau */}
       <div className="overflow-x-auto flex-1 custom-scrollbar">
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-80 text-slate-400">
-              <Loader2 className="animate-spin mb-2 text-primary" size={32} />
-              <p>Chargement des logs...</p>
+          <div className="flex flex-col justify-center items-center h-80 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+              <Icon name="Loader2" size={32} className="animate-spin mb-2 text-primary" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Chargement des logs…</p>
           </div>
         ) : auditLogs.length === 0 ? (
            <div className="flex flex-col items-center justify-center h-80 text-slate-400">

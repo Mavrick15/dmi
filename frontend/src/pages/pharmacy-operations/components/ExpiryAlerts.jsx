@@ -4,8 +4,6 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
-import { AlertTriangle, Clock, Info, Zap, CheckCircle, Eye, RefreshCw, PackageCheck, AlertCircle, Trash2, Calendar, Loader2, X } from 'lucide-react'; // Import complet des icônes utilisées
-
 const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMarkAllConfirmed, onViewMedication, onTreatAlert }) => { 
   const { hasPermission } = usePermissions();
   const [expiryAlerts, setExpiryAlerts] = useState([]);
@@ -103,49 +101,52 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
 
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden flex flex-col h-full">
-      
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/20 rounded-xl flex items-center justify-center border border-amber-100 dark:border-amber-900/50">
-              <Icon name="Hourglass" size={20} className="text-amber-600 dark:text-amber-400" />
+            <div className="w-10 h-10 bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center border border-amber-200 dark:border-amber-800">
+              <Icon name="Clock" size={20} />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Alertes d'expiration</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Médicaments expirant dans les 90 jours</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">Alertes d'expiration</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Médicaments expirant dans les 90 jours</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" iconName="Settings" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
+          <Button variant="outline" size="sm" className="rounded-xl dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
             Configurer
           </Button>
         </div>
       </div>
 
       {/* Alerts List */}
-      <div className="p-6 max-h-[500px] overflow-y-auto custom-scrollbar bg-white dark:bg-slate-900">
+      <div className="p-4 max-h-[500px] overflow-y-auto custom-scrollbar">
         {loading ? (
-           <div className="flex justify-center items-center h-48 text-primary">
-              <Icon name="Loader2" className="animate-spin" size={32} />
-              <span className="ml-3 text-slate-500">Chargement des alertes...</span>
-           </div>
+          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-12">
+            <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des alertes…</span>
+          </div>
         ) : expiryAlerts.length === 0 ? (
-           <div className="flex flex-col items-center justify-center h-48 text-slate-400">
-              <Icon name="CheckCircle" size={32} className="text-emerald-500 opacity-50" />
-              <p className="mt-2 text-sm font-medium">Aucune alerte critique ou expirante.</p>
-           </div>
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+              <Icon name="CheckCircle" size={24} className="text-slate-400 dark:text-slate-500" />
+            </div>
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune alerte</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Aucun médicament critique ou expirant.</p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Array.isArray(expiryAlerts) && expiryAlerts.map((alert) => {
               if (!alert || typeof alert !== 'object') return null;
               const style = getPriorityStyles(alert.priority);
-              
+              const accent = alert.priority === 'high' ? 'bg-rose-500' : alert.priority === 'medium' ? 'bg-amber-500' : 'bg-blue-500';
               return (
-                <div 
-                  key={alert.id} 
-                  className={`p-5 rounded-2xl border transition-all duration-200 hover:shadow-md ${style.bg} ${style.border} dark:border-opacity-50`}
+                <div
+                  key={alert.id}
+                  className={`flex items-start gap-3 p-4 rounded-xl border ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
                 >
+                  <div className={`w-1 rounded-full self-stretch min-h-[3rem] shrink-0 ${accent}`} />
                   <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     
                     {/* Main Content */}
@@ -233,20 +234,20 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
 
       {/* Summary Footer */}
       {expiryAlerts.length > 0 && (
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <span className="flex h-2 w-2 rounded-full bg-rose-500"></span>
                 <span className="font-bold text-slate-900 dark:text-white">{expiryAlerts.length} alerte(s) en attente</span>
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Button variant="outline" size="sm" iconName="FileText" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Rapport</Button>
+                <Button variant="outline" size="sm" className="rounded-xl dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Rapport</Button>
                 <PermissionGuard requiredPermission="inventory_manage">
                   <Button 
                     variant="default" 
                     size="sm" 
                     iconName="CheckCircle" 
-                    className="shadow-sm" 
+                    className="rounded-xl" 
                     disabled={!hasPermission('inventory_manage')}
                     onClick={() => {
                       if (onMarkAllTreated) {

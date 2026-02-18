@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useConsultationTemplates } from '../../../hooks/useClinicalTools';
-import { Loader2, Check, Plus, X, Edit2, Trash2 } from 'lucide-react';
 
 const ConsultationTemplates = ({ onSelectTemplate, onClose }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -48,8 +47,9 @@ const ConsultationTemplates = ({ onSelectTemplate, onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+        <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
     );
   }

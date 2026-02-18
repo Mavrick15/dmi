@@ -8,7 +8,6 @@ import EmptyState from '../../../components/ui/EmptyState';
 import Modal from '../../../components/ui/Modal';
 import { useAppointments, useAppointmentMutations } from '../../../hooks/useAppointments';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Loader2, ChevronLeft, ChevronRight, Clock, User, MapPin } from 'lucide-react';
 
 const DoctorCalendar = ({ onSelectAppointment }) => {
   const { user } = useAuth();
@@ -355,14 +354,15 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
 
   if (isLoading && !appointments.length) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="flex flex-col items-center justify-center h-96 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-4 border-l-4 border-l-primary">
+        <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
+        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[780px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+    <div className="flex flex-col h-[780px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
       {/* Header */}
       <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
         <div className="flex items-center justify-between gap-4">
@@ -535,7 +535,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-10 h-10 rounded-lg ${styles.bg} flex items-center justify-center shrink-0`}>
-                      <Clock size={18} className="text-white" />
+                      <Icon name="Clock" size={18} className="text-white" />
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-slate-900 dark:text-white">

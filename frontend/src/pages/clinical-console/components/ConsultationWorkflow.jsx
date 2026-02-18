@@ -16,7 +16,6 @@ import CIM10Search from './CIM10Search';
 import ConsultationTemplates from './ConsultationTemplates';
 import MedicalCalculators from './MedicalCalculators';
 import QuickNotes from './QuickNotes';
-import { Loader2, Plus, Check, Trash2, Search, X, AlertTriangle } from 'lucide-react';
 
 const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultation }) => {
   const { hasPermission } = usePermissions();
@@ -632,7 +631,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.temperature && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.temperature}
                     </p>
                   )}
@@ -648,7 +647,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.bloodPressure && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.bloodPressure}
                     </p>
                   )}
@@ -664,7 +663,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.heartRate && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.heartRate}
                     </p>
                   )}
@@ -680,7 +679,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.respiratoryRate && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.respiratoryRate}
                     </p>
                   )}
@@ -696,7 +695,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.oxygenSaturation && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.oxygenSaturation}
                     </p>
                   )}
@@ -728,7 +727,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.weight && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.weight}
                     </p>
                   )}
@@ -744,7 +743,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   />
                   {vitalSignsErrors.height && (
                     <p className="mt-1 text-xs text-red-600 dark:text-red-400 flex items-center gap-1">
-                      <AlertTriangle size={12} />
+                      <Icon name="AlertTriangle" size={12} />
                       {vitalSignsErrors.height}
                     </p>
                   )}
@@ -873,7 +872,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                     className="shrink-0 p-2 rounded-lg hover:bg-emerald-200/60 dark:hover:bg-emerald-800/40 text-emerald-700 dark:text-emerald-300 transition-colors"
                     title="Retirer le code"
                   >
-                    <X size={18} />
+                    <Icon name="X" size={18} />
                   </button>
                 </div>
               )}
@@ -919,7 +918,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                     onChange={(e) => setMedQuery(e.target.value)}
                     autoFocus
                   />
-                  {isSearchingMed && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary" size={18} />}
+                  {isSearchingMed && <Icon name="Loader2" size={18} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary" />}
                   {Array.isArray(medResults) && medResults.length > 0 && (
                     <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden max-h-56 overflow-y-auto custom-scrollbar">
                       {medResults.map(res => {
@@ -954,7 +953,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                       </div>
                     </div>
                     <button type="button" onClick={() => setCurrentMedDraft(null)} className="p-1.5 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg text-slate-400 hover:text-rose-500 transition-colors">
-                      <X size={18} />
+                      <Icon name="X" size={18} />
                     </button>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -964,7 +963,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                     <Input label="Quantité" type="number" min="1" placeholder="10" value={currentMedDraft.quantity || 1} onChange={e => setCurrentMedDraft({ ...currentMedDraft, quantity: parseInt(e.target.value) || 1 })} className="bg-white dark:bg-slate-900 text-sm" />
                   </div>
                   <Button fullWidth className="bg-primary hover:bg-blue-600 text-white h-10 text-sm font-semibold" onClick={validateAndAddMed}>
-                    <Check className="mr-2" size={18} strokeWidth={3} /> Valider et ajouter
+                    <Icon name="Check" size={18} className="mr-2" /> Valider et ajouter
                   </Button>
                 </div>
               )}
@@ -979,7 +978,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                     return (
                       <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="shrink-0 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 p-1.5 rounded-lg"><Check size={14} strokeWidth={3} /></div>
+                          <div className="shrink-0 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 p-1.5 rounded-lg"><Icon name="Check" size={14} /></div>
                           <div className="min-w-0">
                             <div className="font-semibold text-slate-900 dark:text-white text-sm truncate">{med.name || 'Médicament'}</div>
                             <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 flex gap-1.5 flex-wrap">
@@ -990,7 +989,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                             </div>
                           </div>
                         </div>
-                        <button type="button" onClick={() => removeMedFromList(idx)} className="shrink-0 p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg" title="Retirer"><Trash2 size={16} /></button>
+                        <button type="button" onClick={() => removeMedFromList(idx)} className="shrink-0 p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg" title="Retirer"><Icon name="Trash2" size={16} /></button>
                       </div>
                     );
                   })}
@@ -1028,7 +1027,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                           : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-primary/40'
                       }`}
                     >
-                      {isSelected ? <Check size={14} strokeWidth={3} /> : <div className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-600" />}
+                      {isSelected ? <Icon name="Check" size={14} /> : <div className="w-4 h-4 rounded border-2 border-slate-300 dark:border-slate-600" />}
                       <span className="flex-1 truncate">{exam}</span>
                     </button>
                   );
@@ -1062,7 +1061,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   disabled={!consultationData.customExam?.trim()}
                   className="shrink-0"
                 >
-                  <Plus size={14} className="mr-1" /> Ajouter
+                  <Icon name="Plus" size={14} className="mr-1" /> Ajouter
                 </Button>
               </div>
               {Array.isArray(consultationData.requestedExams) && consultationData.requestedExams.length > 0 && (
@@ -1072,7 +1071,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                     {consultationData.requestedExams.map((exam, idx) => (
                       <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 text-xs font-medium rounded-lg">
                         {exam}
-                        <button type="button" onClick={() => handleExamToggle(exam)} className="hover:bg-primary/20 dark:hover:bg-primary/30 rounded p-0.5"><X size={12} /></button>
+                        <button type="button" onClick={() => handleExamToggle(exam)} className="hover:bg-primary/20 dark:hover:bg-primary/30 rounded p-0.5"><Icon name="X" size={12} /></button>
                       </span>
                     ))}
                   </div>
@@ -1314,7 +1313,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     >
-                      <Check size={16} strokeWidth={3} className="text-emerald-600 dark:text-emerald-400" />
+                      <Icon name="Check" size={16} className="text-emerald-600 dark:text-emerald-400" />
                     </motion.div>
                     <span>{s.label}</span>
                   </>
@@ -1379,7 +1378,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
           {activeStep === consultationSteps.length - 1 ? (
               <PermissionGuard requiredPermission="consultation_create">
                 <Button variant="default" onClick={handleSaveConsultation} loading={loading} className="bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-500/20">
-                   <Check size={18} className="mr-2"/> Enregistrer
+                   <Icon name="Check" size={18} className="mr-2"/> Enregistrer
                 </Button>
               </PermissionGuard>
           ) : (
@@ -1422,7 +1421,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   onClick={() => setShowCIM10Search(false)}
                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  <X size={20} className="text-slate-500 dark:text-slate-400" />
+                  <Icon name="X" size={20} className="text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
               <div className="p-6 overflow-y-auto custom-scrollbar">
@@ -1473,7 +1472,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   onClick={() => setShowTemplates(false)}
                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  <X size={20} className="text-slate-500 dark:text-slate-400" />
+                  <Icon name="X" size={20} className="text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
               <div className="p-6 overflow-y-auto custom-scrollbar">
@@ -1605,7 +1604,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   onClick={() => setShowCalculators(false)}
                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-slate-500 dark:text-slate-400"
                 >
-                  <X size={20} />
+                  <Icon name="X" size={20} />
                 </button>
               </div>
               <div className="p-6 overflow-y-auto custom-scrollbar">
@@ -1646,7 +1645,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
                   onClick={() => setShowQuickNotes(false)}
                   className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  <X size={20} className="text-slate-500 dark:text-slate-400" />
+                  <Icon name="X" size={20} className="text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
               <div className="p-6 overflow-y-auto custom-scrollbar">

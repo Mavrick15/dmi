@@ -90,7 +90,7 @@ const SecuritySettings = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Carte MFA */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="p-2 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg"><Icon name="Shield" size={20} /></div>
                 <div>
@@ -123,7 +123,7 @@ const SecuritySettings = () => {
         </div>
 
         {/* Carte Mots de Passe */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg"><Icon name="Lock" size={20} /></div>
                 <div>
@@ -170,7 +170,7 @@ const SecuritySettings = () => {
         </div>
 
         {/* Carte Sessions */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm lg:col-span-2 hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm lg:col-span-2 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="p-2 bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-lg"><Icon name="Clock" size={20} /></div>
                 <div>
@@ -182,7 +182,7 @@ const SecuritySettings = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 {/* Slider Timeout */}
-                <div className="p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Timeout Inactivité</label>
                     <div className="flex items-end gap-2 mt-2 mb-4">
                         <span className="text-3xl font-black text-slate-900 dark:text-white">{settings.sessionTimeout}</span>
@@ -204,7 +204,7 @@ const SecuritySettings = () => {
                 </div>
 
                 {/* Slider Tentatives */}
-                <div className="p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                     <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Tentatives Max</label>
                     <div className="flex items-end gap-2 mt-2 mb-4">
                         <span className="text-3xl font-black text-slate-900 dark:text-white">{settings.maxLoginAttempts}</span>
@@ -225,7 +225,7 @@ const SecuritySettings = () => {
                 </div>
 
                 {/* IP Whitelist */}
-                <div className="p-5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+                <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
                     <div>
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Verrouillage IP</label>
                         <p className="text-xs text-slate-500 mt-2 mb-4 leading-relaxed">

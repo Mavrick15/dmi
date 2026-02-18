@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
 import Modal from '../../../components/ui/Modal';
 import { useResultatsMutations } from '../../../hooks/useResultats';
 import { useToast } from '../../../contexts/ToastContext';
@@ -48,7 +46,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
         size="sm"
         iconName="MessageSquare"
         onClick={() => setIsOpen(true)}
-        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20 p-2"
+        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/20 p-2 rounded-xl"
         title="Ajouter/modifier commentaires"
       />
 
@@ -57,8 +55,8 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
         onClose={() => setIsOpen(false)}
         title={
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Icon name="MessageSquare" size={20} className="text-white" />
+            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-xl flex items-center justify-center">
+              <Icon name="MessageSquare" size={20} className="text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <span className="text-base font-bold text-slate-900 dark:text-white">
@@ -74,7 +72,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
       >
         <div className="space-y-6">
           {/* Informations du résultat */}
-          <div className="bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-800 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700 border-l-4 border-l-blue-500">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Paramètre</p>
@@ -136,10 +134,10 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
           </div>
 
           {/* Mentions légales */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 border-l-4 border-l-amber-500">
             <div className="flex items-start gap-2">
-              <Icon name="Info" size={16} className="text-amber-600 dark:text-amber-400 mt-0.5" />
-              <div className="text-xs text-amber-800 dark:text-amber-200">
+              <Icon name="Info" size={16} className="text-slate-600 dark:text-slate-400 mt-0.5" />
+              <div className="text-xs text-slate-700 dark:text-slate-300">
                 <p className="font-semibold mb-1">Mentions légales :</p>
                 <ul className="list-disc list-inside space-y-1">
                   <li>Les commentaires médicaux doivent être factuels et basés sur les résultats d'analyse.</li>
@@ -154,7 +152,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
 
           {/* Informations de traçabilité */}
           {resultat?.updatedAt && (
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 border border-slate-200 dark:border-slate-700">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-200 dark:border-slate-700 border-l-4 border-l-slate-500">
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 <span className="font-semibold">Dernière modification :</span>{' '}
                 {format(new Date(resultat.updatedAt), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
@@ -167,6 +165,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
             <Button
               variant="outline"
               onClick={() => setIsOpen(false)}
+              className="rounded-xl"
             >
               Annuler
             </Button>
@@ -175,7 +174,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
               iconName="Save"
               onClick={handleSave}
               loading={updateResultat.isPending}
-              className="shadow-lg shadow-primary/20"
+              className="rounded-xl"
             >
               Enregistrer
             </Button>

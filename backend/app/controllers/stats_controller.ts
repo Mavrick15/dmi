@@ -13,10 +13,10 @@ import { PaginationHelper } from '../utils/PaginationHelper.js'
 import { StatsTransformer } from '../transformers/StatsTransformer.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
-import CacheService from '#services/CacheService'
 
 /**
- * Contrôleur pour les statistiques avancées
+ * Contrôleur pour les statistiques avancées (Centre analytique).
+ * Pas de cache Redis : données toujours fraîches.
  */
 export default class StatsController {
   /**
@@ -26,12 +26,6 @@ export default class StatsController {
    */
   async overview({ response }: HttpContext) {
     try {
-      const cacheKey = 'stats:overview'
-      const cached = await CacheService.getAsync(cacheKey)
-      if (cached !== undefined) {
-        return response.json(ApiResponse.success(cached))
-      }
-
       const today = DateTime.now()
       const startOfMonth = today.startOf('month')
       const startOfYear = today.startOf('year')
@@ -77,7 +71,6 @@ export default class StatsController {
         activeAppointments,
         lowStockMedications,
       })
-      await CacheService.setAsync(cacheKey, transformedStats, 120)
       return response.json(ApiResponse.success(transformedStats))
     } catch (error) {
       logger.error({ err: error }, 'Erreur lors de la récupération des statistiques générales')

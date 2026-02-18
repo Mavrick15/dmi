@@ -303,7 +303,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
 
   if (loading) {
     return (
-        <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6">
+        <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
            <Icon name="Loader2" className="animate-spin mb-3" size={32} />
            <p>Chargement des analyses prédictives...</p>
         </div>
@@ -317,7 +317,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
   
   if (!hasAnyData && !loading) {
        return (
-          <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 p-6">
+          <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-6">
               <Icon name="Database" size={40} className="mb-4" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Pas de données de consommation</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-sm">
@@ -332,7 +332,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
     <div className="space-y-6">
       
       {/* Header & Controls */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/20 rounded-xl flex items-center justify-center text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-900/50">
@@ -363,7 +363,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Usage Forecast Chart */}
-        <div className="xl:col-span-2 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+        <div className="xl:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h4 className="font-bold text-slate-800 dark:text-white">Consommation sur 6 mois (Sorties)</h4>
             <div className="flex items-center gap-4 text-xs font-medium">
@@ -387,7 +387,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
         </div>
 
         {/* Category Distribution (Pie Chart) */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
           <h4 className="font-bold text-slate-800 dark:text-white mb-2">Répartition par Catégorie</h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Distribution de la consommation attendue</p>
           
@@ -441,7 +441,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
       </div>
 
       {/* Reorder Recommendations */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex justify-between items-center">
           <div>
              <h4 className="font-bold text-slate-800 dark:text-white">Recommandations de Commande</h4>

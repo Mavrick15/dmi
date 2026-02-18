@@ -70,18 +70,18 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
 
   const daysOverdue = invoice.dateEcheance ? getDaysOverdue(invoice.dateEcheance) : null;
 
-  const getGradientBg = () => {
-    if (invoice.statut === 'payee') return 'from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-emerald-950/20';
-    if (invoice.statut === 'en_retard') return 'from-rose-50 via-white to-rose-50/50 dark:from-rose-950/30 dark:via-slate-900 dark:to-rose-950/20';
-    if (invoice.statut === 'en_attente') return 'from-amber-50 via-white to-amber-50/50 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/20';
-    return 'from-blue-50 via-white to-blue-50/50 dark:from-blue-950/30 dark:via-slate-900 dark:to-blue-950/20';
+  const getFlatBg = () => {
+    if (invoice.statut === 'payee') return 'bg-emerald-50 dark:bg-emerald-900/20';
+    if (invoice.statut === 'en_retard') return 'bg-rose-50 dark:bg-rose-900/20';
+    if (invoice.statut === 'en_attente') return 'bg-amber-50 dark:bg-amber-900/20';
+    return 'bg-white dark:bg-slate-900';
   };
 
   const getBorderColor = () => {
-    if (invoice.statut === 'payee') return 'border-emerald-100 dark:border-emerald-900/50';
-    if (invoice.statut === 'en_retard') return 'border-rose-100 dark:border-rose-900/50';
-    if (invoice.statut === 'en_attente') return 'border-amber-100 dark:border-amber-900/50';
-    return 'border-blue-100 dark:border-blue-900/50';
+    if (invoice.statut === 'payee') return 'border-emerald-200 dark:border-emerald-700';
+    if (invoice.statut === 'en_retard') return 'border-rose-200 dark:border-rose-700';
+    if (invoice.statut === 'en_attente') return 'border-amber-200 dark:border-amber-700';
+    return 'border-slate-200 dark:border-slate-700';
   };
 
   return (
@@ -89,9 +89,9 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, scale: 1.02 }}
-      className={`group relative bg-gradient-to-br ${getGradientBg()} border ${getBorderColor()} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all overflow-hidden`}
+      className={`group relative ${getFlatBg()} border ${getBorderColor()} rounded-xl p-6 shadow-sm hover:shadow-md transition-all overflow-hidden`}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
       
       <div className="relative z-10">
         {/* Header */}
@@ -153,7 +153,7 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
         </div>
 
         {/* Montants (widget compact) */}
-        <div className="bg-gradient-to-br from-slate-50 via-white to-slate-100/50 dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-800/30 rounded-lg px-3 py-2 mb-3 border border-slate-200 dark:border-slate-700">
+        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg px-3 py-2 mb-3 border border-slate-200 dark:border-slate-700">
           <div className="grid grid-cols-3 gap-2">
             <div>
               <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -234,7 +234,7 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
                 size="sm"
                 onClick={() => onPay?.(invoice)}
                 disabled={!hasPermission('payment_process')}
-                className={onView ? "flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20" : "px-8 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/20"}
+                className={onView ? "flex-1 bg-emerald-500 hover:bg-emerald-600" : "px-8 bg-emerald-500 hover:bg-emerald-600"}
               >
                 <Icon name="CreditCard" size={16} className="mr-1" />
                 Payer

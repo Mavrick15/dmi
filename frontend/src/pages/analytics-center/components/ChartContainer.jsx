@@ -36,7 +36,7 @@ const ChartContainer = ({
       const hasExtendedData = data && (data.tooltipData || data.percentage !== undefined);
       
       return (
-        <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-xl shadow-xl transition-colors duration-300 min-w-[200px]">
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-xl transition-colors duration-300 min-w-[200px]">
           <p className="text-sm font-bold text-slate-900 dark:text-white mb-3 pb-2 border-b border-slate-200 dark:border-slate-700">
             {label || payload[0].name}
           </p>
@@ -202,16 +202,16 @@ const ChartContainer = ({
   // État vide si pas de données OU si en chargement
   if (!Array.isArray(data) || data.length === 0 || loading) {
     return (
-      <div className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm ${className}`}>
+      <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm ${className}`}>
          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{title}</h3>
-         <div className="flex flex-col items-center justify-center h-[200px] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-900/50">
+         <div className={`flex flex-col items-center justify-center h-[200px] rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${loading ? 'border-l-4 border-l-primary' : ''}`}>
              {loading ? (
                   <div className='flex flex-col items-center'>
                      <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
-                     <p className="text-slate-400 dark:text-slate-500 text-sm">Chargement...</p>
+                     <p className="text-slate-500 dark:text-slate-400 text-sm">Chargement…</p>
                   </div>
              ) : (
-                  <p className="text-slate-400 dark:text-slate-500 text-sm">Aucune donnée disponible</p>
+                  <p className="text-slate-500 dark:text-slate-400 text-sm">Aucune donnée disponible</p>
              )}
          </div>
       </div>
@@ -219,7 +219,7 @@ const ChartContainer = ({
   }
 
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-sm transition-colors duration-300 ${className}`}>
+    <div className={`bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm transition-colors duration-300 ${className}`}>
       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{title}</h3>
       <div className="w-full" style={{ height: `${height}px` }} aria-label={`${title} Chart`}>
         {renderChart()}

@@ -7,7 +7,6 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import api from '../../../lib/axios';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Loader2, AlertCircle } from 'lucide-react';
 
 const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
   const { user, loading: authLoading } = useAuth();
@@ -101,7 +100,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
       initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[780px]"
+      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]"
     >
       {/* Header */}
       <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
@@ -139,13 +138,15 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
       {/* Liste des patients */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2 bg-slate-50/30 dark:bg-slate-900">
         {authLoading || loadingList ? (
-          <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="animate-spin text-primary mb-3" size={28} />
-            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers...</span>
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+            <Icon name="Loader2" size={28} className="animate-spin text-primary mb-3" />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers…</span>
           </div>
         ) : isError ? (
-          <div className="flex flex-col items-center justify-center py-12 text-rose-600 dark:text-rose-400">
-            <AlertCircle size={28} className="mb-2" />
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-rose-500 text-rose-600 dark:text-rose-400">
+            <div className="w-10 h-10 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-2">
+              <Icon name="AlertCircle" size={24} />
+            </div>
             <p className="text-sm font-medium">Erreur de chargement</p>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Réessayez plus tard</p>
           </div>
@@ -175,7 +176,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
                 >
                   {loadingDetails && isSelected && (
                     <div className="absolute inset-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm flex items-center justify-center rounded-xl z-10">
-                      <Loader2 className="animate-spin text-primary" size={22} />
+                      <Icon name="Loader2" size={22} className="animate-spin text-primary" />
                     </div>
                   )}
 

@@ -7,8 +7,6 @@ import Input from '../../../components/ui/Input';
 import { usePendingPrescriptions, usePharmacyMutations } from '../../../hooks/usePharmacy';
 import { useToast } from '../../../contexts/ToastContext';
 import api from '../../../lib/axios';
-import { Loader2, AlertCircle } from 'lucide-react';
-
 const PrescriptionsList = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 20;
@@ -115,10 +113,10 @@ const PrescriptionsList = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
       
-      {/* 1. Header avec bandeau */}
-      <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+      {/* 1. Header */}
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             <Icon name="FileText" size={20} />
@@ -165,25 +163,34 @@ const PrescriptionsList = () => {
           <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
             {isLoading ? (
               <tr>
-                <td colSpan={7} className="p-12 text-center text-slate-500">
-                  <div className="flex flex-col items-center justify-center">
-                    <Loader2 className="animate-spin text-primary mb-3" size={32} />
-                    <p>Chargement des prescriptions...</p>
+                <td colSpan={7} className="p-12">
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-10">
+                    <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                    <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des prescriptions…</p>
                   </div>
                 </td>
               </tr>
             ) : isError ? (
               <tr>
-                <td colSpan={7} className="p-12 text-center text-rose-500">
-                  <AlertCircle className="inline mb-2" size={32} />
-                  <p>Erreur lors du chargement des données. Veuillez réessayer.</p>
+                <td colSpan={7} className="p-12">
+                  <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-900/20 flex flex-col items-center justify-center gap-3 py-10">
+                    <div className="w-12 h-12 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                      <Icon name="AlertCircle" size={24} className="text-rose-600 dark:text-rose-400" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 text-center">Erreur lors du chargement. Veuillez réessayer.</p>
+                  </div>
                 </td>
               </tr>
             ) : prescriptions.length === 0 ? (
               <tr>
-                <td colSpan={7} className="p-12 text-center text-slate-400">
-                  <Icon name="FileText" size={48} className="mx-auto mb-3 opacity-50" />
-                  <p>Aucune prescription en attente.</p>
+                <td colSpan={7} className="p-12">
+                  <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                    <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                      <Icon name="FileText" size={28} className="text-slate-400 dark:text-slate-500" />
+                    </div>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune prescription en attente</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Les nouvelles prescriptions apparaîtront ici.</p>
+                  </div>
                 </td>
               </tr>
             ) : (
@@ -307,7 +314,7 @@ const PrescriptionsList = () => {
 
       {/* 3. Pagination */}
       {totalPages > 1 && (
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
           <div className="flex items-center justify-between">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Page {page} sur {totalPages} ({totalItems} prescription{totalItems > 1 ? 's' : ''})

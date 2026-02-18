@@ -300,23 +300,19 @@ const DocumentManagement = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors">
       <Header />
 
       <main className="pt-24 max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         {/* En-tête de page */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-              <Icon name="FileText" size={24} className="text-primary" />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+              <Icon name="FileText" size={22} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-                Gestion documentaire
-              </h1>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Archivage, consultation et signature des dossiers médicaux
-              </p>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Gestion documentaire</h1>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Archivage, consultation et signature des dossiers médicaux</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -364,14 +360,14 @@ const DocumentManagement = () => {
 
         {/* Zone d'erreur globale */}
         {documentsError && (
-          <div className="mb-6 flex items-center gap-3 p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400">
+          <div className="mb-6 flex items-center gap-3 p-4 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-l-4 border-l-red-500">
             <Icon name="AlertCircle" size={20} className="shrink-0" />
             <p className="text-sm">{documentsError.message || 'Impossible de charger les documents.'}</p>
           </div>
         )}
 
         {/* Conteneur principal */}
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm min-h-[400px] overflow-hidden">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm min-h-[400px] overflow-hidden">
           <div className="p-6">
             {/* Barre de recherche */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
@@ -403,20 +399,20 @@ const DocumentManagement = () => {
 
             {/* Grille de documents */}
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-24 text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col items-center justify-center py-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
                 <Icon name="Loader2" size={32} className="animate-spin text-primary mb-4" />
-                <p className="text-sm font-medium">Chargement des documents...</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Chargement des documents…</p>
               </div>
             ) : documents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
-                  <Icon name="FileText" size={32} className="text-slate-400 dark:text-slate-500" />
+              <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
+                  <Icon name="FileText" size={28} className="text-slate-400 dark:text-slate-500" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-4">
                   Aucun fichier trouvé. Utilisez « Nouveau document » pour en ajouter.
                 </p>
-                <Button onClick={() => setIsModalOpen(true)} variant="outline" size="sm">
+                <Button onClick={() => setIsModalOpen(true)} variant="outline" size="sm" className="rounded-xl">
                   Ajouter un document
                 </Button>
               </div>
@@ -429,7 +425,7 @@ const DocumentManagement = () => {
                   return (
                     <div
                       key={doc.id}
-                      className={`h-full relative ${isSelected ? 'ring-2 ring-primary rounded-2xl ring-offset-2 dark:ring-offset-slate-900' : ''}`}
+                      className={`h-full relative ${isSelected ? 'ring-2 ring-primary rounded-xl ring-offset-2 dark:ring-offset-slate-900' : ''}`}
                     >
                       <div className="absolute top-2 right-2 z-10">
                         <input

@@ -50,85 +50,77 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
 
   const QuickFilterChip = ({ label, icon, isActive, onClick, colorClass }) => (
     <button
+      type="button"
       onClick={onClick}
-      className={`
-        flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 border
-        ${isActive 
-          ? `bg-white dark:bg-slate-800 border-transparent shadow-sm ring-1 ring-offset-1 dark:ring-offset-slate-900 ${colorClass.ring} ${colorClass.text}` 
-          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:border-slate-300 hover:text-slate-700 dark:hover:text-slate-200'}
-      `}
+      className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+        isActive
+          ? `${colorClass?.bg || 'bg-primary/15 dark:bg-primary/25'} ${colorClass?.text || 'text-primary'} border-current`
+          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+      }`}
     >
-      <Icon name={icon} size={14} className={isActive ? 'text-current' : 'opacity-70'} />
+      <Icon name={icon} size={12} className={isActive ? 'text-current' : 'opacity-70'} />
       {label}
     </button>
   );
 
+  const inputBaseClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none";
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 p-1 mb-6"
+      transition={{ duration: 0.25 }}
+      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm mb-5 overflow-hidden"
     >
-      <div className="flex flex-col md:flex-row gap-2 p-2">
-        <div className="relative flex-1">
-          {/* Bouton de recherche (Loupe) cliquable */}
-          <motion.button 
+      <div className="flex flex-col sm:flex-row gap-2 p-4">
+        <div className="relative flex-1 min-w-0">
+          <button
+            type="button"
             onClick={triggerSearch}
             className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500 hover:text-primary transition-colors cursor-pointer z-10"
             title="Lancer la recherche"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
           >
             <Icon name="Search" size={18} />
-          </motion.button>
-          
+          </button>
           <input
             type="text"
-            placeholder="Rechercher (Nom, ID, Tél) puis Entrée..."
+            placeholder="Nom, ID patient, téléphone… (Entrée pour rechercher)"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
             onKeyDown={handleKeyDown}
             maxLength={100}
-            className="block w-full pl-10 pr-4 py-2.5 bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border-none rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/30 focus:bg-white dark:focus:bg-slate-950 transition-all outline-none shadow-sm"
+            className={inputBaseClass}
           />
         </div>
-        
-        <div className="flex gap-2">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button 
-              variant="ghost" 
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className={`rounded-xl border-2 transition-all ${showAdvanced || activeFiltersCount > 0 ? 'bg-primary/10 dark:bg-primary/20 text-primary border-primary/30 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 border-transparent'}`}
-            >
-              <Icon name="Filter" size={18} className="mr-2" />
-              Filtres
-              {activeFiltersCount > 0 && (
-                <motion.span 
-                  className="ml-2 bg-gradient-to-r from-primary to-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", bounce: 0.5 }}
-                >
-                  {activeFiltersCount}
-                </motion.span>
-              )}
-              <Icon name={showAdvanced ? 'ChevronUp' : 'ChevronDown'} size={14} className="ml-2 opacity-50" />
-            </Button>
-          </motion.div>
-
+        <div className="flex gap-2 shrink-0">
+          <Button
+            variant="ghost"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className={`rounded-xl border transition-all shrink-0 ${
+              showAdvanced || activeFiltersCount > 0
+                ? 'bg-primary/10 dark:bg-primary/20 text-primary border-primary/40'
+                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Icon name="Filter" size={16} className="mr-2" />
+            Filtres
+            {activeFiltersCount > 0 && (
+              <span className="ml-2 px-2 py-0.5 rounded-full bg-primary text-white text-[10px] font-bold">
+                {activeFiltersCount}
+              </span>
+            )}
+            <Icon name={showAdvanced ? 'ChevronUp' : 'ChevronDown'} size={14} className="ml-1 opacity-60" />
+          </Button>
           {(activeFiltersCount > 0 || localSearch) && (
-            <motion.div whileHover={{ scale: 1.1, rotate: 180 }} whileTap={{ scale: 0.9 }} transition={{ duration: 0.3 }}>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={handleReset}
-                className="text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl border-2 border-transparent hover:border-rose-200 dark:hover:border-rose-800"
-                title="Réinitialiser"
-              >
-                <Icon name="RotateCcw" size={18} />
-              </Button>
-            </motion.div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleReset}
+              className="rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 shrink-0"
+              title="Réinitialiser"
+            >
+              <Icon name="RotateCcw" size={18} />
+            </Button>
           )}
         </div>
       </div>
@@ -142,30 +134,56 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="p-4 border-t border-slate-50 dark:border-slate-800 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="px-4 pb-4 pt-0 border-t border-slate-200 dark:border-slate-700">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
                 {establishmentsList.length > 0 && (
-                  <Select label="Établissement" options={establishmentsList} value={filters.establishmentId || ''} onChange={(v) => handleFilterChange('establishmentId', v)} />
+                  <Select
+                    label="Établissement"
+                    options={establishmentsList}
+                    value={filters.establishmentId || ''}
+                    onChange={(v) => handleFilterChange('establishmentId', v)}
+                    buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  />
                 )}
-                <Select label="Statut" options={statusOptions} value={filters.status} onChange={(v) => handleFilterChange('status', v)} />
-                <Select label="Sexe" options={genderOptions} value={filters.gender} onChange={(v) => handleFilterChange('gender', v)} />
+                <Select
+                  label="Statut"
+                  options={statusOptions}
+                  value={filters.status}
+                  onChange={(v) => handleFilterChange('status', v)}
+                  buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                />
+                <Select
+                  label="Sexe"
+                  options={genderOptions}
+                  value={filters.gender}
+                  onChange={(v) => handleFilterChange('gender', v)}
+                  buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                />
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="px-4 pb-3 pt-2 flex flex-wrap gap-2 border-t border-slate-100 dark:border-slate-800 mt-1">
-        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 dark:text-slate-600 self-center mr-1 flex items-center gap-1">
-          <Icon name="Zap" size={12} />
-          Rapide :
+      <div className="px-4 py-3 flex flex-wrap items-center gap-2 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <Icon name="Zap" size={11} />
+          Rapide
         </span>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <QuickFilterChip label="Critiques" icon="AlertTriangle" isActive={filters.status === 'Critical'} onClick={() => handleFilterChange('status', filters.status === 'Critical' ? '' : 'Critical')} colorClass={{ ring: 'ring-rose-500', text: 'text-rose-600 dark:text-rose-400' }} />
-        </motion.div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <QuickFilterChip label="Actifs" icon="CheckCircle" isActive={filters.status === 'Active'} onClick={() => handleFilterChange('status', filters.status === 'Active' ? '' : 'Active')} colorClass={{ ring: 'ring-emerald-500', text: 'text-emerald-600 dark:text-emerald-400' }} />
-        </motion.div>
+        <QuickFilterChip
+          label="Critiques"
+          icon="AlertTriangle"
+          isActive={filters.status === 'Critical'}
+          onClick={() => handleFilterChange('status', filters.status === 'Critical' ? '' : 'Critical')}
+          colorClass={{ bg: 'bg-rose-100 dark:bg-rose-900/30', text: 'text-rose-600 dark:text-rose-400' }}
+        />
+        <QuickFilterChip
+          label="Actifs"
+          icon="CheckCircle"
+          isActive={filters.status === 'Active'}
+          onClick={() => handleFilterChange('status', filters.status === 'Active' ? '' : 'Active')}
+          colorClass={{ bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400' }}
+        />
       </div>
     </motion.div>
   );

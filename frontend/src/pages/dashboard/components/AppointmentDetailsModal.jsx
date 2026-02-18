@@ -7,7 +7,6 @@ import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import api from '../../../lib/axios';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Loader2 } from 'lucide-react';
 
 const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointment }) => {
   const navigate = useNavigate();
@@ -112,14 +111,16 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
       size="lg"
     >
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Loader2 className="animate-spin text-primary mb-4" size={32} />
-          <p className="text-sm text-slate-500">Chargement des détails...</p>
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-8 flex flex-col items-center justify-center gap-3">
+          <Icon name="Loader2" size={32} className="animate-spin text-primary" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des détails…</p>
         </div>
       ) : error ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <Icon name="AlertCircle" size={48} className="text-rose-500 mb-4" />
-          <p className="text-sm text-slate-600 dark:text-slate-400">{error}</p>
+        <div className="rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-900/20 p-8 flex flex-col items-center justify-center gap-3">
+          <div className="w-14 h-14 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+            <Icon name="AlertCircle" size={28} className="text-rose-600 dark:text-rose-400" />
+          </div>
+          <p className="text-sm text-slate-700 dark:text-slate-300 text-center">{error}</p>
         </div>
       ) : appointment ? (
         <motion.div
@@ -147,7 +148,9 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
           {/* Informations principales */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Patient */}
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700 flex">
+              <div className="w-1 rounded-full self-stretch min-h-[3rem] shrink-0 bg-primary mr-3" />
+              <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="User" size={16} className="text-primary" />
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Patient</span>
@@ -160,6 +163,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
                   N° {appointment.patient.numeroPatient}
                 </p>
               )}
+              </div>
             </div>
 
             {/* Médecin */}
@@ -243,7 +247,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <Button variant="outline" onClick={onClose} className="flex-1">
+            <Button variant="outline" onClick={onClose} className="flex-1 rounded-xl">
               Fermer
             </Button>
             {/* Seuls les docteurs et infirmières peuvent démarrer une consultation */}
@@ -260,7 +264,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
                     onClose();
                   }
                 }}
-                className="flex-1"
+                className="flex-1 rounded-xl"
                 iconName="Stethoscope"
               >
                 Démarrer consultation

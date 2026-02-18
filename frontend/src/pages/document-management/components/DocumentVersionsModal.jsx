@@ -33,7 +33,7 @@ const DocumentVersionsModal = ({ document, isOpen, onClose }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
@@ -60,13 +60,14 @@ const DocumentVersionsModal = ({ document, isOpen, onClose }) => {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 min-h-0">
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+            <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+              <Icon name="Loader2" size={28} className="animate-spin text-primary mb-2" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
             </div>
           ) : (
             <div className="space-y-3">
               {/* Version actuelle */}
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4 border-l-4 border-l-primary">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4 border-l-4 border-l-primary">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">
@@ -98,7 +99,7 @@ const DocumentVersionsModal = ({ document, isOpen, onClose }) => {
                     return (
                       <div
                         key={version.id}
-                        className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4 hover:shadow-md transition-shadow"
+                        className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4 hover:shadow-md transition-shadow"
                       >
                         <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -139,7 +140,7 @@ const DocumentVersionsModal = ({ document, isOpen, onClose }) => {
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                  <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
                     <Icon name="GitBranch" size={28} className="text-slate-400 dark:text-slate-500" />
                   </div>
                   <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucune version précédente</p>

@@ -6,7 +6,6 @@ import AnimatedModal from '../../../components/ui/AnimatedModal';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { Checkbox } from '../../../components/ui/Checkbox';
-import { AlertCircle } from 'lucide-react'; 
 
 const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
   const { hasPermission } = usePermissions();
@@ -108,11 +107,11 @@ const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
         
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
-          <div className="flex gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
+          <div className="flex gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
               <Icon name="Building2" size={24} />
             </div>
             <div>
@@ -133,7 +132,7 @@ const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
           
           {globalError && (
             <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/50 rounded-xl flex items-center gap-3 text-rose-600 dark:text-rose-400 text-sm font-medium animate-pulse">
-              <AlertCircle size={20} />
+              <Icon name="AlertCircle" size={20} />
               {globalError}
             </div>
           )}

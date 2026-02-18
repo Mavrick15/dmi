@@ -10,18 +10,16 @@ import { Checkbox } from '../../../components/ui/Checkbox';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
 import { usePatientDetails } from '../../../hooks/usePatients';
-import { Upload, X } from 'lucide-react';
 import Image from '../../../components/AppImage';
 
-// Composant de section avec titre - défini en dehors pour éviter les re-renders
 const Section = ({ title, icon, children, className = "" }) => (
   <div className={`space-y-3 ${className}`}>
     {title && (
       <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
         <div className="p-1.5 bg-primary/10 dark:bg-primary/20 rounded-lg">
-          <Icon name={icon} size={16} className="text-primary dark:text-blue-400" />
+          <Icon name={icon} size={16} className="text-primary" />
         </div>
-        <h3 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide">{title}</h3>
+        <h3 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">{title}</h3>
       </div>
     )}
     {children}
@@ -595,10 +593,10 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
                               e.stopPropagation();
                               fileInputRef.current?.click();
                             }}
-                            className="p-1 bg-blue-500 hover:bg-blue-600 rounded-full text-white transition-colors"
+                            className="p-1.5 bg-blue-500 hover:bg-blue-600 rounded-full text-white transition-colors"
                             title="Changer la photo"
                           >
-                            <Upload size={12} />
+                            <Icon name="Upload" size={12} />
                           </button>
                           <button
                             type="button"
@@ -606,10 +604,10 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
                               e.stopPropagation();
                               handleRemoveAvatar();
                             }}
-                            className="p-1 bg-rose-500 hover:bg-rose-600 rounded-full text-white transition-colors"
+                            className="p-1.5 bg-rose-500 hover:bg-rose-600 rounded-full text-white transition-colors"
                             title="Supprimer la photo"
                           >
-                            <X size={12} />
+                            <Icon name="X" size={12} />
                           </button>
                         </div>
                       </>
@@ -619,7 +617,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
                           {getInitials()}
                         </div>
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                          <Upload size={16} className="text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Icon name="Upload" size={18} className="text-slate-400 dark:text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </>
                     )}
@@ -987,7 +985,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
         return (
           <div className="space-y-4">
             <Section title="Récapitulatif" icon="FileText">
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-5 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="space-y-1">
                     <span className="text-slate-400 text-xs uppercase block font-medium">Patient</span>
@@ -1055,42 +1053,45 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal={true}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
-        
+      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-800 dark:to-slate-800/50 flex justify-between items-center">
-          <div>
-             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-               <Icon name={patient ? "Edit" : "UserPlus"} size={22} className="text-primary" />
-               {patient ? 'Mise à jour Dossier' : 'Admission Patient'}
-             </h2>
-             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Étape {activeStep + 1} sur {steps.length}</p>
+        <div className="shrink-0 p-5 sm:p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name={patient ? "Edit" : "UserPlus"} size={20} className="text-primary" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                {patient ? 'Mise à jour du dossier' : 'Admission patient'}
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Étape {activeStep + 1} sur {steps.length}</p>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-200 dark:hover:bg-slate-700">
+          <Button variant="ghost" size="icon" onClick={onClose} className="rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700">
             <Icon name="X" size={20} />
           </Button>
         </div>
 
-        {/* Stepper Visual */}
-        <div className="px-8 pt-6 pb-4 bg-slate-50/30 dark:bg-slate-800/30">
-            <div className="flex justify-between relative">
-                <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-200 dark:bg-slate-700 rounded-full -z-10" />
-                <div className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-primary to-blue-600 rounded-full -z-10 transition-all duration-500 ease-out" style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }} />
-                {steps.map((s, i) => (
-                    <div key={s.id} className="flex flex-col items-center gap-2 bg-slate-50/30 dark:bg-slate-800/30 px-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${i <= activeStep ? 'bg-gradient-to-br from-primary to-blue-600 text-white border-primary shadow-lg shadow-primary/30 scale-110' : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-600'}`}>
-                            {i < activeStep ? <Icon name="Check" size={14} strokeWidth={3} /> : <Icon name={s.icon} size={14} />}
-                        </div>
-                        <span className={`text-[10px] font-semibold uppercase tracking-wide transition-colors ${i <= activeStep ? 'text-primary dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`}>
-                            {s.label}
-                        </span>
-                    </div>
-                ))}
-            </div>
+        {/* Stepper */}
+        <div className="shrink-0 px-5 sm:px-6 pt-4 pb-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="flex justify-between relative">
+            <div className="absolute top-4 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-700 rounded-full -z-10" />
+            <div className="absolute top-4 left-0 h-0.5 bg-primary rounded-full -z-10 transition-all duration-400 ease-out" style={{ width: `${(activeStep / Math.max(steps.length - 1, 1)) * 100}%` }} />
+            {steps.map((s, i) => (
+              <div key={s.id} className="flex flex-col items-center gap-1.5 relative z-0">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${i <= activeStep ? 'bg-primary text-white border-primary shadow-md' : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-600'}`}>
+                  {i < activeStep ? <Icon name="Check" size={14} /> : <Icon name={s.icon} size={14} />}
+                </div>
+                <span className={`text-[10px] font-semibold uppercase tracking-wider max-w-[4rem] text-center leading-tight ${i <= activeStep ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>
+                  {s.label}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="p-4 flex-1 overflow-y-auto custom-scrollbar min-h-[450px] max-h-[60vh]">
+        <div className="flex-1 min-h-0 overflow-y-auto p-5 custom-scrollbar">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeStep}
@@ -1105,36 +1106,35 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
-            <Button 
-              variant="ghost" 
-              onClick={activeStep === 0 ? onClose : handleBack} 
-              disabled={loading}
-              className="hover:bg-slate-200 dark:hover:bg-slate-700"
+        <div className="shrink-0 p-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center rounded-b-2xl">
+          <Button
+            variant="ghost"
+            onClick={activeStep === 0 ? onClose : handleBack}
+            disabled={loading}
+            className="rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700"
+          >
+            {activeStep === 0 ? 'Annuler' : 'Précédent'}
+          </Button>
+          {activeStep === steps.length - 1 ? (
+            <Button
+              onClick={handleSubmit}
+              loading={loading}
+              disabled={patient ? !hasPermission('patient_edit') : !hasPermission('patient_create')}
+              iconName="Check"
+              className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-md"
             >
-              {activeStep === 0 ? 'Annuler' : 'Précédent'}
+              {patient ? 'Mettre à jour' : 'Créer le dossier'}
             </Button>
-            
-            {activeStep === steps.length - 1 ? (
-                <Button 
-                  onClick={handleSubmit} 
-                  loading={loading} 
-                  disabled={patient ? !hasPermission('patient_edit') : !hasPermission('patient_create')}
-                  iconName="Check" 
-                  className="shadow-lg shadow-primary/20 bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                >
-                  {patient ? 'Mettre à jour' : 'Créer le dossier'}
-                </Button>
-            ) : (
-                <Button 
-                  onClick={handleNext} 
-                  iconName="ArrowRight" 
-                  iconPosition="right"
-                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90"
-                >
-                  Suivant
-                </Button>
-            )}
+          ) : (
+            <Button
+              onClick={handleNext}
+              iconName="ArrowRight"
+              iconPosition="right"
+              className="rounded-xl bg-primary hover:bg-primary/90 text-white"
+            >
+              Suivant
+            </Button>
+          )}
         </div>
       </div>
     </AnimatedModal>

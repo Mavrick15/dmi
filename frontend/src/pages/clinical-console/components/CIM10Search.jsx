@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { useCIM10Search, useCIM10Categories, useCIM10Mutations } from '../../../hooks/useClinicalTools';
-import { Loader2, Search, Check, X } from 'lucide-react';
 
 const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,7 +153,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
             onClick={() => setSearchQuery('')}
             className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded"
           >
-            <X size={16} className="text-slate-400" />
+            <Icon name="X" size={16} className="text-slate-400" />
           </button>
         )}
       </div>
@@ -162,7 +161,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
       {/* Category Filters — scroll horizontal si beaucoup */}
       {loadingCategories ? (
         <div className="flex justify-center py-4">
-          <Loader2 className="animate-spin text-primary" size={16} />
+          <Icon name="Loader2" size={16} className="animate-spin text-primary" />
         </div>
       ) : (
         <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar max-w-full">
@@ -196,7 +195,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
       <div className="max-h-96 overflow-y-auto custom-scrollbar space-y-2">
         {loadingCodes ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="animate-spin text-primary" size={24} />
+            <Icon name="Loader2" size={24} className="animate-spin text-primary" />
           </div>
         ) : !searchQuery.trim() && !selectedCategory && filteredResults.length === 0 ? (
           <div className="text-center py-8 text-slate-500 dark:text-slate-400">
@@ -243,7 +242,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
                       )}
                     </div>
                     {isSelected && (
-                      <Check size={16} className="shrink-0 text-primary dark:text-blue-400" />
+                      <Icon name="Check" size={16} className="shrink-0 text-primary dark:text-blue-400" />
                     )}
                   </div>
                 </motion.button>
