@@ -47,9 +47,6 @@ export default class Document extends BaseModel {
   declare description: string | null
 
   @column()
-  declare tags: string | null // JSON array
-
-  @column()
   declare extractedText: string | null
 
   @column()
@@ -63,9 +60,6 @@ export default class Document extends BaseModel {
 
   @column()
   declare isArchived: boolean
-
-  @column()
-  declare isWatermarked: boolean
 
   @column()
   declare status: 'draft' | 'pending_approval' | 'approved' | 'rejected'
@@ -148,19 +142,6 @@ export default class Document extends BaseModel {
   declare approvals: HasMany<typeof DocumentApproval>
 
   // Helpers
-  getTagsArray(): string[] {
-    if (!this.tags) return []
-    try {
-      return JSON.parse(this.tags)
-    } catch {
-      return []
-    }
-  }
-
-  setTagsArray(tags: string[]) {
-    this.tags = JSON.stringify(tags)
-  }
-
   getAccessPermissions(): { userIds?: string[], roleIds?: string[] } {
     if (!this.accessPermissions) return {}
     try {

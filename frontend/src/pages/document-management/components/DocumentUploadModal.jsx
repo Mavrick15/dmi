@@ -11,9 +11,6 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('general');
   const [description, setDescription] = useState('');
-  const [tags, setTags] = useState([]);
-  const [newTag, setNewTag] = useState('');
-  const [addWatermark, setAddWatermark] = useState(false);
   const [selectedPatientId, setSelectedPatientId] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [patients, setPatients] = useState([]);
@@ -25,9 +22,6 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
       fetchPatients();
       setTitle('');
       setDescription('');
-      setTags([]);
-      setNewTag('');
-      setAddWatermark(false);
       setSelectedPatientId('');
       setSelectedFile(null);
     }
@@ -72,17 +66,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
     formData.append('category', category);
     formData.append('patientId', selectedPatientId);
     if (description) formData.append('description', description);
-    if (tags.length > 0) formData.append('tags', JSON.stringify(tags));
-    if (addWatermark) formData.append('addWatermark', 'true');
     onUpload(formData);
-  };
-
-  const addTag = () => {
-    const t = newTag.trim();
-    if (t && !tags.includes(t)) {
-      setTags([...tags, t]);
-      setNewTag('');
-    }
   };
 
   return (
@@ -183,61 +167,6 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm resize-none"
             />
           </div>
-
-          {/* Tags */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-4 shadow-sm">
-            <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Tags (optionnel)</p>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                placeholder="Ajouter un tag (Entrée)"
-                className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm"
-              />
-              <Button type="button" variant="outline" size="sm" onClick={addTag} disabled={!newTag.trim()}>
-                Ajouter
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => setTags(tags.filter((_, i) => i !== idx))}
-                      className="p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-500 transition-colors"
-                      aria-label={`Retirer ${tag}`}
-                    >
-                      <Icon name="X" size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Watermark */}
-          {selectedFile && selectedFile.type === 'application/pdf' && (
-            <div className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30">
-              <input
-                type="checkbox"
-                id="watermark"
-                checked={addWatermark}
-                onChange={(e) => setAddWatermark(e.target.checked)}
-                className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary/20"
-              />
-              <label htmlFor="watermark" className="flex-1 cursor-pointer">
-                <span className="text-sm font-medium text-slate-900 dark:text-white">Ajouter un watermark (nom patient + date)</span>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Le document sera marqué avec les informations du patient.</p>
-              </label>
-            </div>
-          )}
 
           {/* Zone fichier */}
           <div className="pt-2 border-t border-slate-200 dark:border-slate-700">

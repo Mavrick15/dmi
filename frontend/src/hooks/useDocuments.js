@@ -218,26 +218,6 @@ export const useDocumentMutations = () => {
         showToast(message, 'error');
       }
     }),
-    // Nouvelles mutations Phase 1-3
-    updateTags: useMutation({
-      mutationFn: async ({ id, action, tags }) => {
-        const response = await api.patch(`/documents/${id}/tags`, { action, tags });
-        return response.data;
-      },
-      onSuccess: (data) => {
-        invalidate();
-        const message = data?.message || 'Tags mis à jour avec succès';
-        showToast(message, 'success');
-      },
-      onError: (error) => {
-        // Ne pas afficher les erreurs 422 (validation) car elles sont gérées par les modales
-        if (error.response?.status === 422) {
-          return;
-        }
-        const message = error.userMessage || 'Erreur lors de la mise à jour des tags.';
-        showToast(message, 'error');
-      }
-    }),
     shareDocument: useMutation({
       mutationFn: async ({ id, userIds, roleIds, permission, expiresAt }) => {
         const response = await api.post(`/documents/${id}/share`, { 
@@ -339,25 +319,6 @@ export const useDocumentMutations = () => {
           return;
         }
         const message = error.userMessage || 'Erreur lors de l\'archivage.';
-        showToast(message, 'error');
-      }
-    }),
-    addWatermark: useMutation({
-      mutationFn: async ({ id, watermarkText }) => {
-        const response = await api.post(`/documents/${id}/watermark`, { watermarkText });
-        return response.data;
-      },
-      onSuccess: (data) => {
-        invalidate();
-        const message = data?.message || 'Watermark ajouté avec succès';
-        showToast(message, 'success');
-      },
-      onError: (error) => {
-        // Ne pas afficher les erreurs 422 (validation) car elles sont gérées par les modales
-        if (error.response?.status === 422) {
-          return;
-        }
-        const message = error.userMessage || 'Erreur lors de l\'ajout du watermark.';
         showToast(message, 'error');
       }
     }),

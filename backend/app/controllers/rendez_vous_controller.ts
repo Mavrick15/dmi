@@ -221,14 +221,32 @@ export default class RendezVousController {
   public async store({ request, response, auth }: HttpContext) {
     // Validation avec VineJS
     const payload = await request.validateUsing(createRendezVousValidator)
+
+    // Restriction : un médecin ne peut créer un rendez-vous que pour lui-même.
+    // Seuls les infirmiers (et admin/gestionnaire) peuvent créer des RDV pour n'importe quel médecin.
+    const user = auth.user as any
+    if (user?.role === 'docteur') {
+      const medecinConnected = await Medecin.query().where('userId', user.id).first()
+      if (!medecinConnected) {
+        throw AppException.forbiddenWithMessage('Aucun profil médecin associé à votre compte. Vous ne pouvez pas créer de rendez-vous.')
+      }
+      if (payload.medecinId !== medecinConnected.id) {
+        throw AppException.forbiddenWithMessage('Un médecin ne peut créer un rendez-vous que pour lui-même. Pour programmer un RDV pour un autre médecin, contactez un infirmier ou l\'administration.')
+      }
+    }
     
     // Combiner date et time en dateHeure
     const dateStr = payload.date // Format: YYYY-MM-DD
     const timeStr = payload.time // Format: HH:mm
     const dateTimeStr = `${dateStr}T${timeStr}:00` // Format: YYYY-MM-DDTHH:mm:ss
     // Interpréter la date comme locale (pas UTC) pour éviter les décalages
-    // Si la chaîne n'a pas de fuseau horaire, fromISO l'interprète comme locale
     const startDateTime = DateTime.fromISO(dateTimeStr, { zone: 'local' })
+
+    // Ne pas autoriser un rendez-vous dans le passé
+    const now = DateTime.now().setZone('local')
+    if (startDateTime <= now) {
+      throw AppException.badRequest('Impossible de programmer un rendez-vous dans le passé. Veuillez choisir une date et une heure à venir.')
+    }
     
     // Utiliser duration ou dureeMinutes (priorité à duration du frontend)
     const duration = payload.duration || payload.dureeMinutes || 30
@@ -702,19 +720,25 @@ export default class RendezVousController {
   }
 
   /**
-   * Liste des médecins disponibles
+   * Liste des médecins disponibles.
+   * Restriction : un médecin connecté ne voit que lui-même (il ne peut créer des RDV que pour lui).
+   * Les infirmiers, admin et gestionnaire voient tous les médecins.
    * @route GET /api/v1/doctors
    * @queryParam establishmentId (optionnel) - Filtrer par établissement
    * @access Authentifié
    */
-  public async medecins({ request, response }: HttpContext) {
+  public async medecins({ request, response, auth }: HttpContext) {
     try {
       const establishmentId = request.input('establishmentId')
       const query = Medecin.query()
         .preload('user')
         .where('disponible', true)
 
-      if (establishmentId) {
+      // Un médecin ne peut créer un RDV que pour lui-même : ne retourner que son profil
+      const user = auth.user as any
+      if (user?.role === 'docteur') {
+        query.where('userId', user.id)
+      } else if (establishmentId) {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
         if (uuidRegex.test(establishmentId)) {
           query.where('etablissement_id', establishmentId)

@@ -9,8 +9,6 @@ import { cuid } from '@adonisjs/core/helpers'
 import logger from '@adonisjs/core/services/logger'
 import { DateTime } from 'luxon'
 import sharp from 'sharp'
-import { PDFDocument, rgb, degrees } from 'pdf-lib'
-
 /**
  * Service pour gérer toutes les fonctionnalités avancées des documents
  */
@@ -68,30 +66,6 @@ export default class DocumentService {
   }
 
   /**
-   * Ajouter des tags à un document
-   */
-  static async addTags(documentId: number, tags: string[]): Promise<Document> {
-    const document = await Document.findOrFail(documentId)
-    const currentTags = document.getTagsArray()
-    const newTags = [...new Set([...currentTags, ...tags])] // Éviter les doublons
-    document.setTagsArray(newTags)
-    await document.save()
-    return document
-  }
-
-  /**
-   * Retirer des tags d'un document
-   */
-  static async removeTags(documentId: number, tags: string[]): Promise<Document> {
-    const document = await Document.findOrFail(documentId)
-    const currentTags = document.getTagsArray()
-    const newTags = currentTags.filter(tag => !tags.includes(tag))
-    document.setTagsArray(newTags)
-    await document.save()
-    return document
-  }
-
-  /**
    * Générer une miniature pour un document (image)
    */
   static async generateThumbnail(document: Document): Promise<string | null> {
@@ -116,52 +90,6 @@ export default class DocumentService {
     } catch (error) {
       logger.error({ err: error, documentId: document.id }, 'Erreur lors de la génération de la miniature')
       return null
-    }
-  }
-
-  /**
-   * Ajouter un watermark à un document PDF
-   */
-  static async addWatermark(
-    document: Document,
-    watermarkText: string,
-    userId: string
-  ): Promise<void> {
-    if (!document.mimeType.includes('pdf')) {
-      throw new Error('Le watermarking n\'est disponible que pour les PDF')
-    }
-    
-    try {
-      const pdfBuffer = await drive.use().getBytes(document.filePath)
-      const pdfDoc = await PDFDocument.load(pdfBuffer)
-      
-      const pages = pdfDoc.getPages()
-      const font = await pdfDoc.embedFont('Helvetica-Bold')
-      
-      pages.forEach((page) => {
-        const { width, height } = page.getSize()
-        
-        // Watermark en diagonale
-        // Utiliser rgb() de pdf-lib pour créer la couleur correctement
-        page.drawText(watermarkText, {
-          x: width / 2 - 100,
-          y: height / 2,
-          size: 20,
-          font,
-          color: rgb(0.8, 0.8, 0.8),
-          rotate: degrees(-45),
-          opacity: 0.3,
-        })
-      })
-      
-      const watermarkedPdf = await pdfDoc.save()
-      await drive.use().put(document.filePath, watermarkedPdf)
-      
-      document.isWatermarked = true
-      await document.save()
-    } catch (error) {
-      logger.error({ err: error, documentId: document.id }, 'Erreur lors de l\'ajout du watermark')
-      throw error
     }
   }
 

@@ -143,7 +143,6 @@ export default class OmnisearchController {
            .orWhereRaw('LOWER(original_name) LIKE ?', [term])
            .orWhereRaw('LOWER(category) LIKE ?', [term])
            .orWhereRaw('CAST(id AS TEXT) LIKE ?', [rawTerm])
-           .orWhereRaw('(tags IS NOT NULL AND LOWER(tags::text) LIKE ?)', [term])
            .orWhereHas('patient', (patientQuery) => {
              patientQuery.whereHas('user', (userQuery) => {
                userQuery.whereRaw('LOWER(nom_complet) LIKE ?', [term])

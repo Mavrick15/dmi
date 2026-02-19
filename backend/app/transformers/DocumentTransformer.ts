@@ -40,12 +40,10 @@ export class DocumentTransformer extends BaseTransformer {
       // Nouvelles propriétés Phase 1-3
       version: d.version || 1,
       description: d.description || null,
-      tags: d.getTagsArray(),
       isSigned: d.isSigned || false,
       signedBy: d.signedBy || null,
       signedAt: d.signedAt?.toISO() || null,
       isArchived: d.isArchived || false,
-      isWatermarked: d.isWatermarked || false,
       status: d.status || 'draft',
       accessLevel: d.accessLevel || 'private',
       downloadCount: d.downloadCount || 0,

@@ -3,8 +3,6 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
-import PermissionGuard from '../../../components/PermissionGuard';
-import { usePermissions } from '../../../hooks/usePermissions';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 import { useDocumentMutations } from '../../../hooks/useDocuments';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +13,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 const ROLES_DOCTEURS = [{ value: 'docteur', label: 'Tous les docteurs' }];
 
 const DocumentShareModal = ({ document, isOpen, onClose }) => {
-  const { hasPermission } = usePermissions();
   const { user } = useAuth();
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [selectedRoleIds, setSelectedRoleIds] = useState([]);
@@ -40,7 +37,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
 
   const noSelection = (Array.isArray(selectedUserIds) ? selectedUserIds.length : 0) === 0 &&
     (Array.isArray(selectedRoleIds) ? selectedRoleIds.length : 0) === 0;
-  const canSubmit = !noSelection && hasPermission('document_share') && !shareDocument.isPending;
+  const canSubmit = !noSelection && !shareDocument.isPending;
 
   const handleShare = async () => {
     if (noSelection) return;
@@ -77,8 +74,8 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
     : [];
 
   return (
-    <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+    <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
           <div className="flex items-center gap-3">
@@ -199,24 +196,22 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           <Button variant="outline" onClick={onClose}>
             Annuler
           </Button>
-          <PermissionGuard requiredPermission="document_share">
-            <Button
-              onClick={handleShare}
-              disabled={!canSubmit}
-            >
-              {shareDocument.isPending ? (
-                <>
-                  <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
-                  Partage en cours...
-                </>
-              ) : (
-                <>
-                  <Icon name="Share2" size={16} className="mr-2" />
-                  Partager
-                </>
-              )}
-            </Button>
-          </PermissionGuard>
+          <Button
+            onClick={handleShare}
+            disabled={!canSubmit}
+          >
+            {shareDocument.isPending ? (
+              <>
+                <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                Partage en cours...
+              </>
+            ) : (
+              <>
+                <Icon name="Share2" size={16} className="mr-2" />
+                Partager
+              </>
+            )}
+          </Button>
         </div>
       </div>
     </AnimatedModal>

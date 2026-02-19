@@ -18,7 +18,6 @@ import DocumentUploadModal from './components/DocumentUploadModal';
 import DocumentSigningModal from './components/DocumentSigningModal';
 import DocumentViewer from './components/DocumentViewer';
 import DocumentVersionsModal from './components/DocumentVersionsModal';
-import DocumentTagsModal from './components/DocumentTagsModal';
 import DocumentCommentsPanel from './components/DocumentCommentsPanel';
 import DocumentShareModal from './components/DocumentShareModal';
 import DocumentApprovalWorkflow from './components/DocumentApprovalWorkflow';
@@ -42,7 +41,6 @@ const DocumentManagement = () => {
   const [isViewerOpen, setIsViewerOpen] = useState(false); 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isVersionsModalOpen, setIsVersionsModalOpen] = useState(false);
-  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [isCommentsPanelOpen, setIsCommentsPanelOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
@@ -77,11 +75,9 @@ const DocumentManagement = () => {
     deleteDocument, 
     signDocument, 
     downloadDocument,
-    updateTags,
     shareDocument,
     addComment,
     toggleArchive,
-    addWatermark,
     restoreVersion,
     exportBulk: exportBulkMutation,
     trackView
@@ -260,11 +256,6 @@ const DocumentManagement = () => {
   const handleViewVersions = (doc) => {
     setSelectedDoc(doc);
     setIsVersionsModalOpen(true);
-  };
-
-  const handleManageTags = (doc) => {
-    setSelectedDoc(doc);
-    setIsTagsModalOpen(true);
   };
 
   const handleViewComments = (doc) => {
@@ -545,7 +536,6 @@ const DocumentManagement = () => {
         onDownload={handleDownload}
         onSign={() => openSigning(selectedDoc)}
         onViewVersions={handleViewVersions}
-        onManageTags={handleManageTags}
         onViewComments={handleViewComments}
         onViewApproval={handleViewApproval}
         onShare={handleShare}
@@ -558,21 +548,14 @@ const DocumentManagement = () => {
         onClose={() => { setIsVersionsModalOpen(false); setSelectedDoc(null); }}
       />
 
-      {/* 5. Tags */}
-      <DocumentTagsModal
-        document={selectedDoc}
-        isOpen={isTagsModalOpen}
-        onClose={() => { setIsTagsModalOpen(false); setSelectedDoc(null); }}
-      />
-
-      {/* 6. Commentaires */}
+      {/* 5. Commentaires */}
       <DocumentCommentsPanel
         documentId={selectedDoc?.id}
         isOpen={isCommentsPanelOpen}
         onClose={() => { setIsCommentsPanelOpen(false); setSelectedDoc(null); }}
       />
 
-      {/* 7. Partage */}
+      {/* 6. Partage */}
       <DocumentShareModal
         document={selectedDoc}
         isOpen={isShareModalOpen}

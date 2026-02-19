@@ -161,7 +161,6 @@ export default class DocumentsController {
       // Écriture sur le disque configuré (fs ou s3)
       await file.moveToDisk(key)
 
-      const tags = request.input('tags') ? JSON.parse(request.input('tags')) : []
       const description = request.input('description') || null
 
       const doc = await Document.create(
@@ -176,7 +175,6 @@ export default class DocumentsController {
           size: file.size,
           version: 1,
           description,
-          tags: tags.length > 0 ? JSON.stringify(tags) : null,
           status: 'draft',
           accessLevel: 'private',
           downloadCount: 0,
@@ -189,14 +187,6 @@ export default class DocumentsController {
       if (file.type === 'image') {
         await DocumentService.generateThumbnail(doc).catch((err) => {
           logger.warn({ err, documentId: doc.id }, 'Échec génération miniature')
-        })
-      }
-
-      // Ajouter un watermark si demandé
-      if (request.input('addWatermark') === 'true' && file.subtype === 'pdf') {
-        const watermarkText = `${patient.user?.nomComplet || 'Patient'} - ${DateTime.now().toFormat('dd/MM/yyyy')}`
-        await DocumentService.addWatermark(doc, watermarkText, user.id).catch((err) => {
-          logger.warn({ err, documentId: doc.id }, 'Échec ajout watermark')
         })
       }
 
@@ -536,40 +526,6 @@ export default class DocumentsController {
   }
 
   /**
-   * Ajouter/Retirer des tags
-   */
-  public async updateTags({ params, request, response, auth }: HttpContext) {
-    const action = request.input('action') // 'add' ou 'remove'
-    const tags = request.input('tags') // Array de tags
-    const user = auth.user as UserProfile
-
-    if (!Array.isArray(tags) || tags.length === 0) {
-      throw AppException.badRequest('Les tags sont requis')
-    }
-
-    const document =
-      action === 'add'
-        ? await DocumentService.addTags(params.id, tags)
-        : await DocumentService.removeTags(params.id, tags)
-
-    // Log d'audit - Modification de document (tags)
-    await AuditService.logDocumentUpdated(
-      { auth, request, response } as HttpContext,
-      String(document.id),
-      document.title,
-      user.nomComplet || user.email,
-      { tags, action }
-    )
-
-    return response.json(
-      ApiResponse.success(
-        DocumentTransformer.transform(document, true),
-        `Tags ${action === 'add' ? 'ajoutés' : 'retirés'} avec succès`
-      )
-    )
-  }
-
-  /**
    * Partager un document (uniquement avec des docteurs)
    */
   public async share({ params, request, response, auth }: HttpContext) {
@@ -844,34 +800,6 @@ export default class DocumentsController {
       ApiResponse.success(
         DocumentTransformer.transform(document, true),
         `Document ${action === 'archive' ? 'archivé' : 'désarchivé'} avec succès`
-      )
-    )
-  }
-
-  /**
-   * Ajouter un watermark
-   */
-  public async addWatermark({ params, request, response, auth }: HttpContext) {
-    const user = auth.user as UserProfile
-    const watermarkText =
-      request.input('watermarkText') ||
-      `${user.nomComplet || 'Utilisateur'} - ${DateTime.now().toFormat('dd/MM/yyyy')}`
-
-    const document = await Document.findOrFail(params.id)
-    await DocumentService.addWatermark(document, watermarkText, user.id)
-
-    await AuditService.logUpdate(
-      { auth, request, response } as HttpContext,
-      'document',
-      String(document.id),
-      document.title,
-      { action: 'watermark_added' }
-    )
-
-    return response.json(
-      ApiResponse.success(
-        DocumentTransformer.transform(document, true),
-        'Watermark ajouté avec succès'
       )
     )
   }

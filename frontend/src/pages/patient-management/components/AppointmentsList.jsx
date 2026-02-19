@@ -14,7 +14,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { useAppointments, useDoctors, useAppointmentMutations } from '../../../hooks/useAppointments';
 import { Loader2 } from 'lucide-react';
 
-const AppointmentsList = ({ patient, onSelectAppointment }) => {
+const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => {
   const { hasPermission } = usePermissions();
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -160,59 +160,31 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
   }
 
   const count = Array.isArray(appointments) ? appointments.length : 0;
-  const todayStr = new Date().toISOString().split('T')[0];
-  const isToday = selectedDate === todayStr;
 
   return (
     <div className="w-full">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
-            <Icon name="Calendar" size={22} className="text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Rendez-vous</h3>
-              {count > 0 && (
-                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/15 dark:bg-primary/25 text-primary">
-                  {count} {count === 1 ? 'RDV' : 'RDV'}
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {isToday ? "Aujourd'hui" : formatDate(selectedDate)}
-            </p>
-          </div>
+      {/* Header : Rendez-vous à gauche, Nouveau RDV à droite */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <Icon name="CalendarClock" size={18} className="text-primary" />
+          <span className="text-sm font-semibold text-slate-900 dark:text-white">Rendez-vous</span>
+          {count > 0 && (
+            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-primary/15 dark:bg-primary/25 text-primary">
+              {count} RDV
+            </span>
+          )}
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-44 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-xl"
-          />
+        <PermissionGuard requiredPermission="appointment_create">
           <Button
-            variant="ghost"
+            onClick={() => (onOpenScheduler ? onOpenScheduler(patient) : setIsCreateModalOpen(true))}
+            iconName="Plus"
+            disabled={!patient || !hasPermission('appointment_create')}
             size="sm"
-            onClick={() => setSelectedDate(todayStr)}
-            className={`rounded-xl border ${isToday ? 'border-primary bg-primary/10 text-primary dark:bg-primary/20' : 'border-slate-200 dark:border-slate-700'}`}
+            className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 shrink-0"
           >
-            <Icon name="Calendar" size={14} className="mr-1.5" />
-            Aujourd'hui
+            Nouveau RDV
           </Button>
-          <PermissionGuard requiredPermission="appointment_create">
-            <Button
-              onClick={() => setIsCreateModalOpen(true)}
-              iconName="Plus"
-              disabled={!patient || !hasPermission('appointment_create')}
-              size="sm"
-              className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20"
-            >
-              Nouveau RDV
-            </Button>
-          </PermissionGuard>
-        </div>
+        </PermissionGuard>
       </div>
 
       {/* Content */}
@@ -231,7 +203,7 @@ const AppointmentsList = ({ patient, onSelectAppointment }) => {
             <PermissionGuard requiredPermission="appointment_create">
               {patient && (
                 <Button
-                  onClick={() => setIsCreateModalOpen(true)}
+                  onClick={() => (onOpenScheduler ? onOpenScheduler(patient) : setIsCreateModalOpen(true))}
                   variant="outline"
                   size="sm"
                   disabled={!hasPermission('appointment_create')}

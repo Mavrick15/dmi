@@ -214,10 +214,9 @@ const PatientManagement = () => {
     setIsDetailsModalOpen(true); 
   }, []);
 
-  const openAppointment = useCallback((patient) => { 
-    setSelectedPatient(patient); 
-    setIsAppointmentModalOpen(true); 
-    setIsDetailsModalOpen(false);
+  const openAppointment = useCallback((patient) => {
+    setSelectedPatient(patient);
+    setIsAppointmentModalOpen(true);
   }, []);
 
   const openEdit = useCallback((patient) => {

@@ -1,6 +1,8 @@
 // openclinic/frontend/src/pages/patient-management/components/AppointmentScheduler.jsx
 
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import api from '../../../lib/axios';
 import Icon from '../../../components/AppIcon';
 import Input from '../../../components/ui/Input';
@@ -8,10 +10,42 @@ import Select from '../../../components/ui/Select';
 import Button from '../../../components/ui/Button';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
-import { useAppointmentMutations, useDoctors } from '../../../hooks/useAppointments';
+import { useAppointments, useAppointmentMutations, useDoctors } from '../../../hooks/useAppointments';
 
 const TIME_SLOTS_MORNING = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];
 const TIME_SLOTS_AFTERNOON = ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
+const ALL_TIME_SLOTS = [...TIME_SLOTS_MORNING, ...TIME_SLOTS_AFTERNOON];
+
+/** Retourne true si le créneau (date + heure) est déjà passé. */
+const isSlotInPast = (dateStr, timeStr) => new Date(`${dateStr}T${timeStr}`) <= new Date();
+
+/** Convertit "HH:mm" en minutes depuis minuit. */
+const timeToMinutes = (hhmm) => {
+  const [h, m] = hhmm.split(':').map(Number);
+  return (h || 0) * 60 + (m || 0);
+};
+
+/** À partir des RDV existants (même médecin, même jour), retourne un map créneau -> nom du patient. */
+const getOccupiedSlots = (appointments) => {
+  const map = {};
+  if (!Array.isArray(appointments)) return map;
+  for (const apt of appointments) {
+    const start = timeToMinutes(apt.time || apt.dateHeure?.slice(11, 16) || '08:00');
+    const duration = apt.dureeMinutes ?? apt.duration ?? 30;
+    const end = start + duration;
+    for (const slot of ALL_TIME_SLOTS) {
+      const slotM = timeToMinutes(slot);
+      if (slotM >= start && slotM < end) map[slot] = apt.patientName || apt.patient?.name || 'Patient';
+    }
+  }
+  return map;
+};
+
+/** Premier créneau encore à venir et non occupé pour la date donnée. */
+const getFirstAvailableTime = (dateStr, occupiedBySlot = {}) => {
+  const first = ALL_TIME_SLOTS.find(t => !isSlotInPast(dateStr, t) && !occupiedBySlot[t]);
+  return first ?? ALL_TIME_SLOTS[ALL_TIME_SLOTS.length - 1];
+};
 
 const DURATION_OPTIONS = [
   { value: '15', label: '15 min' },
@@ -39,6 +73,11 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
   const { showToast } = useToast();
   const { createAppointment } = useAppointmentMutations();
   const { data: doctorsData } = useDoctors();
+  const { data: existingAppointments = [] } = useAppointments(
+    { medecinId: appointmentData.provider, date: appointmentData.date },
+    { enabled: !!appointmentData.provider && !!appointmentData.date && isOpen }
+  );
+  const occupiedSlots = React.useMemo(() => getOccupiedSlots(existingAppointments), [existingAppointments]);
 
   useEffect(() => {
     if (doctorsData && Array.isArray(doctorsData)) {
@@ -50,6 +89,16 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
       setLoadingDoctors(false);
     }
   }, [doctorsData]);
+
+  // Quand la date, le médecin ou l'ouverture change : si l'heure choisie est passée ou déjà prise, passer au premier créneau disponible
+  useEffect(() => {
+    if (!isOpen || !appointmentData.date) return;
+    const past = isSlotInPast(appointmentData.date, appointmentData.time);
+    const occupied = occupiedSlots[appointmentData.time];
+    if (past || occupied) {
+      setAppointmentData(prev => ({ ...prev, time: getFirstAvailableTime(appointmentData.date, occupiedSlots) }));
+    }
+  }, [isOpen, appointmentData.date, appointmentData.provider, occupiedSlots]);
 
   useEffect(() => {
     if (isOpen) {
@@ -91,15 +140,26 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
 
     // Validation basique
     if (!appointmentData.provider) {
-      showToast("Veuillez sélectionner un médecin.", 'error'); // <--- FEEDBACK ERREUR
+      showToast("Veuillez sélectionner un médecin.", 'error');
       return;
     }
     if (!appointmentData.time) {
-      showToast("Veuillez choisir une heure.", 'error'); // <--- FEEDBACK ERREUR
+      showToast("Veuillez choisir une heure.", 'error');
       return;
     }
     if (!patient || !patient.id) {
-      showToast("Erreur: Aucun patient sélectionné.", 'error'); // <--- FEEDBACK ERREUR
+      showToast("Erreur: Aucun patient sélectionné.", 'error');
+      return;
+    }
+
+    // Ne pas programmer un rendez-vous dans le passé
+    const chosenDateTime = new Date(`${appointmentData.date}T${appointmentData.time}`);
+    if (chosenDateTime <= new Date()) {
+      showToast("Impossible de programmer un rendez-vous dans le passé. Choisissez une date et une heure à venir.", 'error');
+      return;
+    }
+    if (occupiedSlots[appointmentData.time]) {
+      showToast(`Ce créneau est déjà réservé par ${occupiedSlots[appointmentData.time]}. Choisissez un autre horaire.`, 'error');
       return;
     }
 
@@ -132,13 +192,28 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
 
   const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
-  if (!isOpen) return null;
-
   const patientName = patient?.user?.nomComplet || patient?.name || 'Patient';
 
-  return (
-    <div className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-hidden flex flex-col">
+  const modalContent = (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+          className="fixed inset-0 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
+          style={{ zIndex: 100000 }}
+          onClick={(e) => e.target === e.currentTarget && onClose?.()}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 12 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-hidden flex flex-col"
+          >
         {/* En-tête avec patient */}
         <div className="shrink-0 px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900 flex justify-between items-start gap-4">
           <div className="flex items-center gap-4 min-w-0">
@@ -170,6 +245,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
               <Input
                 label="Date"
                 type="date"
+                min={new Date().toISOString().split('T')[0]}
                 value={appointmentData.date}
                 onChange={e => setAppointmentData({ ...appointmentData, date: e.target.value })}
                 className={inputStyle}
@@ -224,37 +300,61 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
               <div>
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Matin</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {TIME_SLOTS_MORNING.map(slot => (
-                    <button
-                      key={slot}
-                      type="button"
-                      onClick={() => setAppointmentData({ ...appointmentData, time: slot })}
-                      className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${appointmentData.time === slot
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
+                  {TIME_SLOTS_MORNING.map(slot => {
+                    const past = isSlotInPast(appointmentData.date, slot);
+                    const occupied = occupiedSlots[slot];
+                    const patientName = occupied || '';
+                    const unavailable = past || occupied;
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        disabled={unavailable}
+                        title={occupied ? `Créneau déjà réservé par ${patientName}` : undefined}
+                        onClick={() => !unavailable && setAppointmentData({ ...appointmentData, time: slot })}
+                        className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${past
+                          ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
+                          : occupied
+                            ? 'cursor-not-allowed bg-amber-100/90 dark:bg-amber-900/50 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-100'
+                            : appointmentData.time === slot
+                              ? 'bg-primary text-white border-primary shadow-sm'
+                              : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
                         }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
               <div>
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Après-midi</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {TIME_SLOTS_AFTERNOON.map(slot => (
-                    <button
-                      key={slot}
-                      type="button"
-                      onClick={() => setAppointmentData({ ...appointmentData, time: slot })}
-                      className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${appointmentData.time === slot
-                        ? 'bg-primary text-white border-primary shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
+                  {TIME_SLOTS_AFTERNOON.map(slot => {
+                    const past = isSlotInPast(appointmentData.date, slot);
+                    const occupied = occupiedSlots[slot];
+                    const patientName = occupied || '';
+                    const unavailable = past || occupied;
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        disabled={unavailable}
+                        title={occupied ? `Créneau déjà réservé par ${patientName}` : undefined}
+                        onClick={() => !unavailable && setAppointmentData({ ...appointmentData, time: slot })}
+                        className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${past
+                          ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
+                          : occupied
+                            ? 'cursor-not-allowed bg-amber-100/90 dark:bg-amber-900/50 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-100'
+                            : appointmentData.time === slot
+                              ? 'bg-primary text-white border-primary shadow-sm'
+                              : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
                         }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+                      >
+                        {slot}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -305,9 +405,16 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
             Confirmer le rendez-vous
           </Button>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
+
+  if (isOpen) {
+    return ReactDOM.createPortal(modalContent, document.body);
+  }
+  return null;
 };
 
 export default AppointmentScheduler;

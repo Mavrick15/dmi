@@ -181,10 +181,6 @@ router
           .use(middleware.permission(['document_upload']))
           .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
         router
-          .patch('/documents/:id/tags', [DocumentsController, 'updateTags'])
-          .use(middleware.permission(['document_upload']))
-          .use(middleware.rateLimit({ maxRequests: 30, windowMs: 60 * 1000 })) // 30 req/min
-        router
           .post('/documents/:id/share', [DocumentsController, 'share'])
           .use(middleware.permission(['document_view']))
           .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
@@ -212,9 +208,6 @@ router
           .post('/documents/:id/archive', [DocumentsController, 'toggleArchive'])
           .use(middleware.permission(['document_delete']))
           .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
-        router
-          .post('/documents/:id/watermark', [DocumentsController, 'addWatermark'])
-          .use(middleware.permission(['document_upload']))
           .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
         router
           .post('/documents/export', [DocumentsController, 'exportBulk'])

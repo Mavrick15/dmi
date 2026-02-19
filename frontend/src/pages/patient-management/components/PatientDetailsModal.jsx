@@ -440,9 +440,6 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
             </div>
 
             <div className="flex justify-center sm:justify-start gap-3 mt-4 pt-2">
-              <PermissionGuard requiredPermission="appointment_create">
-                <Button variant="default" size="sm" iconName="CalendarPlus" onClick={() => onSchedule(currentPatient)} disabled={!hasPermission('appointment_create')} className="shadow-lg shadow-primary/20">Nouveau RDV</Button>
-              </PermissionGuard>
               <PermissionGuard requiredPermission="patient_edit">
                 <Button variant="outline" size="sm" iconName="Edit" onClick={() => onEdit(currentPatient)} disabled={!hasPermission('patient_edit')} className="dark:border-slate-700 dark:text-slate-200">Modifier</Button>
               </PermissionGuard>
@@ -500,6 +497,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
                 {activeTab === 'appointments' && (
                   <AppointmentsList
                     patient={currentPatient}
+                    onOpenScheduler={onSchedule}
                     onSelectAppointment={(appointment) => {
                       // Optionnel : action quand on sélectionne un rendez-vous
                       if (process.env.NODE_ENV === 'development') {
