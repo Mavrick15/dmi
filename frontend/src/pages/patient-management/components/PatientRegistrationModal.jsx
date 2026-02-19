@@ -11,6 +11,7 @@ import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
 import { usePatientDetails } from '../../../hooks/usePatients';
 import Image from '../../../components/AppImage';
+import { printPatientRegistrationForm } from '../../../print/patientRegistrationForm';
 
 const Section = ({ title, icon, children, className = "" }) => (
   <div className={`space-y-3 ${className}`}>
@@ -446,6 +447,12 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
   };
 
   const handleBack = () => setActiveStep(prev => Math.max(prev - 1, 0));
+
+  const handlePrint = () => {
+    printPatientRegistrationForm(formData, {
+      onPopupBlocked: () => showToast('Autorisez les pop-ups pour imprimer.', 'warning'),
+    });
+  };
 
   const handleSubmit = async () => {
     if (!validateStep(activeStep)) {
@@ -1115,26 +1122,36 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
           >
             {activeStep === 0 ? 'Annuler' : 'Précédent'}
           </Button>
-          {activeStep === steps.length - 1 ? (
+          <div className="flex items-center gap-2">
             <Button
-              onClick={handleSubmit}
-              loading={loading}
-              disabled={patient ? !hasPermission('patient_edit') : !hasPermission('patient_create')}
-              iconName="Check"
-              className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-md"
-            >
-              {patient ? 'Mettre à jour' : 'Créer le dossier'}
-            </Button>
-          ) : (
-            <Button
-              onClick={handleNext}
-              iconName="ArrowRight"
-              iconPosition="right"
-              className="rounded-xl bg-primary hover:bg-primary/90 text-white"
-            >
-              Suivant
-            </Button>
-          )}
+              variant="outline"
+              size="icon"
+              onClick={handlePrint}
+              className="rounded-xl"
+              iconName="Printer"
+              title="Imprimer pour le patient"
+            />
+            {activeStep === steps.length - 1 ? (
+              <Button
+                onClick={handleSubmit}
+                loading={loading}
+                disabled={patient ? !hasPermission('patient_edit') : !hasPermission('patient_create')}
+                iconName="Check"
+                className="rounded-xl bg-primary hover:bg-primary/90 text-white shadow-md"
+              >
+                {patient ? 'Mettre à jour' : 'Créer le dossier'}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                iconName="ArrowRight"
+                iconPosition="right"
+                className="rounded-xl bg-primary hover:bg-primary/90 text-white"
+              >
+                Suivant
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </AnimatedModal>

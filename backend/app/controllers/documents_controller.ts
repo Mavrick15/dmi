@@ -128,6 +128,22 @@ export default class DocumentsController {
       throw AppException.badRequest('Le patientId est requis.')
     }
 
+    // Pour un infirmier : le document doit être attribué à un médecin (propriétaire = médecin)
+    let uploadedByUserId: string = user.id
+    if (user.role === 'infirmiere') {
+      const attributedToUserId = request.input('attributedToUserId') || request.input('attributed_to_user_id')
+      if (!attributedToUserId) {
+        throw AppException.badRequest(
+          'En tant qu\'infirmier(ère), vous devez choisir le médecin auquel ce document sera attribué.'
+        )
+      }
+      const attributedUser = await UserProfile.find(attributedToUserId)
+      if (!attributedUser || attributedUser.role !== 'docteur') {
+        throw AppException.badRequest('Le document doit être attribué à un médecin valide.')
+      }
+      uploadedByUserId = attributedUser.id
+    }
+
     // Charger le patient avec ses relations pour l'utiliser plus tard
     const patient = await Patient.findOrFail(patientId)
     await patient.load('user')
@@ -166,7 +182,7 @@ export default class DocumentsController {
       const doc = await Document.create(
         {
           patientId: patientId,
-          uploadedBy: user.id,
+          uploadedBy: uploadedByUserId,
           title: request.input('title') || file.clientName,
           category: request.input('category') || 'general',
           filePath: key,

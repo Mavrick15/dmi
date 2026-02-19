@@ -732,6 +732,7 @@ export default class RendezVousController {
       const establishmentId = request.input('establishmentId')
       const query = Medecin.query()
         .preload('user')
+        .preload('department')
         .where('disponible', true)
 
       // Un médecin ne peut créer un RDV que pour lui-même : ne retourner que son profil
@@ -746,13 +747,16 @@ export default class RendezVousController {
       }
 
       const medecins = await query.exec()
-      const data = medecins.map(m => ({
-        id: m.id,
-        value: m.id,
-        label: `Dr. ${m.user.nomComplet} - ${m.specialite}`,
-        name: m.user?.nomComplet,
-        nomComplet: m.user?.nomComplet,
-      }))
+      const data = medecins.map(m => {
+        const departmentName = m.department?.nom || m.specialite || 'Non spécifiée'
+        return {
+          id: m.id,
+          value: m.id,
+          label: `Dr. ${m.user?.nomComplet ?? 'Médecin'} - ${departmentName}`,
+          name: m.user?.nomComplet,
+          nomComplet: m.user?.nomComplet,
+        }
+      })
 
       return response.json(ApiResponse.success(data))
     } catch (error) {

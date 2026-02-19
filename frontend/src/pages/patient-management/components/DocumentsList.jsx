@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
@@ -7,12 +7,17 @@ import Modal from '../../../components/ui/Modal';
 import Input from '../../../components/ui/Input';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../contexts/ToastContext';
 import { usePatientDocuments, useDocumentMutations } from '../../../hooks/useDocuments';
+import api from '../../../lib/axios';
 import { Loader2 } from 'lucide-react';
 
 const DocumentsList = ({ patient }) => {
   const { hasPermission } = usePermissions();
+  const { user } = useAuth();
+  const isInfirmier = user?.role === 'infirmiere';
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [uploadFile, setUploadFile] = useState(null);
   const [uploadData, setUploadData] = useState({
@@ -20,6 +25,9 @@ const DocumentsList = ({ patient }) => {
     category: 'medical',
     description: '',
   });
+  const [doctors, setDoctors] = useState([]);
+  const [isLoadingDoctors, setIsLoadingDoctors] = useState(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const documentsPerPage = 9;
   
@@ -41,6 +49,27 @@ const DocumentsList = ({ patient }) => {
   React.useEffect(() => {
     setCurrentPage(1);
   }, [patient?.id]);
+
+  useEffect(() => {
+    if (isUploadModalOpen && isInfirmier) {
+      const fetchDoctors = async () => {
+        try {
+          setIsLoadingDoctors(true);
+          const response = await api.get('/users/doctors');
+          const raw = response.data?.data ?? response.data;
+          const list = Array.isArray(raw) ? raw : [];
+          setDoctors(list.map((d) => ({ value: d.id, label: d.nomComplet || d.name || 'Médecin' })));
+        } catch (err) {
+          if (process.env.NODE_ENV === 'development') console.error('Erreur chargement médecins:', err);
+          setDoctors([]);
+        } finally {
+          setIsLoadingDoctors(false);
+        }
+      };
+      fetchDoctors();
+      setSelectedDoctorId('');
+    }
+  }, [isUploadModalOpen, isInfirmier]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -68,18 +97,25 @@ const DocumentsList = ({ patient }) => {
       return;
     }
 
+    if (isInfirmier && !selectedDoctorId) {
+      showToast('En tant qu\'infirmier(ère), vous devez choisir le médecin auquel ce document sera attribué.', 'error');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', uploadFile);
     formData.append('patientId', patient.id);
     formData.append('title', uploadData.title);
     formData.append('category', uploadData.category);
     formData.append('description', uploadData.description || '');
+    if (isInfirmier && selectedDoctorId) formData.append('attributedToUserId', selectedDoctorId);
 
     try {
       await uploadDocument.mutateAsync(formData);
       // Le toast et l'invalidation sont gérés par le hook uploadDocument
       setIsUploadModalOpen(false);
       setUploadFile(null);
+      setSelectedDoctorId('');
       setUploadData({
         title: '',
         category: 'medical',
@@ -412,7 +448,7 @@ const DocumentsList = ({ patient }) => {
             <Button
               onClick={handleUpload}
               loading={uploadDocument.isPending}
-              disabled={!uploadFile || !uploadData.title}
+              disabled={!uploadFile || !uploadData.title || (isInfirmier && !selectedDoctorId)}
             >
               Uploader
             </Button>
@@ -465,6 +501,41 @@ const DocumentsList = ({ patient }) => {
               </label>
             </motion.div>
           </motion.div>
+
+          {isInfirmier && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="p-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Icon name="Stethoscope" size={18} className="text-amber-600 dark:text-amber-400" />
+                <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">Document attribué au médecin <span className="text-red-500">*</span></span>
+              </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                En tant qu&apos;infirmier(ère), le document sera enregistré au nom du médecin choisi.
+              </p>
+              <div className="relative">
+                <Icon name="User" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={selectedDoctorId}
+                  onChange={(e) => setSelectedDoctorId(e.target.value)}
+                  required={isInfirmier}
+                  disabled={isLoadingDoctors}
+                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Choisir un médecin</option>
+                  {doctors.map((d) => (
+                    <option key={d.value} value={d.value}>{d.label}</option>
+                  ))}
+                </select>
+                {isLoadingDoctors && (
+                  <Icon name="Loader2" size={16} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary pointer-events-none" />
+                )}
+              </div>
+            </motion.div>
+          )}
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}

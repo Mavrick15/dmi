@@ -51,8 +51,8 @@ const ClinicalConsole = () => {
   const [isCriticalNotificationsOpen, setIsCriticalNotificationsOpen] = useState(false);
   const criticalNotificationsRef = useRef(null);
   const { data: notificationsData, isLoading: loadingNotifications, error: notificationsError } = useNotifications({ limit: 500 });
-  const { markAsRead, archive } = useNotificationMutations();
-  
+  const { markAsRead, markAllAsRead, archive } = useNotificationMutations();
+
   // Filtrer les notifications qui concernent le médecin
   // - Toutes les notifications critiques
   // - Toutes les notifications de rendez-vous (appointment)
@@ -149,6 +149,49 @@ const ClinicalConsole = () => {
     const isRead = n.isRead !== undefined ? n.isRead : (n.is_read || false);
     return !isRead;
   }).length : 0;
+
+  // Temps relatif pour affichage (il y a 5 min, Hier, etc.)
+  const formatRelativeTime = (dateStr) => {
+    if (dateStr === undefined || dateStr === null) return 'À l\'instant';
+    try {
+      const date = new Date(dateStr);
+      if (Number.isNaN(date.getTime())) return 'À l\'instant';
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMin = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      if (diffMin < 1) return 'À l\'instant';
+      if (diffMin < 60) return `Il y a ${diffMin} min`;
+      if (diffHours < 24) return `Il y a ${diffHours} h`;
+      if (diffDays === 1) return 'Hier';
+      if (diffDays < 7) return `Il y a ${diffDays} j`;
+      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+    } catch {
+      return 'À l\'instant';
+    }
+  };
+
+  // Regrouper les notifications par période (Aujourd'hui, Hier, Cette semaine, Plus ancien)
+  const groupedNotifications = useMemo(() => {
+    const list = Array.isArray(allDoctorNotifications) ? allDoctorNotifications : [];
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const weekStart = new Date(todayStart);
+    weekStart.setDate(weekStart.getDate() - 7);
+    const groups = { today: [], yesterday: [], week: [], older: [] };
+    list.forEach((n) => {
+      const raw = n.createdAt || n.created_at || n.time;
+      const d = raw ? new Date(raw) : new Date();
+      if (d >= todayStart) groups.today.push({ ...n, _relativeTime: formatRelativeTime(raw), _date: d });
+      else if (d >= yesterdayStart) groups.yesterday.push({ ...n, _relativeTime: formatRelativeTime(raw), _date: d });
+      else if (d >= weekStart) groups.week.push({ ...n, _relativeTime: formatRelativeTime(raw), _date: d });
+      else groups.older.push({ ...n, _relativeTime: formatRelativeTime(raw), _date: d });
+    });
+    return groups;
+  }, [allDoctorNotifications]);
 
   // Synchroniser l'onglet actif avec l'URL (?view=consultation)
   useEffect(() => {
@@ -418,20 +461,26 @@ const ClinicalConsole = () => {
               </div>
 
               <div className="flex items-center gap-4">
-                {/* Notifications Critiques */}
+                {/* Notifications Médicales */}
                 <div className="relative" ref={criticalNotificationsRef}>
                   <motion.button
                     onClick={() => setIsCriticalNotificationsOpen(!isCriticalNotificationsOpen)}
-                    className="relative flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-gradient-to-r hover:from-slate-100 hover:to-slate-50 dark:hover:from-slate-800 dark:hover:to-slate-800/50 transition-all duration-200 hover:text-rose-500 dark:hover:text-rose-400 group"
+                    className={`relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 group ${
+                      isCriticalNotificationsOpen
+                        ? 'bg-primary/15 dark:bg-primary/25 text-primary dark:text-blue-400 ring-2 ring-primary/30 dark:ring-primary/40 shadow-lg shadow-primary/10'
+                        : doctorUnreadCount > 0
+                          ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/30 ring-2 ring-rose-200 dark:ring-rose-800'
+                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-primary dark:hover:text-blue-400'
+                    }`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Icon name="Bell" size={20} className="group-hover:scale-110 transition-transform" />
+                    <Icon name="Bell" size={22} className="group-hover:scale-110 transition-transform" />
                     {doctorUnreadCount > 0 && (
-                      <motion.span 
-                        initial={{scale:0}} 
-                        animate={{scale:1}} 
-                        className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-gradient-to-r from-rose-500 to-pink-500 rounded-full border-2 border-white dark:border-slate-950 shadow-lg shadow-rose-500/50 text-[10px] font-bold text-white leading-none"
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 px-1 flex items-center justify-center bg-gradient-to-r from-rose-500 to-pink-500 rounded-full border-2 border-white dark:border-slate-900 shadow-md text-[11px] font-bold text-white leading-none"
                       >
                         {doctorUnreadCount > 99 ? '99+' : doctorUnreadCount}
                       </motion.span>
@@ -446,47 +495,35 @@ const ClinicalConsole = () => {
                         exit="exit" 
                         className="absolute top-full right-0 mt-3 w-[420px] bg-white dark:bg-slate-900 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
                       >
-                        <div className="p-4 border-b border-slate-200/60 dark:border-slate-700/60 bg-gradient-to-br from-slate-50 via-white to-slate-50/50 dark:from-slate-800/50 dark:via-slate-900/50 dark:to-slate-800/30">
+                        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50">
                           <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                              <div className="relative flex-shrink-0">
-                                <div className="p-2 rounded-lg bg-gradient-to-br from-primary/10 to-blue-500/10 dark:from-primary/20 dark:to-blue-500/20 border border-primary/20 dark:border-primary/30 shadow-sm">
-                                  <Icon name="Bell" size={18} className="text-primary dark:text-blue-400" />
-                                </div>
-                                {doctorUnreadCount > 0 && (
-                                  <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-gradient-to-r from-rose-500 to-pink-500 rounded-full border-2 border-white dark:border-slate-900 shadow-lg shadow-rose-500/50 text-[10px] font-bold text-white leading-none"
-                                  >
-                                    {doctorUnreadCount > 99 ? '99+' : doctorUnreadCount}
-                                  </motion.div>
-                                )}
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <div className="relative w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center border border-primary/20 dark:border-primary/30 shrink-0">
+                                <Icon name="Bell" size={20} className="text-primary dark:text-blue-400" />
                               </div>
-                              <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <h3 className="font-bold text-slate-900 dark:text-white text-sm tracking-tight whitespace-nowrap">Notifications Médicales</h3>
+                              <div className="min-w-0">
+                                <h3 className="font-bold text-slate-900 dark:text-white text-sm">Notifications médicales</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                  {doctorUnreadCount > 0 ? `${doctorUnreadCount} non lue${doctorUnreadCount > 1 ? 's' : ''}` : 'Tout est à jour'}
+                                </p>
                               </div>
                             </div>
-                            {doctorUnreadCount > 0 && (
-                              <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                className="flex items-center gap-2 flex-shrink-0"
-                              >
-                                <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">
-                                  {doctorUnreadCount} non lue{doctorUnreadCount > 1 ? 's' : ''}
-                                </span>
-                                <div className="h-1 w-10 bg-rose-100 dark:bg-rose-900/30 rounded-full overflow-hidden">
-                                  <motion.div
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${allDoctorNotifications.length > 0 ? (doctorUnreadCount / allDoctorNotifications.length) * 100 : 0}%` }}
-                                    transition={{ duration: 0.5 }}
-                                    className="h-full bg-gradient-to-r from-rose-500 to-pink-500 rounded-full"
-                                  />
-                                </div>
-                              </motion.div>
-                            )}
                           </div>
+                          {doctorUnreadCount > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => markAllAsRead.mutate()}
+                              disabled={markAllAsRead.isPending}
+                              className="mt-3 w-full py-2 px-3 rounded-lg text-xs font-semibold text-primary dark:text-blue-400 bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 border border-primary/20 dark:border-primary/30 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                              {markAllAsRead.isPending ? (
+                                <Icon name="Loader2" size={14} className="animate-spin" />
+                              ) : (
+                                <Icon name="CheckCheck" size={14} />
+                              )}
+                              Tout marquer comme lu
+                            </button>
+                          )}
                         </div>
                         <div className="max-h-[650px] overflow-y-auto custom-scrollbar">
                           {loadingNotifications ? (
@@ -503,189 +540,98 @@ const ClinicalConsole = () => {
                               <p className="text-xs text-slate-500 dark:text-slate-400">Veuillez réessayer</p>
                             </div>
                           ) : Array.isArray(allDoctorNotifications) && allDoctorNotifications.length > 0 ? (
-                            <div className="p-3 space-y-2">
-                              {allDoctorNotifications.map((n, index) => {
-                                if (!n || typeof n !== 'object') return null;
-                                const isRead = n.isClinical ? false : (n.isRead !== undefined ? n.isRead : (n.is_read || false));
-                                const handleNotificationClick = (e) => {
-                                  e.stopPropagation();
-                                  setSelectedNotification(n);
-                                  setIsNotificationDetailsOpen(true);
-                                  // Marquer comme lu si ce n'est pas une alerte clinique
-                                  if (!n.isClinical && n.id && !isRead) {
-                                    markAsRead.mutate(n.id);
-                                  }
-                                };
-                                const handleArchiveNotification = (e, id) => {
-                                  e.stopPropagation();
-                                  if (!n.isClinical && id) {
-                                    archive.mutate(id);
-                                  }
-                                };
-                                
-                                const getNotificationStyles = () => {
-                                  if (n.type === 'critical') {
-                                    return {
-                                      bg: !isRead ? 'bg-gradient-to-br from-rose-50 via-rose-50/80 to-pink-50/60 dark:from-rose-950/40 dark:via-rose-900/30 dark:to-pink-900/20' : 'bg-white dark:bg-slate-900',
-                                      border: !isRead ? 'border-rose-200/60 dark:border-rose-800/40' : 'border-slate-200 dark:border-slate-800',
-                                      iconBg: 'from-rose-500 to-pink-500',
-                                      icon: 'AlertTriangle',
-                                      dot: 'bg-rose-500',
-                                      shadow: !isRead ? 'shadow-md shadow-rose-500/10' : 'shadow-sm'
-                                    };
-                                  } else if (n.type === 'warning') {
-                                    return {
-                                      bg: !isRead ? 'bg-gradient-to-br from-amber-50 via-amber-50/80 to-orange-50/60 dark:from-amber-950/40 dark:via-amber-900/30 dark:to-orange-900/20' : 'bg-white dark:bg-slate-900',
-                                      border: !isRead ? 'border-amber-200/60 dark:border-amber-800/40' : 'border-slate-200 dark:border-slate-800',
-                                      iconBg: 'from-amber-500 to-orange-500',
-                                      icon: 'AlertCircle',
-                                      dot: 'bg-amber-500',
-                                      shadow: !isRead ? 'shadow-md shadow-amber-500/10' : 'shadow-sm'
-                                    };
-                                  } else if (n.type === 'error') {
-                                    return {
-                                      bg: !isRead ? 'bg-gradient-to-br from-red-50 via-red-50/80 to-rose-50/60 dark:from-red-950/40 dark:via-red-900/30 dark:to-rose-900/20' : 'bg-white dark:bg-slate-900',
-                                      border: !isRead ? 'border-red-200/60 dark:border-red-800/40' : 'border-slate-200 dark:border-slate-800',
-                                      iconBg: 'from-red-500 to-rose-500',
-                                      icon: 'XCircle',
-                                      dot: 'bg-red-500',
-                                      shadow: !isRead ? 'shadow-md shadow-red-500/10' : 'shadow-sm'
-                                    };
-                                  } else if (n.type === 'success') {
-                                    return {
-                                      bg: !isRead ? 'bg-gradient-to-br from-emerald-50 via-emerald-50/80 to-teal-50/60 dark:from-emerald-950/40 dark:via-emerald-900/30 dark:to-teal-900/20' : 'bg-white dark:bg-slate-900',
-                                      border: !isRead ? 'border-emerald-200/60 dark:border-emerald-800/40' : 'border-slate-200 dark:border-slate-800',
-                                      iconBg: 'from-emerald-500 to-teal-500',
-                                      icon: 'CheckCircle',
-                                      dot: 'bg-emerald-500',
-                                      shadow: !isRead ? 'shadow-md shadow-emerald-500/10' : 'shadow-sm'
-                                    };
-                                  } else {
-                                    return {
-                                      bg: !isRead ? 'bg-gradient-to-br from-blue-50 via-blue-50/80 to-indigo-50/60 dark:from-blue-950/40 dark:via-blue-900/30 dark:to-indigo-900/20' : 'bg-white dark:bg-slate-900',
-                                      border: !isRead ? 'border-blue-200/60 dark:border-blue-800/40' : 'border-slate-200 dark:border-slate-800',
-                                      iconBg: 'from-blue-500 to-indigo-500',
-                                      icon: 'Info',
-                                      dot: 'bg-blue-500',
-                                      shadow: !isRead ? 'shadow-md shadow-blue-500/10' : 'shadow-sm'
-                                    };
-                                  }
-                                };
-                                
-                                const styles = getNotificationStyles();
-                                
-                                return (
-                                  <motion.div 
-                                    key={n.id} 
-                                    onClick={handleNotificationClick} 
-                                    className={`group relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${styles.bg} ${styles.border} ${styles.shadow} ${
-                                      !isRead ? 'ring-2 ring-offset-1 ring-opacity-20' : 'hover:border-slate-300 dark:hover:border-slate-700'
-                                    }`} 
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.03, type: "spring", stiffness: 200 }}
-                                    whileHover={{ x: 4, scale: 1.01 }}
-                                  >
-                                    <div className="flex items-start gap-4">
-                                      <div className={`relative p-3 rounded-2xl bg-gradient-to-br ${styles.iconBg} shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
-                                        <Icon name={styles.icon} size={18} className="text-white" />
-                                        {!isRead && (
-                                          <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            className="absolute -top-1 -right-1 w-3 h-3 bg-white dark:bg-slate-900 rounded-full border-2 border-current"
-                                          >
-                                            <div className={`w-full h-full rounded-full ${styles.dot} animate-pulse`} />
-                                          </motion.div>
-                                        )}
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between gap-3 mb-2">
-                                          <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                              <p className={`text-sm font-bold leading-tight ${!isRead ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
-                                                {n.title || 'Notification'}
-                                              </p>
-                                              {!isRead && (
-                                                <motion.span
-                                                  initial={{ scale: 0 }}
-                                                  animate={{ scale: 1 }}
-                                                  className={`px-2 py-0.5 ${styles.dot} text-white text-[9px] font-bold uppercase rounded-full shadow-sm`}
-                                                >
-                                                  Nouveau
-                                                </motion.span>
-                                              )}
-                                              {n.isClinical && (
-                                                <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[9px] font-bold uppercase rounded-full border border-slate-200 dark:border-slate-700">
-                                                  Clinique
-                                                </span>
-                                              )}
+                            <div className="p-3 space-y-4">
+                              {[
+                                { key: 'today', label: 'Aujourd\'hui', items: groupedNotifications.today },
+                                { key: 'yesterday', label: 'Hier', items: groupedNotifications.yesterday },
+                                { key: 'week', label: 'Cette semaine', items: groupedNotifications.week },
+                                { key: 'older', label: 'Plus ancien', items: groupedNotifications.older },
+                              ].map(({ key, label, items }) =>
+                                items.length === 0 ? null : (
+                                  <div key={key} className="space-y-2">
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1 sticky top-0 bg-white dark:bg-slate-900 py-0.5 z-10">
+                                      {label}
+                                    </p>
+                                    {items.map((n, index) => {
+                                      if (!n || typeof n !== 'object') return null;
+                                      const isRead = n.isClinical ? false : (n.isRead !== undefined ? n.isRead : (n.is_read || false));
+                                      const handleNotificationClick = (e) => {
+                                        e.stopPropagation();
+                                        setSelectedNotification(n);
+                                        setIsNotificationDetailsOpen(true);
+                                        if (!n.isClinical && n.id && !isRead) markAsRead.mutate(n.id);
+                                      };
+                                      const handleArchiveNotification = (e, id) => {
+                                        e.stopPropagation();
+                                        if (!n.isClinical && id) archive.mutate(id);
+                                      };
+                                      const getNotificationStyles = () => {
+                                        if (n.type === 'critical') return { bg: !isRead ? 'bg-rose-50 dark:bg-rose-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-rose-200 dark:border-rose-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-rose-500 to-pink-500', icon: 'AlertTriangle', dot: 'bg-rose-500' };
+                                        if (n.type === 'warning') return { bg: !isRead ? 'bg-amber-50 dark:bg-amber-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-amber-200 dark:border-amber-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-amber-500 to-orange-500', icon: 'AlertCircle', dot: 'bg-amber-500' };
+                                        if (n.type === 'error') return { bg: !isRead ? 'bg-red-50 dark:bg-red-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-red-200 dark:border-red-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-red-500 to-rose-500', icon: 'XCircle', dot: 'bg-red-500' };
+                                        if (n.type === 'success') return { bg: !isRead ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-emerald-200 dark:border-emerald-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-emerald-500 to-teal-500', icon: 'CheckCircle', dot: 'bg-emerald-500' };
+                                        return { bg: !isRead ? 'bg-blue-50 dark:bg-blue-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-blue-200 dark:border-blue-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-blue-500 to-indigo-500', icon: 'Info', dot: 'bg-blue-500' };
+                                      };
+                                      const styles = getNotificationStyles();
+                                      return (
+                                        <motion.div
+                                          key={n.id || `${key}-${index}`}
+                                          onClick={handleNotificationClick}
+                                          className={`group relative p-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${styles.bg} ${styles.border} hover:shadow-md ${!isRead ? 'ring-1 ring-offset-1 ring-primary/20' : ''}`}
+                                          initial={{ opacity: 0, y: 4 }}
+                                          animate={{ opacity: 1, y: 0 }}
+                                          transition={{ delay: index * 0.02 }}
+                                          whileHover={{ x: 2 }}
+                                        >
+                                          <div className="flex items-start gap-3">
+                                            <div className={`relative p-2.5 rounded-xl bg-gradient-to-br ${styles.iconBg} shadow-sm flex-shrink-0`}>
+                                              <Icon name={styles.icon} size={16} className="text-white" />
+                                              {!isRead && <div className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ${styles.dot} animate-pulse border border-white dark:border-slate-900`} />}
                                             </div>
-                                            <p className={`text-xs leading-relaxed ${!isRead ? 'text-slate-700 dark:text-slate-300' : 'text-slate-500 dark:text-slate-500'}`}>
-                                              {n.message || 'Aucun message'}
-                                            </p>
-                                          </div>
-                                          {!n.isClinical && (
-                                            <motion.button
-                                              onClick={(e) => handleArchiveNotification(e, n.id)}
-                                              className="opacity-0 group-hover:opacity-100 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 transition-all duration-200 flex-shrink-0"
-                                              whileHover={{ scale: 1.1, rotate: 5 }}
-                                              whileTap={{ scale: 0.9 }}
-                                              title="Supprimer cette notification"
-                                            >
-                                              <Icon name="Trash2" size={14} />
-                                            </motion.button>
-                                          )}
-                                        </div>
-                                        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                                          {n.isClinical ? (
-                                            <>
-                                              <div className="flex items-center gap-1.5">
-                                                <Icon name="User" size={12} className="text-slate-400 dark:text-slate-500" />
-                                                <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                                                  {n.patientName || 'Patient actuel'}
-                                                </p>
-                                              </div>
-                                            </>
-                                          ) : (
-                                            <>
-                                              <div className="flex items-center gap-1.5">
-                                                <Icon name="Clock" size={12} className="text-slate-400 dark:text-slate-500" />
-                                                <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-                                                  {n.time || n.createdAt || 'Maintenant'}
-                                                </p>
-                                              </div>
-                                              {n.category && (
-                                                <div className="flex items-center gap-1.5">
-                                                  <Icon name={
-                                                    n.category === 'appointment' ? 'Calendar' :
-                                                    n.category === 'clinical' ? 'Stethoscope' :
-                                                    n.category === 'patient' ? 'User' :
-                                                    'FileText'
-                                                  } size={12} className="text-slate-400 dark:text-slate-500" />
-                                                  <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 capitalize">
-                                                    {n.category}
-                                                  </p>
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0">
+                                                  <div className="flex items-center gap-2 flex-wrap">
+                                                    <p className={`text-sm font-semibold truncate ${!isRead ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'}`}>
+                                                      {n.title || 'Notification'}
+                                                    </p>
+                                                    {!isRead && <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold text-white ${styles.dot}`}>Nouveau</span>}
+                                                    {n.isClinical && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Clinique</span>}
+                                                  </div>
+                                                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">{n.message || 'Aucun message'}</p>
                                                 </div>
-                                              )}
-                                            </>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </motion.div>
+                                                {!n.isClinical && (
+                                                  <button type="button" onClick={(e) => handleArchiveNotification(e, n.id)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 shrink-0" title="Supprimer"><Icon name="Trash2" size={12} /></button>
+                                                )}
+                                              </div>
+                                              <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                                                <Icon name="Clock" size={10} className="text-slate-400" />
+                                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{n._relativeTime || formatRelativeTime(n.createdAt || n.created_at)}</span>
+                                                {n.category && (
+                                                  <>
+                                                    <span className="text-slate-300 dark:text-slate-600">·</span>
+                                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{n.category === 'appointment' ? 'Rendez-vous' : n.category}</span>
+                                                  </>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      );
+                                    })}
+                                  </div>
                                 )
-                              })}
+                              )}
                             </div>
                           ) : (
-                            <div className="flex flex-col items-center justify-center py-12 text-center">
-                              <div className="p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-3">
-                                <Icon name="Bell" size={28} className="text-slate-400 opacity-50" />
+                            <div className="flex flex-col items-center justify-center py-14 px-6 text-center">
+                              <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+                                <Icon name="Bell" size={32} className="text-slate-400 dark:text-slate-500" />
                               </div>
-                              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">Aucune notification médicale</p>
-                              <p className="text-xs text-slate-400 dark:text-slate-500">Vous êtes à jour</p>
-                  </div>
-                )}
+                              <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Aucune notification</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-[200px]">Les alertes et rappels médicaux apparaîtront ici.</p>
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     )}
@@ -994,7 +940,22 @@ const ClinicalConsole = () => {
                 <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <div className="flex items-center gap-2">
                     <Icon name="Clock" size={14} />
-                    <span>Reçue le {selectedNotification.time || selectedNotification.createdAt || 'Date inconnue'}</span>
+                    <span>{formatRelativeTime(selectedNotification.createdAt || selectedNotification.created_at || selectedNotification.time)}</span>
+                    {(() => {
+                      const raw = selectedNotification.createdAt || selectedNotification.created_at;
+                      if (!raw) return null;
+                      try {
+                        const d = new Date(raw);
+                        if (Number.isNaN(d.getTime())) return null;
+                        return (
+                          <span className="text-slate-400 dark:text-slate-500">
+                            · {d.toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
+                          </span>
+                        );
+                      } catch {
+                        return null;
+                      }
+                    })()}
                   </div>
                   {selectedNotification.isRead !== undefined && !selectedNotification.isClinical && (
                     <div className={`px-2 py-1 rounded-full ${
@@ -1018,7 +979,7 @@ const ClinicalConsole = () => {
                         disabled
                         className="px-4 py-2 bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl cursor-not-allowed font-semibold text-sm flex items-center gap-2"
                       >
-                        <Loader2 className="animate-spin" size={16} />
+                        <Icon name="Loader2" size={16} className="animate-spin" />
                         <span>Chargement...</span>
                       </button>
                     ) : (
@@ -1074,7 +1035,7 @@ const ClinicalConsole = () => {
                       >
                         {loadingPatient ? (
                           <>
-                            <Loader2 className="animate-spin" size={16} />
+                            <Icon name="Loader2" size={16} className="animate-spin" />
                             <span>Chargement...</span>
                           </>
                         ) : (

@@ -3,11 +3,15 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { useAuth } from '../../../contexts/AuthContext';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 import api from '../../../lib/axios';
 
 const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
   const { hasPermission } = usePermissions();
+  const { user } = useAuth();
+  const isInfirmier = user?.role === 'infirmiere';
+
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('general');
   const [description, setDescription] = useState('');
@@ -15,17 +19,37 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [patients, setPatients] = useState([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  const [isLoadingDoctors, setIsLoadingDoctors] = useState(false);
+  const [selectedDoctorId, setSelectedDoctorId] = useState('');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
       fetchPatients();
+      if (isInfirmier) fetchDoctors();
       setTitle('');
       setDescription('');
       setSelectedPatientId('');
       setSelectedFile(null);
+      setSelectedDoctorId('');
     }
-  }, [isOpen]);
+  }, [isOpen, isInfirmier]);
+
+  const fetchDoctors = async () => {
+    try {
+      setIsLoadingDoctors(true);
+      const response = await api.get('/users/doctors');
+      const raw = response.data?.data ?? response.data;
+      const list = Array.isArray(raw) ? raw : [];
+      setDoctors(list.map((d) => ({ value: d.id, label: d.nomComplet || d.name || 'Médecin' })));
+    } catch (err) {
+      if (process.env.NODE_ENV === 'development') console.error('Erreur chargement médecins:', err);
+      setDoctors([]);
+    } finally {
+      setIsLoadingDoctors(false);
+    }
+  };
 
   const fetchPatients = async () => {
     try {
@@ -60,12 +84,17 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
       alert('Veuillez sélectionner un patient.');
       return;
     }
+    if (isInfirmier && !selectedDoctorId) {
+      alert('En tant qu\'infirmier(ère), vous devez choisir le médecin auquel ce document sera attribué.');
+      return;
+    }
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('title', title);
     formData.append('category', category);
     formData.append('patientId', selectedPatientId);
     if (description) formData.append('description', description);
+    if (isInfirmier && selectedDoctorId) formData.append('attributedToUserId', selectedDoctorId);
     onUpload(formData);
   };
 
@@ -123,6 +152,36 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               </p>
             )}
           </div>
+
+          {/* Médecin (obligatoire pour infirmier) */}
+          {isInfirmier && (
+            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-amber-50/50 dark:bg-amber-900/10 p-4">
+              <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
+                Document attribué au médecin <span className="text-red-500">*</span>
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                En tant qu&apos;infirmier(ère), le document sera enregistré au nom du médecin choisi.
+              </p>
+              <div className="relative">
+                <Icon name="Stethoscope" size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                <select
+                  value={selectedDoctorId}
+                  onChange={(e) => setSelectedDoctorId(e.target.value)}
+                  required={isInfirmier}
+                  disabled={isLoadingDoctors}
+                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
+                >
+                  <option value="">Choisir un médecin</option>
+                  {doctors.map((d) => (
+                    <option key={d.value} value={d.value}>{d.label}</option>
+                  ))}
+                </select>
+                {isLoadingDoctors && (
+                  <Icon name="Loader2" size={16} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-primary pointer-events-none" />
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Titre + Catégorie */}
           <div className="grid grid-cols-2 gap-4">
@@ -211,7 +270,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
             <PermissionGuard requiredPermission="document_upload">
               <Button
                 type="submit"
-                disabled={isUploading || !selectedFile || !selectedPatientId || !hasPermission('document_upload')}
+                disabled={isUploading || !selectedFile || !selectedPatientId || (isInfirmier && !selectedDoctorId) || !hasPermission('document_upload')}
                 className="flex-1"
               >
                 {isUploading ? (

@@ -826,9 +826,13 @@ export default class NotificationService {
       ? 'Rendez-vous annulé automatiquement'
       : 'Rendez-vous annulé'
     
+    // Éviter la répétition "annulé automatiquement : Annulé automatiquement : ..."
+    const reasonDisplay = (reason && isAutomatic)
+      ? reason.replace(/^Annulé automatiquement\s*:\s*/i, '').trim() || reason
+      : reason
     const message = isAutomatic
-      ? `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé automatiquement : ${reason}`
-      : `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé. ${reason}`
+      ? `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé automatiquement : ${reasonDisplay}`
+      : `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé. ${reason || ''}`
 
     await this.createNotification(
       userIds,
