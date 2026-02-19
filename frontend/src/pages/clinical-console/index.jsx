@@ -712,111 +712,41 @@ const ClinicalConsole = () => {
               </div>
             </motion.div>
 
-            {/* Cartes Métriques (Dynamiques) */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.02 }}
-                className="relative bg-gradient-to-br from-blue-50 via-white to-blue-50/50 dark:from-blue-950/30 dark:via-slate-900 dark:to-blue-950/20 border border-blue-100 dark:border-blue-900/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Consultations Aujourd'hui</p>
-                    <motion.p 
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-400 dark:to-blue-500 bg-clip-text text-transparent"
-                    >
-                      {Array.isArray(appointmentsToday) ? appointmentsToday.length : (typeof dashboardData?.metrics?.appointments === 'number' ? dashboardData.metrics.appointments : 0)}
-                    </motion.p>
-                  </div>
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-500 dark:to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30"
+            {/* Cartes Métriques (style Pharmacie) */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                { id: 1, title: 'Consultations Aujourd\'hui', value: Array.isArray(appointmentsToday) ? appointmentsToday.length : (typeof dashboardData?.metrics?.appointments === 'number' ? dashboardData.metrics.appointments : 0), icon: 'Users', theme: 'blue' },
+                { id: 2, title: 'Patients Actifs', value: patientStats?.activePatients || dashboardData?.metrics?.patients || 0, icon: 'FileText', theme: 'emerald' },
+                { id: 3, title: 'Nouveaux Patients', value: patientStats?.newPatients || 0, icon: 'UserPlus', theme: 'amber' },
+                { id: 4, title: 'Alertes', value: dashboardData?.metrics?.alerts || 0, icon: 'Bell', theme: 'violet' }
+              ].map((stat) => {
+                const themeStyles = {
+                  blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-700', icon: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' },
+                  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-700', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
+                  amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-700', icon: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
+                  violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-700', icon: 'bg-violet-500/20 text-violet-600 dark:text-violet-400' }
+                };
+                const style = themeStyles[stat.theme] || themeStyles.blue;
+                return (
+                  <motion.div
+                    key={stat.id}
+                    variants={itemVariants}
+                    className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
                   >
-                    <Icon name="Users" size={24} className="text-white" />
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.icon}`}>
+                        <Icon name={stat.icon} size={20} />
+                      </div>
+                    </div>
+                    <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      {stat.title}
+                    </p>
                   </motion.div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.02 }}
-                className="relative bg-gradient-to-br from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-emerald-950/20 border border-emerald-100 dark:border-emerald-900/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-2">Patients Actifs</p>
-                    <motion.p 
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-3xl font-extrabold bg-gradient-to-r from-emerald-600 to-emerald-700 dark:from-emerald-400 dark:to-emerald-500 bg-clip-text text-transparent"
-                    >
-                      {patientStats?.activePatients || dashboardData?.metrics?.patients || 0}
-                    </motion.p>
-                  </div>
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-500 dark:to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30"
-                  >
-                    <Icon name="FileText" size={24} className="text-white" />
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.02 }}
-                className="relative bg-gradient-to-br from-amber-50 via-white to-amber-50/50 dark:from-amber-950/30 dark:via-slate-900 dark:to-amber-950/20 border border-amber-100 dark:border-amber-900/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-2">Nouveaux Patients</p>
-                    <motion.p 
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                      className="text-3xl font-extrabold bg-gradient-to-r from-amber-600 to-amber-700 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent"
-                    >
-                      {patientStats?.newPatients || 0}
-                    </motion.p>
-                  </div>
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-500 dark:to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30"
-                  >
-                    <Icon name="TestTube" size={24} className="text-white" />
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                whileHover={{ y: -4, scale: 1.02 }}
-                className="relative bg-gradient-to-br from-violet-50 via-white to-violet-50/50 dark:from-violet-950/30 dark:via-slate-900 dark:to-violet-950/20 border border-violet-100 dark:border-violet-900/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-xs font-bold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-2">Alertes</p>
-                    <motion.p 
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.4 }}
-                      className="text-3xl font-extrabold bg-gradient-to-r from-violet-600 to-violet-700 dark:from-violet-400 dark:to-violet-500 bg-clip-text text-transparent"
-                    >
-                      {dashboardData?.metrics?.alerts || 0}
-                    </motion.p>
-                  </div>
-                  <motion.div 
-                    whileHover={{ rotate: 10, scale: 1.1 }}
-                    className="w-14 h-14 bg-gradient-to-br from-violet-500 to-violet-600 dark:from-violet-500 dark:to-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-500/30"
-                  >
-                    <Icon name="Clock" size={24} className="text-white" />
-                  </motion.div>
-                </div>
-              </motion.div>
+                );
+              })}
             </motion.div>
 
             {/* Layout Principal : 2 Colonnes */}

@@ -32,7 +32,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
 
   const fetchSupplierDetails = async () => {
     if (!supplierId) return;
-    
+
     setLoading(true);
     try {
       const response = await api.get(`/suppliers/${supplierId}`);
@@ -71,27 +71,27 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
 
   const getStatusBadge = (status) => {
     const statusConfig = {
-      recue: { 
-        color: 'bg-emerald-50 dark:bg-emerald-900/20', 
-        text: 'text-emerald-700 dark:text-emerald-400', 
+      recue: {
+        color: 'bg-emerald-50 dark:bg-emerald-900/20',
+        text: 'text-emerald-700 dark:text-emerald-400',
         icon: 'PackageCheck',
         label: 'Reçue'
       },
-      commandee: { 
-        color: 'bg-blue-50 dark:bg-blue-900/20', 
-        text: 'text-blue-700 dark:text-blue-400', 
+      commandee: {
+        color: 'bg-blue-50 dark:bg-blue-900/20',
+        text: 'text-blue-700 dark:text-blue-400',
         icon: 'Clock',
         label: 'Commandée'
       },
-      partiellement_recue: { 
-        color: 'bg-amber-50 dark:bg-amber-900/20', 
-        text: 'text-amber-700 dark:text-amber-400', 
+      partiellement_recue: {
+        color: 'bg-amber-50 dark:bg-amber-900/20',
+        text: 'text-amber-700 dark:text-amber-400',
         icon: 'AlertTriangle',
         label: 'Partiellement reçue'
       },
-      annulee: { 
-        color: 'bg-rose-50 dark:bg-rose-900/20', 
-        text: 'text-rose-700 dark:text-rose-400', 
+      annulee: {
+        color: 'bg-rose-50 dark:bg-rose-900/20',
+        text: 'text-rose-700 dark:text-rose-400',
         icon: 'XCircle',
         label: 'Annulée'
       }
@@ -107,11 +107,11 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div 
-        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-800"
+      <div
+        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-700"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <Icon name="Truck" size={18} className="text-blue-600 dark:text-blue-400" />
@@ -153,11 +153,10 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Statut
                   </div>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                    supplier.actif 
-                      ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' 
+                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${supplier.actif
+                      ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
                       : 'bg-slate-50 dark:bg-slate-900/20 text-slate-700 dark:text-slate-400'
-                  }`}>
+                    }`}>
                     <Icon name={supplier.actif ? 'CheckCircle' : 'XCircle'} size={12} />
                     {supplier.actif ? 'Actif' : 'Inactif'}
                   </span>
@@ -225,57 +224,39 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
 
               {/* Commandes récentes */}
               {supplier.commandesRecentes && supplier.commandesRecentes.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Icon name="Package" size={14} className="text-slate-600 dark:text-slate-400" />
-                    <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wide">
+                <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+                      <Icon name="Package" size={14} className="text-primary dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                       Commandes récentes ({supplier.commandesRecentes.length})
                     </h3>
                   </div>
-                  <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs">
-                        <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
-                          <tr>
-                            <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                              Commande
-                            </th>
-                            <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                              Date
-                            </th>
-                            <th className="text-right py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                              Montant
-                            </th>
-                            <th className="text-center py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-                              Statut
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                          {Array.isArray(supplier.commandesRecentes) && supplier.commandesRecentes.map((commande, index) => {
-                            if (!commande || typeof commande !== 'object') return null;
-                            return (
-                              <tr key={commande.id || index} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                                <td className="py-2 px-3">
-                                  <div className="font-medium text-xs text-slate-900 dark:text-white">
-                                    {commande.numeroCommande || 'N/A'}
-                                  </div>
-                                </td>
-                                <td className="py-2 px-3 text-xs text-slate-700 dark:text-slate-300">
-                                  {formatDate(commande.dateCommande)}
-                                </td>
-                                <td className="py-2 px-3 text-right text-xs font-semibold text-slate-900 dark:text-white">
-                                  {formatCurrency(commande.montantTotal || 0)}
-                                </td>
-                                <td className="py-2 px-3 text-center">
-                                  {getStatusBadge(commande.statut)}
-                                </td>
-                              </tr>
-                            );
-                          }).filter(Boolean)}
-                        </tbody>
-                      </table>
-                    </div>
+                  <div className="overflow-x-auto max-h-[200px] overflow-y-auto custom-scrollbar">
+                    <table className="w-full text-xs">
+                      <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 sticky top-0">
+                        <tr>
+                          <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Commande</th>
+                          <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
+                          <th className="text-right py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Montant</th>
+                          <th className="text-center py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+                        {Array.isArray(supplier.commandesRecentes) && supplier.commandesRecentes.map((commande, index) => {
+                          if (!commande || typeof commande !== 'object') return null;
+                          return (
+                            <tr key={commande.id || index} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                              <td className="py-2 px-3 font-medium text-slate-900 dark:text-white">{commande.numeroCommande || '—'}</td>
+                              <td className="py-2 px-3 text-slate-700 dark:text-slate-300">{formatDate(commande.dateCommande)}</td>
+                              <td className="py-2 px-3 text-right font-semibold text-slate-900 dark:text-white tabular-nums">{formatCurrency(commande.montantTotal || 0)}</td>
+                              <td className="py-2 px-3 text-center">{getStatusBadge(commande.statut)}</td>
+                            </tr>
+                          );
+                        }).filter(Boolean)}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
@@ -288,15 +269,15 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-2 p-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between gap-2 p-3 border-t border-slate-200 dark:border-slate-700">
           <Button variant="outline" size="sm" onClick={onClose}>
             Fermer
           </Button>
           <div className="flex items-center gap-2">
             {supplier && onEdit && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 iconName="Edit2"
                 onClick={() => {
                   onClose();
@@ -307,9 +288,9 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
               </Button>
             )}
             {supplier && onCreateOrder && (
-              <Button 
-                variant="default" 
-                size="sm" 
+              <Button
+                variant="default"
+                size="sm"
                 iconName="ShoppingCart"
                 onClick={() => {
                   onClose();

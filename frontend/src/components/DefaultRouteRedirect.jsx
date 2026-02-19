@@ -14,15 +14,11 @@ const DefaultRouteRedirect = () => {
   // Attendre que l'authentification soit vérifiée
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute w-16 h-16 border-4 border-slate-200 dark:border-slate-800 rounded-full"></div>
-          <div className="absolute w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <Icon name="ShieldCheck" size={24} className="text-primary animate-pulse" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+        <div className="flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-white dark:bg-slate-900 shadow-sm">
+          <Icon name="Loader2" size={32} className="animate-spin text-primary mb-3" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</p>
         </div>
-        <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400 animate-pulse">
-          Vérification de l'authentification...
-        </p>
       </div>
     );
   }
@@ -35,15 +31,11 @@ const DefaultRouteRedirect = () => {
   // Attendre que les permissions soient chargées
   if (permissionsLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute w-16 h-16 border-4 border-slate-200 dark:border-slate-800 rounded-full"></div>
-          <div className="absolute w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <Icon name="ShieldCheck" size={24} className="text-primary animate-pulse" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-200">
+        <div className="flex flex-col items-center justify-center py-12 px-6 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-white dark:bg-slate-900 shadow-sm">
+          <Icon name="Loader2" size={32} className="animate-spin text-primary mb-3" />
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</p>
         </div>
-        <p className="mt-6 text-sm font-medium text-slate-500 dark:text-slate-400 animate-pulse">
-          Chargement des permissions...
-        </p>
       </div>
     );
   }

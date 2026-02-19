@@ -9,7 +9,6 @@ import PermissionGuard from '../PermissionGuard';
 import { useToast } from '../../contexts/ToastContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import api from '../../lib/axios';
-import { Loader2 } from 'lucide-react';
 
 const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
   const { showToast } = useToast();
@@ -120,8 +119,9 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
         icon="FileText"
         size="lg"
       >
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="animate-spin text-primary" size={32} />
+        <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 mx-4">
+          <Icon name="Loader2" size={28} className="animate-spin text-primary mb-2" />
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
         </div>
       </Modal>
     );
@@ -176,7 +176,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
     >
       <div className="space-y-6">
         {/* En-tête avec statut */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
               {invoice.numeroFacture || `Facture #${invoice.id?.slice(0, 8)}`}
@@ -211,7 +211,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
 
         {/* Montants */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-gradient-to-br from-primary/10 to-blue-50 dark:from-primary/20 dark:to-blue-900/20 rounded-xl p-4 border border-primary/20">
+          <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
               Montant Total
             </p>
@@ -219,7 +219,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
               {formatCurrency(invoice.montantTotal || 0)}
             </p>
           </div>
-          <div className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-700">
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1">
               Montant Payé
             </p>
@@ -242,7 +242,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-emerald-500 to-green-500 h-full transition-all duration-500"
+                className="bg-emerald-500 dark:bg-emerald-600 h-full transition-all duration-500"
                 style={{ width: `${pourcentagePaye}%` }}
               />
             </div>
@@ -319,7 +319,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">
               Notes
             </p>
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3">
               <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
                 {invoice.notes}
               </p>
@@ -335,7 +335,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
               Tiers payant / Demande d'assurance
             </p>
             {createdClaim ? (
-              <div className="rounded-lg p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+              <div className="rounded-xl p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700">
                 <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">Demande enregistrée</p>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
                   N° {createdClaim.claimNumber} — {createdClaim.insuranceName} — {formatCurrency(createdClaim.amount || 0)} —{' '}

@@ -97,6 +97,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
       'document_view': 'Voir les documents',
       'document_upload': 'Télécharger des documents',
       'document_delete': 'Supprimer des documents',
+      'document_sign': 'Signer un document (PDF)',
       
       // Finance & Admin
       'billing_view': 'Voir la facturation',

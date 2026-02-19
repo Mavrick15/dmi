@@ -25,8 +25,8 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
     if (document.isArchived) return <Badge variant="default" size="xs">Archivé</Badge>;
     if (document.status === 'approved') return <Badge variant="success" size="xs">Approuvé</Badge>;
     if (document.status === 'pending_approval') return <Badge variant="warning" size="xs">En attente</Badge>;
-    if (document.isSigned) return <Badge variant="info" size="xs">Signé</Badge>;
-    return null;
+    if (document.isSigned) return <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Signé</span>;
+    return <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Pas signé</span>;
   };
 
   const getIconBg = () => {
@@ -56,6 +56,11 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
             </h4>
             <div className="flex items-center gap-2 flex-wrap mt-1">
               {getStatusBadge()}
+              {document.isSharedWithMe && (
+                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 ml-3">
+                  Partagé par {document.uploader?.nomComplet || document.uploader?.name || '—'}
+                </span>
+              )}
               {document.version > 1 && <Badge variant="default" size="xs">v{document.version}</Badge>}
               {document.isWatermarked && (
                 <Badge variant="default" size="xs">
@@ -65,10 +70,9 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
             </div>
           </div>
           {document.isSigned && document.signer?.name && (
-            <div className="shrink-0 text-right">
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider">Signé par</p>
-              <p className="text-xs font-medium text-slate-700 dark:text-slate-300 truncate max-w-[80px]" title={document.signer.name}>{document.signer.name}</p>
-            </div>
+            <p className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[100px]" title={document.signer.name}>
+              {document.signer.name}
+            </p>
           )}
         </div>
 

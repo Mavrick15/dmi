@@ -19,7 +19,7 @@ export default class PermissionsSeeder extends BaseSeeder {
         'analyses_view', 'analyses_create', 'analyses_edit', 'analyses_cancel', 'analyses_delete', // Gestion complète des analyses
         'resultats_view', 'resultats_create', 'resultats_edit', 'resultats_validate', // Gestion complète des résultats
         'appointment_view', 'agenda_view', 'appointment_create', 'appointment_edit', 'appointment_delete', // Gestion complète des rendez-vous + page Agenda
-        'document_view', 'document_upload', 'document_delete', // Gestion complète des documents
+        'document_view', 'document_upload', 'document_delete', 'document_sign', // Gestion complète des documents
         'billing_view', 'billing_create', 'payment_process', 'finance_manage', // Gestion complète de la facturation
         'inventory_view', 'inventory_manage', 'medication_create', 'medication_edit', 'medication_delete', // Gestion complète de la pharmacie
         'order_create', 'order_receive', // Gestion complète des commandes
@@ -38,7 +38,7 @@ export default class PermissionsSeeder extends BaseSeeder {
         'analyses_view', 'analyses_create', 'analyses_edit', 'analyses_cancel', // Gérer les demandes d'analyses
         'resultats_view', 'resultats_create', 'resultats_edit', 'resultats_validate', // Voir, créer, modifier et valider les résultats
         'appointment_view', 'appointment_create', 'appointment_edit', 'appointment_delete', // Gérer les rendez-vous
-        'document_view', 'document_upload' // Voir et uploader des documents médicaux
+        'document_view', 'document_upload', 'document_sign' // Voir, uploader et signer des documents médicaux
       ],
       infirmiere: [
         // Permissions de soins - Pas d'accès au dashboard

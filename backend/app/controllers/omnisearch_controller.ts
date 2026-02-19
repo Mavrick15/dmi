@@ -5,6 +5,9 @@ import Medicament from '#models/Medicament'
 import UserProfile from '#models/UserProfile'
 import Facture from '#models/Facture'
 import Analyse from '#models/Analyse'
+import Fournisseur from '#models/Fournisseur'
+import CommandeFournisseur from '#models/CommandeFournisseur'
+import Document from '#models/Document'
 import { OmnisearchTransformer } from '../transformers/OmnisearchTransformer.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
@@ -104,13 +107,71 @@ export default class OmnisearchController {
         .limit(5)
         .exec()
 
+      // 6. Recherche sur les Fournisseurs
+      const fournisseursSearch = Fournisseur.query()
+        .where((q) => {
+          q.whereRaw('LOWER(nom) LIKE ?', [term])
+           .orWhereRaw('LOWER(contact_nom) LIKE ?', [term])
+           .orWhereRaw('LOWER(COALESCE(email, \'\')) LIKE ?', [term])
+           .orWhere('telephone', 'LIKE', rawTerm)
+           .orWhereRaw('LOWER(COALESCE(adresse, \'\')) LIKE ?', [term])
+           .orWhereRaw('CAST(id AS TEXT) LIKE ?', [rawTerm])
+        })
+        .limit(5)
+        .exec()
+
+      // 7. Recherche sur les Commandes fournisseur
+      const commandesSearch = CommandeFournisseur.query()
+        .preload('fournisseur')
+        .where((q) => {
+          q.whereRaw('LOWER(numero_commande) LIKE ?', [term])
+           .orWhereRaw('LOWER(statut::text) LIKE ?', [term])
+           .orWhereRaw('CAST(montant_total AS TEXT) LIKE ?', [rawTerm])
+           .orWhereRaw('CAST(id AS TEXT) LIKE ?', [rawTerm])
+           .orWhereHas('fournisseur', (fournisseurQuery) => {
+             fournisseurQuery.whereRaw('LOWER(nom) LIKE ?', [term])
+           })
+        })
+        .limit(5)
+        .exec()
+
+      // 8. Recherche sur les Documents
+      const documentsSearch = Document.query()
+        .preload('patient', (q) => q.preload('user'))
+        .where((q) => {
+          q.whereRaw('LOWER(title) LIKE ?', [term])
+           .orWhereRaw('LOWER(original_name) LIKE ?', [term])
+           .orWhereRaw('LOWER(category) LIKE ?', [term])
+           .orWhereRaw('CAST(id AS TEXT) LIKE ?', [rawTerm])
+           .orWhereRaw('(tags IS NOT NULL AND LOWER(tags::text) LIKE ?)', [term])
+           .orWhereHas('patient', (patientQuery) => {
+             patientQuery.whereHas('user', (userQuery) => {
+               userQuery.whereRaw('LOWER(nom_complet) LIKE ?', [term])
+             })
+           })
+        })
+        .limit(5)
+        .exec()
+
       // Exécution parallèle pour la performance
-      const [patients, medicaments, users, factures, analyses] = await Promise.all([
+      const [
+        patients,
+        medicaments,
+        users,
+        factures,
+        analyses,
+        fournisseurs,
+        commandes,
+        documents,
+      ] = await Promise.all([
         patientsSearch,
         medicamentsSearch,
         usersSearch,
         facturesSearch,
         analysesSearch,
+        fournisseursSearch,
+        commandesSearch,
+        documentsSearch,
       ])
 
       const formattedResults = OmnisearchTransformer.transformGlobalSearch({
@@ -119,6 +180,9 @@ export default class OmnisearchController {
         users,
         factures,
         analyses,
+        fournisseurs,
+        commandes,
+        documents,
       })
 
       return response.json(
@@ -198,13 +262,43 @@ export default class OmnisearchController {
         .limit(2)
         .exec()
 
+      // 6. Fournisseurs (nom)
+      const fournisseursSearch = Fournisseur.query()
+        .whereRaw('LOWER(nom) LIKE ?', [term])
+        .limit(2)
+        .exec()
+
+      // 7. Commandes fournisseur (numéro)
+      const commandesSearch = CommandeFournisseur.query()
+        .whereRaw('LOWER(numero_commande) LIKE ?', [term])
+        .limit(2)
+        .exec()
+
+      // 8. Documents (titre)
+      const documentsSearch = Document.query()
+        .whereRaw('LOWER(title) LIKE ?', [term])
+        .limit(2)
+        .exec()
+
       // Exécution parallèle pour la performance
-      const [patients, medicaments, users, factures, analyses] = await Promise.all([
+      const [
+        patients,
+        medicaments,
+        users,
+        factures,
+        analyses,
+        fournisseurs,
+        commandes,
+        documents,
+      ] = await Promise.all([
         patientsSearch,
         medicamentsSearch,
         usersSearch,
         facturesSearch,
         analysesSearch,
+        fournisseursSearch,
+        commandesSearch,
+        documentsSearch,
       ])
 
       const suggestions = OmnisearchTransformer.transformAutocomplete({
@@ -213,6 +307,9 @@ export default class OmnisearchController {
         users,
         factures,
         analyses,
+        fournisseurs,
+        commandes,
+        documents,
       })
 
       return response.json(ApiResponse.success(suggestions))

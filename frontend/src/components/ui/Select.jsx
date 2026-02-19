@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { ChevronDown, Check, Search, X } from "lucide-react";
+import Icon from "../AppIcon";
 import { cn } from "../../utils/cn";
 
 const Select = React.forwardRef(({
@@ -146,7 +146,7 @@ const Select = React.forwardRef(({
         ReactDOM.createPortal(
             <div
                 ref={dropdownRef}
-                className="fixed bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
+                className="fixed bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
                 style={{
                     top: `${dropdownPosition.top}px`,
                     left: `${dropdownPosition.left}px`,
@@ -155,9 +155,9 @@ const Select = React.forwardRef(({
                 }}
             >
                 {searchable && (
-                    <div className="p-2 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 rounded-t-xl z-10">
-                        <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+                    <div className="p-2 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-slate-50 dark:bg-slate-800/50 rounded-t-xl z-10">
+                        <div className="relative flex items-center">
+                            <Icon name="Search" size={16} className="absolute left-3 text-slate-400 dark:text-slate-500 pointer-events-none" />
                             <input
                                 type="text"
                                 autoFocus
@@ -165,7 +165,7 @@ const Select = React.forwardRef(({
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-full pl-9 pr-3 py-1.5 text-sm bg-slate-50 dark:bg-slate-800 border-none rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 outline-none"
+                                className="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 outline-none"
                             />
                         </div>
                     </div>
@@ -184,7 +184,7 @@ const Select = React.forwardRef(({
                                     key={option.value}
                                     onClick={(e) => !option.disabled && handleOptionSelect(option.value, e)}
                                     className={cn(
-                                        "relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm outline-none transition-colors",
+                                        "relative flex cursor-pointer select-none items-center rounded-xl px-3 py-2 text-sm outline-none transition-colors",
                                         selected 
                                             ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-blue-400" 
                                             : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800",
@@ -193,7 +193,7 @@ const Select = React.forwardRef(({
                                 >
                                     <span className="flex-1 truncate">{option.label}</span>
                                     {selected && (
-                                        <Check className="h-4 w-4 ml-2 shrink-0" />
+                                        <Icon name="Check" size={16} className="ml-2 shrink-0 text-primary dark:text-blue-400" />
                                     )}
                                 </div>
                             );
@@ -233,7 +233,7 @@ const Select = React.forwardRef(({
                         "flex h-10 w-full items-center justify-between rounded-xl border px-4 py-2 text-sm ring-offset-background transition-all duration-200",
                         // Utiliser les mêmes couleurs que les Input pour la cohérence
                         "bg-white dark:bg-slate-900 text-slate-900 dark:text-white", 
-                        "border-slate-200 dark:border-slate-800", 
+                        "border-slate-200 dark:border-slate-700", 
                         "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
                         "disabled:cursor-not-allowed disabled:opacity-50",
                         error && "border-rose-500 focus:ring-rose-500/20",
@@ -259,12 +259,12 @@ const Select = React.forwardRef(({
                                     <div
                                         role="button"
                                         onClick={handleClear}
-                                        className="p-0.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors"
+                                        className="p-0.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors"
                                     >
-                                        <X className="h-3 w-3" />
+                                        <Icon name="X" size={14} />
                                     </div>
                                 )}
-                                <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform duration-200", isOpen && "rotate-180")} />
+                                <Icon name="ChevronDown" size={16} className={cn("text-slate-400 dark:text-slate-500 transition-transform duration-200", isOpen && "rotate-180")} />
                             </>
                         )}
                     </div>

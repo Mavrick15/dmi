@@ -23,11 +23,15 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
   const [expiresAt, setExpiresAt] = useState('');
   const { shareDocument } = useDocumentMutations();
 
-  const { data: usersData } = useQuery({
-    queryKey: ['users', 'list'],
+  const { data: usersData, isLoading: loadingDoctors } = useQuery({
+    queryKey: ['users', 'doctors', 'share'],
     queryFn: async () => {
-      const response = await api.get('/users');
-      return response.data.data || [];
+      const response = await api.get('/users/doctors');
+      const raw = response.data;
+      if (Array.isArray(raw)) return raw;
+      if (raw?.data && Array.isArray(raw.data)) return raw.data;
+      if (raw?.data?.data && Array.isArray(raw.data.data)) return raw.data.data;
+      return [];
     },
     enabled: isOpen
   });
@@ -69,7 +73,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
   };
 
   const users = Array.isArray(usersData)
-    ? usersData.filter(u => u && typeof u === 'object' && u.id !== user?.id && u.actif !== false && (u.role === 'docteur' || u.role === 'Docteur'))
+    ? usersData.filter(u => u && typeof u === 'object' && u.id !== user?.id)
     : [];
 
   return (
@@ -124,8 +128,13 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           {/* Médecins (sélection individuelle) */}
           <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
             <p className="text-sm font-bold text-slate-900 dark:text-white px-4 pt-4 pb-2">Médecins</p>
-            <div className="max-h-44 overflow-y-auto px-4 pb-4">
-              {users.length > 0 ? (
+            <div className="max-h-44 overflow-y-auto px-4 pb-4 custom-scrollbar">
+              {loadingDoctors ? (
+                <div className="flex flex-col items-center justify-center py-8 gap-2">
+                  <Icon name="Loader2" size={24} className="animate-spin text-primary" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Chargement de la liste des médecins…</p>
+                </div>
+              ) : users.length > 0 ? (
                 <ul className="space-y-1">
                   {users.map((u) => (
                     <li key={u.id}>
@@ -138,11 +147,8 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
                         />
                         <div className="flex-1 min-w-0">
                           <span className="text-sm font-medium text-slate-900 dark:text-white block truncate">
-                            {u.nomComplet || u.email}
+                            {u.nomComplet || u.name || 'Médecin'}
                           </span>
-                          {u.role && (
-                            <span className="text-xs text-slate-500 dark:text-slate-400">{u.role}</span>
-                          )}
                         </div>
                       </label>
                     </li>

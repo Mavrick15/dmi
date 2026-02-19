@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Image as ImageIcon } from "lucide-react";
+import Icon from "./AppIcon";
 import { cn } from "../utils/cn";
 import { getImageUrl } from "../utils/imageUtils";
 import api from "../lib/axios";
@@ -134,14 +134,14 @@ function Image({
     return (
       <div 
         className={cn(
-            "flex items-center justify-center bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600 overflow-hidden transition-colors duration-300", 
+            "flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 overflow-hidden transition-colors duration-200", 
             className
         )} 
         role="img"
         aria-label={alt}
         {...props}
       >
-        <ImageIcon size="40%" strokeWidth={1.5} />
+        <Icon name="Image" size={24} className="opacity-60" />
       </div>
     );
   }

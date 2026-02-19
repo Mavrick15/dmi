@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ZoomIn, ZoomOut, RotateCw, Check } from 'lucide-react';
 import Button from './Button';
 import AnimatedModal from './AnimatedModal';
+import Icon from '../AppIcon';
 
 const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) => {
   const canvasRef = useRef(null);
@@ -167,9 +166,9 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal={true}>
-      <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700">
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Recadrer l'image
@@ -182,7 +181,7 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
             onClick={onClose}
             type="button"
           >
-            <X size={20} />
+            <Icon name="X" size={20} />
           </Button>
         </div>
 
@@ -190,7 +189,7 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
         <div className="flex-1 p-6 overflow-auto flex items-center justify-center">
           <div 
             ref={containerRef}
-            className="relative bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-slate-300 dark:border-slate-700"
+            className="relative bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700"
             style={{ 
               width: '100%', 
               maxWidth: '400px',
@@ -219,15 +218,16 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
               />
             )}
             {!imageLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 m-2">
+                <Icon name="Loader2" size={28} className="animate-spin text-primary" />
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Controls */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+        <div className="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-2">
               <Button
@@ -236,8 +236,9 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
                 onClick={handleZoomOut}
                 disabled={scale <= 0.5}
                 type="button"
+                iconName="ZoomOut"
+                iconPosition="left"
               >
-                <ZoomOut size={16} className="mr-2" />
                 Zoom -
               </Button>
               <Button
@@ -246,8 +247,9 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
                 onClick={handleZoomIn}
                 disabled={scale >= 3}
                 type="button"
+                iconName="ZoomIn"
+                iconPosition="left"
               >
-                <ZoomIn size={16} className="mr-2" />
                 Zoom +
               </Button>
               <Button
@@ -255,8 +257,9 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
                 size="sm"
                 onClick={handleRotate}
                 type="button"
+                iconName="RotateCw"
+                iconPosition="left"
               >
-                <RotateCw size={16} className="mr-2" />
                 Rotation
               </Button>
             </div>

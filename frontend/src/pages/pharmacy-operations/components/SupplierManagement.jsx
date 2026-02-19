@@ -183,12 +183,12 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
           <div className="space-y-6 animate-fade-in">
 
             {loadingSuppliers ? (
-                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-12">
+                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center gap-3 py-12">
                    <Icon name="Loader2" size={28} className="animate-spin text-primary" />
-                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des fournisseurs…</span>
+                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
                  </div>
             ) : suppliers.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+                 <div className="flex flex-col items-center justify-center py-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30">
                    <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
                      <Icon name="Truck" size={28} className="text-slate-400 dark:text-slate-500" />
                    </div>

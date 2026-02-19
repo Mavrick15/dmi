@@ -18,7 +18,6 @@ import { PharmacyTransformer } from '../transformers/PharmacyTransformer.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
 export default class PharmacyController {
-  
   /**
    * Génère un numéro de commande au format "CMD-yymjXXX"
    * yy: année (2 chiffres)
@@ -31,19 +30,21 @@ export default class PharmacyController {
     const year = now.year.toString().slice(-2) // 2 derniers chiffres de l'année
     const month = now.month
     const day = now.day
-    
+
     // Conversion du mois : 1-9 pour janvier-septembre, A-C pour octobre-décembre
     const monthChar = month <= 9 ? month.toString() : String.fromCharCode(64 + month - 9) // A=10, B=11, C=12
-    
+
     // Conversion du jour : 1-9 pour 1-9, A-V pour 10-31
     const dayChar = day <= 9 ? day.toString() : String.fromCharCode(64 + day - 9) // A=10, B=11, ..., V=31
-    
+
     // Nombre aléatoire sur 3 chiffres
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-    
+    const randomNum = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0')
+
     return `CMD-${year}${monthChar}${dayChar}${randomNum}`
   }
-  
+
   /**
    * Génère un numéro de lot au format "LOT-yymjXXX"
    * yy: année (2 chiffres)
@@ -56,19 +57,21 @@ export default class PharmacyController {
     const year = now.year.toString().slice(-2) // 2 derniers chiffres de l'année
     const month = now.month
     const day = now.day
-    
+
     // Conversion du mois : 1-9 pour janvier-septembre, A-C pour octobre-décembre
     const monthChar = month <= 9 ? month.toString() : String.fromCharCode(64 + month - 9) // A=10, B=11, C=12
-    
+
     // Conversion du jour : 1-9 pour 1-9, A-V pour 10-31
     const dayChar = day <= 9 ? day.toString() : String.fromCharCode(64 + day - 9) // A=10, B=11, ..., V=31
-    
+
     // Nombre aléatoire sur 3 chiffres
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-    
+    const randomNum = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0')
+
     return `LOT-${year}${monthChar}${dayChar}${randomNum}`
   }
-  
+
   // ----------------------------------------------------------------------
   // 1. GESTION DE L'INVENTAIRE (CRUD & LISTING)
   // ----------------------------------------------------------------------
@@ -94,35 +97,44 @@ export default class PharmacyController {
         }
       }
 
-    const query = Medicament.query()
+      const query = Medicament.query()
 
-    if (search) {
-      const searchTerm = search.trim()
-      query.where((q) => {
-        q.where('nom', 'ilike', `%${searchTerm}%`)
-         .orWhere('codeBarre', 'ilike', `%${searchTerm}%`)
-         .orWhere('principeActif', 'ilike', `%${searchTerm}%`)
-      })
-    }
+      if (search) {
+        const searchTerm = search.trim()
+        query.where((q) => {
+          q.where('nom', 'ilike', `%${searchTerm}%`)
+            .orWhere('codeBarre', 'ilike', `%${searchTerm}%`)
+            .orWhere('principeActif', 'ilike', `%${searchTerm}%`)
+        })
+      }
 
-    if (category && category !== 'all') {
+      if (category && category !== 'all') {
         query.where('forme', category)
-    }
+      }
 
-    // Gestion du tri avec validation pour éviter les injections SQL
-    const validSortFields = ['stockActuel', 'dateExpiration', 'nom', 'prix_unitaire', 'created_at']
-    const sortField = validSortFields.includes(sort) ? sort : 'nom'
-    const sortDirection = request.input('sortDirection', 'asc')
-    const validDirections = ['asc', 'desc']
-    const direction = validDirections.includes(sortDirection.toLowerCase()) ? sortDirection.toLowerCase() : 'asc'
-    
-    if (sortField === 'stockActuel') query.orderBy('stock_actuel', direction as 'asc' | 'desc')
-    else if (sortField === 'dateExpiration') query.orderBy('date_expiration', direction as 'asc' | 'desc')
-    else query.orderBy('nom', direction as 'asc' | 'desc')
+      // Gestion du tri avec validation pour éviter les injections SQL
+      const validSortFields = [
+        'stockActuel',
+        'dateExpiration',
+        'nom',
+        'prix_unitaire',
+        'created_at',
+      ]
+      const sortField = validSortFields.includes(sort) ? sort : 'nom'
+      const sortDirection = request.input('sortDirection', 'asc')
+      const validDirections = ['asc', 'desc']
+      const direction = validDirections.includes(sortDirection.toLowerCase())
+        ? sortDirection.toLowerCase()
+        : 'asc'
 
-    const inventory = await query.paginate(page, limit)
+      if (sortField === 'stockActuel') query.orderBy('stock_actuel', direction as 'asc' | 'desc')
+      else if (sortField === 'dateExpiration')
+        query.orderBy('date_expiration', direction as 'asc' | 'desc')
+      else query.orderBy('nom', direction as 'asc' | 'desc')
 
-    const transformedData = PharmacyTransformer.transformMedications(inventory.all())
+      const inventory = await query.paginate(page, limit)
+
+      const transformedData = PharmacyTransformer.transformMedications(inventory.all())
 
       return response.json(
         ApiResponse.paginated(
@@ -133,8 +145,8 @@ export default class PharmacyController {
         )
       )
     } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de la récupération de l\'inventaire')
-      throw AppException.internal('Erreur lors du chargement de l\'inventaire.')
+      logger.error({ err: error }, "Erreur lors de la récupération de l'inventaire")
+      throw AppException.internal("Erreur lors du chargement de l'inventaire.")
     }
   }
 
@@ -148,23 +160,23 @@ export default class PharmacyController {
       if (!uuidRegex.test(params.id)) {
         return response.badRequest({
           success: false,
-          message: 'Format UUID invalide pour l\'ID du médicament'
+          message: "Format UUID invalide pour l'ID du médicament",
         })
       }
 
       const medicament = await Medicament.findOrFail(params.id)
-  
+
       const movements = await InventaireMouvement.query()
         .where('medicamentId', medicament.id)
         .preload('utilisateur', (q) => q.select('nomComplet'))
         .orderBy('createdAt', 'desc')
         .limit(10)
-  
+
       return response.json({
         success: true,
         data: {
           medicament: medicament,
-          movements: movements.map(m => ({
+          movements: movements.map((m) => ({
             date: m.createdAt.toFormat('dd/MM/yy HH:mm'),
             type: m.typeMouvement,
             quantity: m.typeMouvement === 'sortie' ? -m.quantite : m.quantite,
@@ -172,10 +184,10 @@ export default class PharmacyController {
             reason: m.raison,
             user: m.utilisateur?.nomComplet || 'Système',
           })),
-        }
+        },
       })
     } catch (error) {
-       throw error
+      throw error
     }
   }
 
@@ -192,7 +204,7 @@ export default class PharmacyController {
     try {
       const stockActuel = data.stockActuel || 0
       const stockMinimum = data.stockMinimum || 10
-      
+
       const medicament = await Medicament.create({
         nom: data.nom,
         principeActif: data.principeActif || null,
@@ -203,15 +215,20 @@ export default class PharmacyController {
         prixUnitaire: data.prixUnitaire || 0,
         stockActuel: stockActuel,
         stockMinimum: stockMinimum,
-        statutStock: stockActuel > stockMinimum ? 'en_stock' : (stockActuel <= 0 ? 'rupture_stock' : 'stock_faible'),
+        statutStock:
+          stockActuel > stockMinimum
+            ? 'en_stock'
+            : stockActuel <= 0
+              ? 'rupture_stock'
+              : 'stock_faible',
         dateExpiration: data.dateExpiration ? DateTime.fromJSDate(data.dateExpiration) : null,
-        prescriptionRequise: data.prescriptionRequise || false
+        prescriptionRequise: data.prescriptionRequise || false,
       })
 
       // Notification SSE
       await transmit.broadcast('pharmacy_channel', {
-          message: `Nouveau médicament ajouté : ${medicament.nom}`,
-          type: 'inventory_update'
+        message: `Nouveau médicament ajouté : ${medicament.nom}`,
+        type: 'inventory_update',
       })
 
       // Log d'audit - Création de médicament
@@ -224,12 +241,9 @@ export default class PharmacyController {
 
       const transformedMedicament = PharmacyTransformer.transformMedication(medicament, true)
 
-      return response.status(201).json(
-        ApiResponse.created(
-          transformedMedicament,
-          'Médicament ajouté avec succès.'
-        )
-      )
+      return response
+        .status(201)
+        .json(ApiResponse.created(transformedMedicament, 'Médicament ajouté avec succès.'))
     } catch (error) {
       logger.error({ err: error, payload: data }, 'Erreur lors de la création du médicament')
       if (error instanceof AppException) {
@@ -251,7 +265,7 @@ export default class PharmacyController {
       if (!uuidRegex.test(params.id)) {
         return response.badRequest({
           success: false,
-          message: 'Format UUID invalide pour l\'ID du médicament'
+          message: "Format UUID invalide pour l'ID du médicament",
         })
       }
 
@@ -273,22 +287,29 @@ export default class PharmacyController {
         prixUnitaire: data.prixUnitaire ?? medicament.prixUnitaire,
         stockActuel: stockActuel,
         stockMinimum: stockMinimum,
-        statutStock: stockActuel > stockMinimum ? 'en_stock' : (stockActuel <= 0 ? 'rupture_stock' : 'stock_faible'),
-        dateExpiration: data.dateExpiration ? DateTime.fromJSDate(data.dateExpiration) : medicament.dateExpiration,
-        prescriptionRequise: data.prescriptionRequise ?? medicament.prescriptionRequise
+        statutStock:
+          stockActuel > stockMinimum
+            ? 'en_stock'
+            : stockActuel <= 0
+              ? 'rupture_stock'
+              : 'stock_faible',
+        dateExpiration: data.dateExpiration
+          ? DateTime.fromJSDate(data.dateExpiration)
+          : medicament.dateExpiration,
+        prescriptionRequise: data.prescriptionRequise ?? medicament.prescriptionRequise,
       })
 
       const oldData = {
         nom: medicament.nom,
         stockActuel: medicament.stockActuel,
-        prixUnitaire: medicament.prixUnitaire
+        prixUnitaire: medicament.prixUnitaire,
       }
 
       await medicament.save()
 
       await transmit.broadcast('pharmacy_channel', {
-          message: `Médicament mis à jour : ${medicament.nom}`,
-          type: 'inventory_update'
+        message: `Médicament mis à jour : ${medicament.nom}`,
+        type: 'inventory_update',
       })
 
       // Log d'audit - Modification de médicament
@@ -301,8 +322,11 @@ export default class PharmacyController {
 
       return response.ok({ success: true, message: 'Médicament mis à jour.' })
     } catch (error) {
-      logger.error({ err: error, medicamentId: params.id }, 'Erreur lors de la mise à jour du médicament')
-      throw error 
+      logger.error(
+        { err: error, medicamentId: params.id },
+        'Erreur lors de la mise à jour du médicament'
+      )
+      throw error
     }
   }
 
@@ -316,17 +340,17 @@ export default class PharmacyController {
       if (!uuidRegex.test(params.id)) {
         return response.badRequest({
           success: false,
-          message: 'Format UUID invalide pour l\'ID du médicament'
+          message: "Format UUID invalide pour l'ID du médicament",
         })
       }
 
       const medicament = await Medicament.findOrFail(params.id)
       const name = medicament.nom
       await medicament.delete()
-      
+
       await transmit.broadcast('pharmacy_channel', {
-          message: `Médicament supprimé : ${name}`,
-          type: 'inventory_update'
+        message: `Médicament supprimé : ${name}`,
+        type: 'inventory_update',
       })
 
       // Log d'audit - Suppression de médicament
@@ -353,19 +377,19 @@ export default class PharmacyController {
    * @access Admin, Pharmacien
    */
   public async createOrder({ request, response, auth }: HttpContext) {
-    const user = auth.user as UserProfile 
+    const user = auth.user as UserProfile
     const trx = await db.transaction()
 
     try {
       const { fournisseurId, items } = await request.validateUsing(
         (await import('#validators/pharmacy')).createOrderValidator
       )
-      
+
       // Génération du numéro de commande au format "CMD-yymjXXX" avec vérification d'unicité
       let orderNumber = this.generateOrderNumber()
       let attempts = 0
       const maxAttempts = 10
-      
+
       // Vérifier l'unicité du numéro (éviter les collisions)
       while (attempts < maxAttempts) {
         const existing = await CommandeFournisseur.query({ client: trx })
@@ -378,35 +402,38 @@ export default class PharmacyController {
         orderNumber = this.generateOrderNumber()
         attempts++
       }
-      
+
       if (attempts >= maxAttempts) {
         // En cas d'échec, ajouter un suffixe supplémentaire
         const baseNumber = this.generateOrderNumber()
         orderNumber = `${baseNumber}${Math.floor(Math.random() * 10)}`
       }
-      
+
       let totalAmount = 0
 
       // Vérif existence fournisseur
       await Fournisseur.findOrFail(fournisseurId)
 
-      const order = await CommandeFournisseur.create({
-        numeroCommande: orderNumber,
-        fournisseurId: fournisseurId,
-        statut: 'commandee',
-        dateCommande: DateTime.now(),
-        creePar: user.id,
-        montantTotal: 0
-      }, { client: trx })
+      const order = await CommandeFournisseur.create(
+        {
+          numeroCommande: orderNumber,
+          fournisseurId: fournisseurId,
+          statut: 'commandee',
+          dateCommande: DateTime.now(),
+          creePar: user.id,
+          montantTotal: 0,
+        },
+        { client: trx }
+      )
 
       // Optimisation : Récupérer tous les médicaments en une seule requête pour éviter N+1
-      const medicamentIds = items.map(item => item.medicamentId)
+      const medicamentIds = items.map((item) => item.medicamentId)
       const medicaments = await Medicament.query({ client: trx })
         .whereIn('id', medicamentIds)
         .exec()
-      
-      const medicamentMap = new Map(medicaments.map(m => [m.id, m]))
-      
+
+      const medicamentMap = new Map(medicaments.map((m) => [m.id, m]))
+
       // Vérifier que tous les médicaments existent
       for (const medicamentId of medicamentIds) {
         if (!medicamentMap.has(medicamentId)) {
@@ -419,14 +446,17 @@ export default class PharmacyController {
       for (const item of items) {
         const lineTotal = item.quantity * item.price
         totalAmount += lineTotal
-        
-        await LigneCommandeFournisseur.create({
-          commandeId: order.id,
-          medicamentId: item.medicamentId,
-          quantiteCommandee: item.quantity,
-          prixUnitaireAchat: item.price,
-          quantiteRecue: 0
-        }, { client: trx })
+
+        await LigneCommandeFournisseur.create(
+          {
+            commandeId: order.id,
+            medicamentId: item.medicamentId,
+            quantiteCommandee: item.quantity,
+            prixUnitaireAchat: item.price,
+            quantiteRecue: 0,
+          },
+          { client: trx }
+        )
       }
 
       order.montantTotal = totalAmount
@@ -434,8 +464,8 @@ export default class PharmacyController {
       await trx.commit()
 
       await transmit.broadcast('pharmacy_channel', {
-          message: `Nouvelle commande créée : ${orderNumber}`,
-          type: 'order_update'
+        message: `Nouvelle commande créée : ${orderNumber}`,
+        type: 'order_update',
       })
 
       // Log d'audit
@@ -452,26 +482,21 @@ export default class PharmacyController {
 
       const transformedOrder = PharmacyTransformer.transformOrder(order, true)
 
-      return response.status(201).json(
-        ApiResponse.created(
-          transformedOrder,
-          'Commande envoyée'
-        )
-      )
+      return response.status(201).json(ApiResponse.created(transformedOrder, 'Commande envoyée'))
     } catch (error) {
       await trx.rollback()
       logger.error({ err: error, userId: user.id }, 'Erreur lors de la création de la commande')
-      
+
       // Les erreurs VineJS sont déjà gérées par le handler, on les laisse passer
       if (error instanceof AppException || (error as any).code === 'E_VALIDATION_ERROR') {
         throw error
       }
-      
+
       // Gérer les erreurs 404 (médicament introuvable)
       if ((error as any).status === 404) {
         throw AppException.notFound((error as any).message || 'Ressource')
       }
-      
+
       throw AppException.internal('Erreur lors de la création de la commande.')
     }
   }
@@ -480,12 +505,12 @@ export default class PharmacyController {
    * Recevoir une commande (Entrée en stock)
    */
   public async receiveOrder({ params, response, auth }: HttpContext) {
-    const user = auth.user as UserProfile 
+    const user = auth.user as UserProfile
     const trx = await db.transaction()
 
     try {
       const orderId = params.id
-      
+
       const order = await CommandeFournisseur.query({ client: trx })
         .where('id', orderId)
         .preload('lignes')
@@ -503,34 +528,37 @@ export default class PharmacyController {
           .where('id', ligne.medicamentId)
           .forUpdate()
           .first()
-        
+
         if (medicament) {
           medicament.stockActuel += qtyToReceive
           medicament.prixUnitaire = ligne.prixUnitaireAchat
-          
+
           if (medicament.stockActuel > medicament.stockMinimum) {
-             medicament.statutStock = 'en_stock'
+            medicament.statutStock = 'en_stock'
           }
-          
+
           await medicament.save()
         }
-        
+
         ligne.quantiteRecue += qtyToReceive
         await ligne.save()
 
         // Générer un numéro de lot pour cette réception
         const numeroLot = this.generateLotNumber()
 
-        const mouvement = await InventaireMouvement.create({ 
-            medicamentId: ligne.medicamentId, 
-            typeMouvement: 'entree', 
-            quantite: qtyToReceive, 
-            prixUnitaire: ligne.prixUnitaireAchat, 
-            raison: `Réception Commande ${order.numeroCommande}`, 
+        const mouvement = await InventaireMouvement.create(
+          {
+            medicamentId: ligne.medicamentId,
+            typeMouvement: 'entree',
+            quantite: qtyToReceive,
+            prixUnitaire: ligne.prixUnitaireAchat,
+            raison: `Réception Commande ${order.numeroCommande}`,
             numeroLot: numeroLot,
-            commandeFournisseurId: order.id, 
-            utilisateurId: user.id 
-        }, { client: trx })
+            commandeFournisseurId: order.id,
+            utilisateurId: user.id,
+          },
+          { client: trx }
+        )
 
         // Log d'audit - Réception de stock
         await AuditService.logStockReceived(
@@ -568,8 +596,8 @@ export default class PharmacyController {
       await trx.commit()
 
       await transmit.broadcast('pharmacy_channel', {
-          message: `Stock mis à jour (Réception ${order.numeroCommande})`,
-          type: 'stock_update'
+        message: `Stock mis à jour (Réception ${order.numeroCommande})`,
+        type: 'stock_update',
       })
 
       // Log d'audit
@@ -587,15 +615,13 @@ export default class PharmacyController {
 
       const transformedOrder = PharmacyTransformer.transformOrder(order, true)
 
-      return response.json(
-        ApiResponse.success(
-          transformedOrder,
-          'Stock mis à jour.'
-        )
-      )
+      return response.json(ApiResponse.success(transformedOrder, 'Stock mis à jour.'))
     } catch (error) {
       await trx.rollback()
-      logger.error({ err: error, orderId: params.id, userId: user.id }, 'Erreur lors de la réception de la commande')
+      logger.error(
+        { err: error, orderId: params.id, userId: user.id },
+        'Erreur lors de la réception de la commande'
+      )
       if (error instanceof AppException) {
         throw error
       }
@@ -609,7 +635,7 @@ export default class PharmacyController {
    * @access Admin, Pharmacien
    */
   public async adjustStock({ request, response, auth }: HttpContext) {
-    const user = auth.user as UserProfile 
+    const user = auth.user as UserProfile
     const trx = await db.transaction()
 
     try {
@@ -617,20 +643,21 @@ export default class PharmacyController {
         (await import('#validators/pharmacy')).adjustStockValidator
       )
       const medicament = await Medicament.findOrFail(medicamentId, { client: trx })
-      
+
       const oldStock = medicament.stockActuel
-      const newStock = typeof realQuantity === 'string' ? parseInt(realQuantity, 10) : Number(realQuantity)
+      const newStock =
+        typeof realQuantity === 'string' ? Number.parseInt(realQuantity, 10) : Number(realQuantity)
       const diff = newStock - oldStock
 
-      if (diff === 0) { 
-          await trx.commit()
-          return response.json({ success: true, message: 'Aucun changement.' }) 
+      if (diff === 0) {
+        await trx.commit()
+        return response.json({ success: true, message: 'Aucun changement.' })
       }
-      
+
       if (diff !== 0 && !reason) {
-          const error: any = new Error("Le motif de l'ajustement est obligatoire.")
-          error.status = 400
-          throw error
+        const error: any = new Error("Le motif de l'ajustement est obligatoire.")
+        error.status = 400
+        throw error
       }
 
       medicament.stockActuel = newStock
@@ -650,18 +677,21 @@ export default class PharmacyController {
         reason
       )
 
-      const mouvement = await InventaireMouvement.create({
-        medicamentId: medicament.id,
-        typeMouvement: diff > 0 ? 'entree' : (diff < 0 ? 'sortie' : 'ajustement'),
-        quantite: Math.abs(diff),
-        raison: `Ajustement: ${reason || 'Inventaire Physique'}`,
-        utilisateurId: user.id 
-      }, { client: trx })
+      const mouvement = await InventaireMouvement.create(
+        {
+          medicamentId: medicament.id,
+          typeMouvement: diff > 0 ? 'entree' : diff < 0 ? 'sortie' : 'ajustement',
+          quantite: Math.abs(diff),
+          raison: `Ajustement: ${reason || 'Inventaire Physique'}`,
+          utilisateurId: user.id,
+        },
+        { client: trx }
+      )
 
       await trx.commit()
 
       // Notification pour les pharmaciens (mouvement d'inventaire)
-      const movementType = diff > 0 ? 'entree' : (diff < 0 ? 'sortie' : 'ajustement')
+      const movementType = diff > 0 ? 'entree' : diff < 0 ? 'sortie' : 'ajustement'
       await NotificationService.notifyInventoryMovement(
         medicament.id,
         medicament.nom,
@@ -672,7 +702,7 @@ export default class PharmacyController {
 
       await transmit.broadcast('pharmacy_channel', {
         message: `Ajustement stock : ${medicament.nom} (${diff > 0 ? '+' : ''}${diff})`,
-        type: 'stock_update'
+        type: 'stock_update',
       })
 
       // Créer une notification si le stock est faible ou en rupture
@@ -685,13 +715,13 @@ export default class PharmacyController {
           0,
           medicament.stockMinimum
         )
-        
+
         // Notifier uniquement les pharmaciens (leur domaine)
         const pharmacists = await UserProfile.query()
           .where('role', 'pharmacien')
           .where('actif', true)
         const pharmacistIds = pharmacists.map((u) => u.id)
-        
+
         if (pharmacistIds.length > 0) {
           await NotificationService.createNotification(
             pharmacistIds,
@@ -739,7 +769,7 @@ export default class PharmacyController {
           newStock,
           medicament.stockMinimum
         )
-        
+
         await NotificationService.notifyLowStock(medicament.id, medicament.nom)
       }
 
@@ -747,7 +777,10 @@ export default class PharmacyController {
     } catch (error) {
       await trx.rollback()
       const medicamentId = request.input('medicamentId')
-      logger.error({ err: error, medicamentId, userId: user.id }, 'Erreur lors de l\'ajustement du stock')
+      logger.error(
+        { err: error, medicamentId, userId: user.id },
+        "Erreur lors de l'ajustement du stock"
+      )
       throw error
     }
   }
@@ -763,25 +796,35 @@ export default class PharmacyController {
     try {
       const totalItems = await Medicament.query().count('* as total')
       const allMeds = await Medicament.query().select('stock_actuel', 'prix_unitaire')
-      const totalValue = allMeds.reduce((acc, med) => acc + ((Number(med.prixUnitaire) || 0) * med.stockActuel), 0)
-      const lowStock = await Medicament.query().whereRaw('stock_actuel <= stock_minimum').count('* as total')
-      const expiringSoon = await Medicament.query().where('date_expiration', '<=', DateTime.now().plus({ days: 30 }).toSQLDate()).count('* as total')
+      const totalValue = allMeds.reduce(
+        (acc, med) => acc + (Number(med.prixUnitaire) || 0) * med.stockActuel,
+        0
+      )
+      const lowStock = await Medicament.query()
+        .whereRaw('stock_actuel <= stock_minimum')
+        .count('* as total')
+      const expiringSoon = await Medicament.query()
+        .where('date_expiration', '<=', DateTime.now().plus({ days: 30 }).toSQLDate())
+        .count('* as total')
 
       const data = {
         totalMedications: Number(totalItems[0].$extras.total),
         totalValue: totalValue,
         lowStock: Number(lowStock[0].$extras.total),
-        expiringSoon: Number(expiringSoon[0].$extras.total)
+        expiringSoon: Number(expiringSoon[0].$extras.total),
       }
       return response.json({
         success: true,
-        data
+        data,
       })
     } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de la récupération des statistiques de la pharmacie')
+      logger.error(
+        { err: error },
+        'Erreur lors de la récupération des statistiques de la pharmacie'
+      )
       return response.internalServerError({
         success: false,
-        message: 'Erreur lors du chargement des statistiques de la pharmacie.'
+        message: 'Erreur lors du chargement des statistiques de la pharmacie.',
       })
     }
   }
@@ -802,24 +845,24 @@ export default class PharmacyController {
       ORDER BY DATE_TRUNC('month', created_at) ASC
     `)
 
-    let forecastData = usageForecastDataRaw.rows.map((row: any) => ({
+      let forecastData = usageForecastDataRaw.rows.map((row: any) => ({
         month: row.month,
-        actual: parseInt(row.actual_out) || 0,
-        predicted: Math.round((parseInt(row.actual_out) || 0) * 1.1), // Mock simple +10%
-        confidence: 90
-    }))
+        actual: Number.parseInt(row.actual_out) || 0,
+        predicted: Math.round((Number.parseInt(row.actual_out) || 0) * 1.1), // Mock simple +10%
+        confidence: 90,
+      }))
 
-    // Si pas de données, mock complet pour l'affichage
-    if (forecastData.length === 0) {
+      // Si pas de données, mock complet pour l'affichage
+      if (forecastData.length === 0) {
         forecastData = [
-            { month: 'Oct', actual: 120, predicted: 130 },
-            { month: 'Nov', actual: 145, predicted: 150 },
-            { month: 'Déc', actual: 180, predicted: 170 },
-            { month: 'Jan', actual: 150, predicted: 160 }
+          { month: 'Oct', actual: 120, predicted: 130 },
+          { month: 'Nov', actual: 145, predicted: 150 },
+          { month: 'Déc', actual: 180, predicted: 170 },
+          { month: 'Jan', actual: 150, predicted: 160 },
         ]
-    }
+      }
 
-    const distributionDataRaw = await db.rawQuery(`
+      const distributionDataRaw = await db.rawQuery(`
       SELECT 
         m.forme as name,
         SUM(i.quantite) as value
@@ -831,47 +874,47 @@ export default class PharmacyController {
       LIMIT 5
     `)
 
-    const categoryColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
-    
-    const distributionData = distributionDataRaw.rows.map((row: any, index: number) => ({
-        name: row.name,
-        value: parseInt(row.value),
-        color: categoryColors[index % categoryColors.length]
-    }))
+      const categoryColors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
 
-    // Recommandations de commande (Basique)
-    const reorderRecommendations = await Medicament.query()
+      const distributionData = distributionDataRaw.rows.map((row: any, index: number) => ({
+        name: row.name,
+        value: Number.parseInt(row.value),
+        color: categoryColors[index % categoryColors.length],
+      }))
+
+      // Recommandations de commande (Basique)
+      const reorderRecommendations = await Medicament.query()
         .whereRaw('stock_actuel <= stock_minimum')
         .limit(5)
         .exec()
 
-    const formattedRecs = reorderRecommendations.map(m => ({
+      const formattedRecs = reorderRecommendations.map((m) => ({
         id: m.id,
         medication: m.nom,
         currentStock: m.stockActuel,
         predictedNeed: m.stockMinimum * 3,
-        recommendedOrder: (m.stockMinimum * 3) - m.stockActuel,
+        recommendedOrder: m.stockMinimum * 3 - m.stockActuel,
         urgency: m.stockActuel === 0 ? 'high' : 'medium',
         estimatedStockout: m.stockActuel === 0 ? 'Immédiat' : '2 jours',
         confidence: 85,
-        reason: 'Stock sous le seuil minimum'
-    }));
-    
+        reason: 'Stock sous le seuil minimum',
+      }))
+
       return response.json({
         success: true,
         forecastData,
         distributionData,
-        reorderRecommendations: formattedRecs
+        reorderRecommendations: formattedRecs,
       })
     } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de l\'analyse prédictive')
+      logger.error({ err: error }, "Erreur lors de l'analyse prédictive")
       return response.internalServerError({
         success: false,
-        message: 'Erreur lors du chargement de l\'analyse prédictive.'
+        message: "Erreur lors du chargement de l'analyse prédictive.",
       })
     }
   }
-  
+
   // ----------------------------------------------------------------------
   // 4. UTILITAIRES DE RECHERCHE & LISTING
   // ----------------------------------------------------------------------
@@ -879,12 +922,12 @@ export default class PharmacyController {
   public async search({ request, response }: HttpContext) {
     try {
       const term = request.input('q', '').trim()
-      
+
       // Validation de la longueur de la recherche
       if (term.length > 100) {
         return response.badRequest({
           success: false,
-          message: 'La recherche ne peut pas dépasser 100 caractères.'
+          message: 'La recherche ne peut pas dépasser 100 caractères.',
         })
       }
 
@@ -892,19 +935,19 @@ export default class PharmacyController {
         .where('nom', 'ilike', `%${term}%`)
         .orWhere('principeActif', 'ilike', `%${term}%`)
         .limit(20)
-        
+
       return response.json({
-          success: true,
-          data: meds.map(m => ({ 
-              value: m.id, 
-              label: `${m.nom} ${m.dosage || ''} - Stock: ${m.stockActuel}` 
-          }))
+        success: true,
+        data: meds.map((m) => ({
+          value: m.id,
+          label: `${m.nom} ${m.dosage || ''} - Stock: ${m.stockActuel}`,
+        })),
       })
     } catch (error) {
       logger.error({ err: error }, 'Erreur lors de la recherche de médicaments')
       return response.internalServerError({
         success: false,
-        message: 'Erreur lors de la recherche.'
+        message: 'Erreur lors de la recherche.',
       })
     }
   }
@@ -917,7 +960,7 @@ export default class PharmacyController {
         .orderBy('date_expiration', 'asc')
         .limit(20)
 
-      const formattedAlerts = expiringSoon.map(item => {
+      const formattedAlerts = expiringSoon.map((item) => {
         const daysLeft = Math.ceil(item.dateExpiration!.diff(DateTime.now(), 'days').days)
         let priority = daysLeft <= 30 ? 'high' : daysLeft <= 60 ? 'medium' : 'low'
 
@@ -929,16 +972,16 @@ export default class PharmacyController {
           daysUntilExpiry: daysLeft,
           currentStock: item.stockActuel,
           priority: priority,
-          action: priority === 'high' ? 'Retirer du stock' : 'Prévoir rotation'
+          action: priority === 'high' ? 'Retirer du stock' : 'Prévoir rotation',
         }
       })
 
       return response.json({ success: true, data: formattedAlerts })
     } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de la récupération des alertes d\'expiration')
+      logger.error({ err: error }, "Erreur lors de la récupération des alertes d'expiration")
       return response.internalServerError({
         success: false,
-        message: 'Erreur lors du chargement des alertes.'
+        message: 'Erreur lors du chargement des alertes.',
       })
     }
   }
@@ -951,16 +994,16 @@ export default class PharmacyController {
         .preload('lignes', (q) => q.preload('medicament'))
         .orderBy('dateCommande', 'desc')
 
-      const formatted = orders.map(o => ({
+      const formatted = orders.map((o) => ({
         value: o.id,
         label: `${o.numeroCommande} - ${o.fournisseur.nom} (${o.lignes.length} articles)`,
-        lines: o.lignes.map(l => ({
+        lines: o.lignes.map((l) => ({
           id: l.id,
           medicamentId: l.medicamentId,
           name: l.medicament ? l.medicament.nom : 'Médicament inconnu',
           ordered: l.quantiteCommandee,
-          received: l.quantiteRecue
-        }))
+          received: l.quantiteRecue,
+        })),
       }))
 
       return response.json(ApiResponse.success(formatted))
@@ -972,27 +1015,27 @@ export default class PharmacyController {
 
   public async recentOrders({ response }: HttpContext) {
     try {
-        const orders = await CommandeFournisseur.query()
-            .preload('fournisseur')
-            .preload('lignes')
-            .orderBy('dateCommande', 'desc')
-            .limit(10)
+      const orders = await CommandeFournisseur.query()
+        .preload('fournisseur')
+        .preload('lignes')
+        .orderBy('dateCommande', 'desc')
+        .limit(10)
 
-        const formattedOrders = orders.map(o => ({
-            id: o.id,
-            orderNumber: o.numeroCommande,
-            supplier: o.fournisseur ? o.fournisseur.nom : 'Inconnu',
-            date: o.dateCommande.toISODate(),
-            items: o.lignes.length,
-            totalAmount: Number(o.montantTotal),
-            status: o.statut,
-            deliveryDate: o.dateLivraisonEstimee ? o.dateLivraisonEstimee.toISODate() : 'N/A',
-            trackingNumber: `TRACK-${o.id.substring(0, 8).toUpperCase()}`
-        }))
+      const formattedOrders = orders.map((o) => ({
+        id: o.id,
+        orderNumber: o.numeroCommande,
+        supplier: o.fournisseur ? o.fournisseur.nom : 'Inconnu',
+        date: o.dateCommande.toISODate(),
+        items: o.lignes.length,
+        totalAmount: Number(o.montantTotal),
+        status: o.statut,
+        deliveryDate: o.dateLivraisonEstimee ? o.dateLivraisonEstimee.toISODate() : 'N/A',
+        trackingNumber: `TRACK-${o.id.substring(0, 8).toUpperCase()}`,
+      }))
 
-        return response.json({ success: true, data: formattedOrders })
+      return response.json({ success: true, data: formattedOrders })
     } catch (error) {
-        throw error
+      throw error
     }
   }
 
@@ -1012,34 +1055,40 @@ export default class PharmacyController {
       const formattedOrder = {
         id: order.id,
         orderNumber: order.numeroCommande,
-        supplier: order.fournisseur ? {
-          id: order.fournisseur.id,
-          nom: order.fournisseur.nom,
-          email: order.fournisseur.email || null,
-          telephone: order.fournisseur.telephone || null,
-          adresse: order.fournisseur.adresse || null,
-        } : null,
+        supplier: order.fournisseur
+          ? {
+              id: order.fournisseur.id,
+              nom: order.fournisseur.nom,
+              email: order.fournisseur.email || null,
+              telephone: order.fournisseur.telephone || null,
+              adresse: order.fournisseur.adresse || null,
+            }
+          : null,
         date: order.dateCommande.toISODate(),
         deliveryDate: order.dateLivraisonEstimee ? order.dateLivraisonEstimee.toISODate() : null,
         status: order.statut,
         totalAmount: Number(order.montantTotal),
-        createdBy: order.createur ? {
-          id: order.createur.id,
-          nomComplet: order.createur.nomComplet,
-          email: order.createur.email || null,
-        } : null,
+        createdBy: order.createur
+          ? {
+              id: order.createur.id,
+              nomComplet: order.createur.nomComplet,
+              email: order.createur.email || null,
+            }
+          : null,
         createdAt: order.createdAt.toISO(),
         updatedAt: order.updatedAt.toISO(),
-        lines: order.lignes.map(l => ({
+        lines: order.lignes.map((l) => ({
           id: l.id,
           medicamentId: l.medicamentId,
-          medicament: l.medicament ? {
-            id: l.medicament.id,
-            nom: l.medicament.nom,
-            codeBarre: l.medicament.codeBarre || null,
-            forme: l.medicament.forme || null,
-            dosage: l.medicament.dosage || null,
-          } : null,
+          medicament: l.medicament
+            ? {
+                id: l.medicament.id,
+                nom: l.medicament.nom,
+                codeBarre: l.medicament.codeBarre || null,
+                forme: l.medicament.forme || null,
+                dosage: l.medicament.dosage || null,
+              }
+            : null,
           quantiteCommandee: l.quantiteCommandee,
           quantiteRecue: l.quantiteRecue,
           prixUnitaireAchat: Number(l.prixUnitaireAchat),
@@ -1049,7 +1098,10 @@ export default class PharmacyController {
 
       return response.json({ success: true, data: formattedOrder })
     } catch (error: any) {
-      logger.error({ err: error, orderId: params.id }, 'Erreur lors de la récupération des détails de la commande')
+      logger.error(
+        { err: error, orderId: params.id },
+        'Erreur lors de la récupération des détails de la commande'
+      )
       if (error.code === 'E_ROW_NOT_FOUND') {
         return response.notFound({ success: false, message: 'Commande introuvable' })
       }
@@ -1113,8 +1165,7 @@ export default class PharmacyController {
                 uq.where('nomComplet', 'ilike', `%${searchTerm}%`)
               })
             })
-          })
-          .orWhereHas('medicament', (mq) => {
+          }).orWhereHas('medicament', (mq) => {
             mq.where('nom', 'ilike', `%${searchTerm}%`)
           })
         })
@@ -1135,27 +1186,33 @@ export default class PharmacyController {
           id: prescription.id,
           consultationId: prescription.consultationId,
           medicamentId: prescription.medicamentId,
-          medicament: medicament ? {
-            id: medicament.id,
-            nom: medicament.nom,
-            codeBarre: medicament.codeBarre || null,
-            forme: medicament.forme || null,
-            dosage: medicament.dosage || null,
-          } : null,
+          medicament: medicament
+            ? {
+                id: medicament.id,
+                nom: medicament.nom,
+                codeBarre: medicament.codeBarre || null,
+                forme: medicament.forme || null,
+                dosage: medicament.dosage || null,
+              }
+            : null,
           quantite: prescription.quantite,
           posologie: prescription.posologie,
           dureeTraitement: prescription.dureeTraitement,
           instructionsSpeciales: prescription.instructionsSpeciales,
           datePrescription: prescription.datePrescription.toISO(),
-          patient: patientUser ? {
-            id: patient.id,
-            nomComplet: patientUser.nomComplet,
-            numeroPatient: patient.numeroPatient || null,
-          } : null,
-          medecin: medecinUser ? {
-            id: medecin.id,
-            nomComplet: medecinUser.nomComplet,
-          } : null,
+          patient: patientUser
+            ? {
+                id: patient.id,
+                nomComplet: patientUser.nomComplet,
+                numeroPatient: patient.numeroPatient || null,
+              }
+            : null,
+          medecin: medecinUser
+            ? {
+                id: medecin.id,
+                nomComplet: medecinUser.nomComplet,
+              }
+            : null,
           consultationDate: consultation?.dateConsultation?.toISO() || null,
         }
       })
@@ -1238,7 +1295,7 @@ export default class PharmacyController {
 
           // Mettre à jour le stock
           medicamentToUpdate.stockActuel = newStock
-          
+
           // Mettre à jour le statut du stock
           if (newStock <= 0) {
             medicamentToUpdate.statutStock = 'rupture_stock'
@@ -1252,13 +1309,16 @@ export default class PharmacyController {
 
           // Créer un mouvement d'inventaire pour la traçabilité
           const InventaireMouvement = (await import('#models/InventaireMouvement')).default
-          await InventaireMouvement.create({
-            medicamentId: medicament.id,
-            typeMouvement: 'sortie',
-            quantite: Math.abs(diff),
-            raison: `Prescription délivrée - ${medicament.nom} (${prescription.quantite} unité(s)) pour ${patientUser?.nomComplet || 'Patient'}`,
-            utilisateurId: user.id
-          }, { client: trx })
+          await InventaireMouvement.create(
+            {
+              medicamentId: medicament.id,
+              typeMouvement: 'sortie',
+              quantite: Math.abs(diff),
+              raison: `Prescription délivrée - ${medicament.nom} (${prescription.quantite} unité(s)) pour ${patientUser?.nomComplet || 'Patient'}`,
+              utilisateurId: user.id,
+            },
+            { client: trx }
+          )
 
           await trx.commit()
 
@@ -1268,7 +1328,7 @@ export default class PharmacyController {
               .where('role', 'pharmacien')
               .where('actif', true)
             const pharmacistIds = pharmacists.map((u) => u.id)
-            
+
             if (pharmacistIds.length > 0) {
               await NotificationService.createNotification(
                 pharmacistIds,
@@ -1293,11 +1353,14 @@ export default class PharmacyController {
             message: `Stock réduit : ${medicament.nom} (${diff} unité(s))`,
             type: 'stock_update',
             medicamentId: medicament.id,
-            newStock: newStock
+            newStock: newStock,
           })
         } catch (stockError) {
           await trx.rollback()
-          logger.error({ err: stockError, medicamentId: medicament.id, prescriptionId: prescription.id }, 'Erreur lors de la réduction de stock pour prescription')
+          logger.error(
+            { err: stockError, medicamentId: medicament.id, prescriptionId: prescription.id },
+            'Erreur lors de la réduction de stock pour prescription'
+          )
           // Ne pas faire échouer la validation de prescription si la réduction de stock échoue
           // Mais logger l'erreur pour investigation
         }
@@ -1357,7 +1420,10 @@ export default class PharmacyController {
         )
       )
     } catch (error) {
-      logger.error({ err: error, prescriptionId: params.id }, 'Erreur lors du marquage de la prescription comme délivrée')
+      logger.error(
+        { err: error, prescriptionId: params.id },
+        'Erreur lors du marquage de la prescription comme délivrée'
+      )
       if (error instanceof AppException) {
         throw error
       }
@@ -1386,7 +1452,7 @@ export default class PharmacyController {
 
       const Prescription = (await import('#models/Prescription')).default
       const prescription = await Prescription.find(params.id)
-      
+
       if (!prescription) {
         throw AppException.notFound('Prescription introuvable')
       }
@@ -1396,7 +1462,11 @@ export default class PharmacyController {
       }
 
       // Récupérer les données à modifier
-      const { quantite, posologie, dureeTraitement } = request.only(['quantite', 'posologie', 'dureeTraitement'])
+      const { quantite, posologie, dureeTraitement } = request.only([
+        'quantite',
+        'posologie',
+        'dureeTraitement',
+      ])
 
       // Mettre à jour uniquement les champs fournis
       if (quantite !== undefined) {
@@ -1459,7 +1529,10 @@ export default class PharmacyController {
         )
       )
     } catch (error) {
-      logger.error({ err: error, prescriptionId: params.id }, 'Erreur lors de la modification de la prescription')
+      logger.error(
+        { err: error, prescriptionId: params.id },
+        'Erreur lors de la modification de la prescription'
+      )
       if (error instanceof AppException) {
         throw error
       }
@@ -1488,13 +1561,13 @@ export default class PharmacyController {
 
       const Prescription = (await import('#models/Prescription')).default
       const prescription = await Prescription.find(params.id)
-      
+
       if (!prescription) {
         throw AppException.notFound('Prescription introuvable')
       }
 
       if (prescription.delivre) {
-        throw AppException.badRequest('Impossible d\'annuler une prescription déjà délivrée')
+        throw AppException.badRequest("Impossible d'annuler une prescription déjà délivrée")
       }
 
       // Charger les relations avant suppression pour l'audit
@@ -1532,17 +1605,17 @@ export default class PharmacyController {
       await prescription.delete()
 
       return response.json(
-        ApiResponse.success(
-          { id: params.id, cancelled: true },
-          'Prescription annulée avec succès.'
-        )
+        ApiResponse.success({ id: params.id, cancelled: true }, 'Prescription annulée avec succès.')
       )
     } catch (error) {
-      logger.error({ err: error, prescriptionId: params.id }, 'Erreur lors de l\'annulation de la prescription')
+      logger.error(
+        { err: error, prescriptionId: params.id },
+        "Erreur lors de l'annulation de la prescription"
+      )
       if (error instanceof AppException) {
         throw error
       }
-      throw AppException.internal('Erreur lors de l\'annulation de la prescription.')
+      throw AppException.internal("Erreur lors de l'annulation de la prescription.")
     }
   }
 }

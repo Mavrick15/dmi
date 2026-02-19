@@ -63,7 +63,7 @@ const Modal = ({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              'relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800',
+              'relative bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700',
               'w-full flex flex-col max-h-[90vh] overflow-hidden',
               sizes[size],
               className
@@ -73,8 +73,8 @@ const Modal = ({
             {(title || icon || showCloseButton) && (
               <div
                 className={cn(
-                  'flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800',
-                  'bg-gradient-to-r from-slate-50 to-white dark:from-slate-800 dark:to-slate-900',
+                  'flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700',
+                  'bg-slate-50 dark:bg-slate-800/50',
                   headerClassName
                 )}
               >
@@ -93,7 +93,7 @@ const Modal = ({
                 {showCloseButton && (
                   <button
                     onClick={onClose}
-                    className="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors"
                   >
                     <Icon name="X" size={18} className="text-slate-500 dark:text-slate-400" />
                   </button>
@@ -113,7 +113,7 @@ const Modal = ({
 
             {/* Footer */}
             {footer && (
-              <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+              <div className="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
                 {footer}
               </div>
             )}

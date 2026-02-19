@@ -22,14 +22,11 @@ class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-6 transition-colors duration-300">
-          <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 max-w-md w-full text-center">
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 max-w-md w-full text-center">
             
-            {/* Icône d'erreur animée */}
-            <div className="relative mb-6 mx-auto w-20 h-20">
-              <div className="absolute inset-0 bg-rose-100 dark:bg-rose-900/20 rounded-full animate-pulse"></div>
-              <div className="relative flex items-center justify-center w-full h-full rounded-full bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30">
-                <Icon name="AlertTriangle" size={36} className="text-rose-500 dark:text-rose-400" />
-              </div>
+            {/* Icône d'erreur */}
+            <div className="mb-6 mx-auto w-16 h-16 rounded-xl bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-700 flex items-center justify-center">
+              <Icon name="AlertTriangle" size={32} className="text-rose-500 dark:text-rose-400" />
             </div>
 
             <div className="flex flex-col gap-2 mb-8">
@@ -45,7 +42,7 @@ class ErrorBoundary extends React.Component {
               {/* Bouton Recharger (Primaire) */}
               <button
                 onClick={() => window.location.reload()}
-                className="flex items-center justify-center gap-2 w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full bg-primary hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
               >
                 <Icon name="RefreshCw" size={18} />
                 Rafraîchir la page
@@ -68,7 +65,7 @@ class ErrorBoundary extends React.Component {
               <div className="mt-8 text-left">
                 <details className="text-xs text-slate-400 cursor-pointer">
                   <summary className="hover:text-slate-600 mb-2">Détails techniques</summary>
-                  <pre className="p-3 bg-slate-100 dark:bg-slate-950 rounded-lg overflow-auto max-h-32 border border-slate-200 dark:border-slate-800">
+                  <pre className="p-3 bg-slate-100 dark:bg-slate-900 rounded-xl overflow-auto max-h-32 border border-slate-200 dark:border-slate-700">
                     {this.state.errorInfo.componentStack}
                   </pre>
                 </details>

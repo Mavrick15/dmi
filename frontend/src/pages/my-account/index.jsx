@@ -152,25 +152,25 @@ const MyAccount = () => {
           transition={{ duration: 0.3 }}
           className="mb-8"
         >
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg shadow-slate-200/50 dark:shadow-none overflow-hidden">
-            <div className="h-20 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent dark:from-primary/30 dark:via-primary/15" />
-            <div className="px-6 pb-6 -mt-10 relative">
+          <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            <div className="h-16 bg-primary/10 dark:bg-primary/20" />
+            <div className="px-6 pb-6 -mt-8 relative">
               <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-800 border-4 border-white dark:border-slate-900 shadow-xl flex items-center justify-center overflow-hidden flex-shrink-0 ring-2 ring-slate-200/50 dark:ring-slate-700">
+                <div className="w-20 h-20 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-900 shadow-md flex items-center justify-center overflow-hidden flex-shrink-0">
                   {avatarFile ? (
                     <img src={URL.createObjectURL(avatarFile)} alt="" className="w-full h-full object-cover" />
                   ) : profile.photoProfil ? (
                     <Image src={profile.photoProfil} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-2xl font-bold text-primary">{userInitials}</span>
+                    <span className="text-2xl font-bold text-primary dark:text-blue-400">{userInitials}</span>
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 pb-1">
                   <h1 className="text-xl font-bold text-slate-900 dark:text-white truncate">
                     {user?.nomComplet || 'Mon compte'}
                   </h1>
                   {roleLabel && (
-                    <span className="inline-block mt-2 px-2.5 py-1 text-xs font-medium rounded-lg bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border border-primary/20">
+                    <span className="inline-block mt-2 px-2.5 py-1 text-xs font-semibold rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 border border-slate-200 dark:border-slate-700">
                       {roleLabel}
                     </span>
                   )}
@@ -180,18 +180,18 @@ const MyAccount = () => {
           </div>
         </motion.div>
 
-        {/* Onglets style pill */}
+        {/* Onglets et contenu */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.08 }}
-          className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden"
+          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden"
         >
-          <div className="flex p-1.5 bg-slate-100 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex p-1.5 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
             <button
               type="button"
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'profile' ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'profile' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
             >
               <Icon name="User" size={18} />
               Profil
@@ -199,7 +199,7 @@ const MyAccount = () => {
             <button
               type="button"
               onClick={() => setActiveTab('password')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'password' ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'password' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
             >
               <Icon name="Lock" size={18} />
               Mot de passe
@@ -223,7 +223,7 @@ const MyAccount = () => {
                       placeholder="Votre nom"
                     />
                   </div>
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
                     <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
                       <Icon name="Phone" size={16} />
                       Contact
@@ -245,7 +245,7 @@ const MyAccount = () => {
                       />
                     </div>
                   </div>
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
                     <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
                       <Icon name="Image" size={16} />
                       Photo
@@ -292,7 +292,7 @@ const MyAccount = () => {
 
             {activeTab === 'password' && (
               <form onSubmit={submitPassword} className="space-y-6 max-w-2xl">
-                <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 mb-6">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 mb-6">
                   <Icon name="ShieldAlert" size={22} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
                   <p className="text-sm text-amber-800 dark:text-amber-200">
                     Changer votre mot de passe régulièrement améliore la sécurité de votre compte.

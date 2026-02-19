@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Minus } from "lucide-react";
+import Icon from "../AppIcon";
 import { cn } from "../../utils/cn";
 
 const Checkbox = React.forwardRef(({
@@ -47,9 +47,9 @@ const Checkbox = React.forwardRef(({
                 <label
                     htmlFor={checkboxId}
                     className={cn(
-                        "flex items-center justify-center shrink-0 rounded-md border transition-all duration-200 cursor-pointer shadow-sm",
+                        "flex items-center justify-center shrink-0 rounded-lg border transition-all duration-200 cursor-pointer shadow-sm",
                         // Styles de base (Light/Dark)
-                        "bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-600",
+                        "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700",
                         
                         // Focus ring via le 'peer' (l'input caché)
                         "peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 peer-focus-visible:border-primary",
@@ -58,7 +58,7 @@ const Checkbox = React.forwardRef(({
                         sizeClasses?.[size],
                         
                         // État Checked / Indeterminate
-                        (checked || indeterminate) && "bg-primary border-primary text-white shadow-md shadow-primary/20",
+                        (checked || indeterminate) && "bg-primary border-primary text-white shadow-sm",
                         
                         // État Erreur
                         error && "border-rose-500 ring-rose-500/20",
@@ -68,10 +68,10 @@ const Checkbox = React.forwardRef(({
                     )}
                 >
                     {checked && !indeterminate && (
-                        <Check strokeWidth={3} size={iconSizes[size]} className="text-current" />
+                        <Icon name="Check" size={iconSizes[size]} className="text-current" />
                     )}
                     {indeterminate && (
-                        <Minus strokeWidth={3} size={iconSizes[size]} className="text-current" />
+                        <Icon name="Minus" size={iconSizes[size]} className="text-current" />
                     )}
                 </label>
             </div>

@@ -13,7 +13,7 @@ const Input = React.forwardRef(({
   ...props 
 }, ref) => {
   const inputClasses = cn(
-    'flex h-10 w-full items-center rounded-xl border border-slate-200 dark:border-slate-800',
+    'flex h-10 w-full items-center rounded-xl border border-slate-200 dark:border-slate-700',
     'bg-white dark:bg-slate-900',
     'px-4 py-2 text-sm font-medium',
     'text-slate-900 dark:text-white',

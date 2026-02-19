@@ -47,12 +47,11 @@ export default class PermissionMiddleware {
       )
 
       if (!hasAtLeastOnePermission) {
-        const userName = user.nomComplet || user.email || 'Utilisateur'
         return ctx.response.forbidden({
           success: false,
           error: {
             code: 'INSUFFICIENT_PERMISSIONS',
-            message: `Vous n'avez pas le droit ${userName}, Veuillez contacter l'Administrateur Système.`,
+            message: "Vous n'avez pas les droits nécessaires pour cette action. Veuillez contacter l'administrateur système.",
             required: permissions,
             userPermissions: userPermissions,
           },

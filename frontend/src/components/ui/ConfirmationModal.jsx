@@ -48,18 +48,16 @@ const ConfirmationModal = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center relative overflow-hidden"
+            className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center text-center relative overflow-hidden"
             onClick={(e) => e.stopPropagation()}
             style={{ zIndex: 1000000, position: 'relative' }}
           >
-            {/* Gradient background effect */}
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-transparent to-transparent dark:from-slate-800/50 pointer-events-none" />
             <div className="relative z-10 w-full">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className={`w-14 h-14 rounded-full flex items-center justify-center mb-5 mx-auto ${iconColor.replace('text', 'bg').replace('500', '100').replace('600', '100')}`}
+                className={`w-14 h-14 rounded-xl flex items-center justify-center mb-5 mx-auto ${iconColor.replace('text', 'bg').replace('500', '100').replace('600', '100')}`}
               >
                 <Icon name={iconName} size={28} className={iconColor} />
               </motion.div>
@@ -101,7 +99,7 @@ const ConfirmationModal = ({
                   onClick={handleConfirm} 
                   loading={isLoading}
                   disabled={isLoading}
-                  className="shadow-lg shadow-rose-500/20 hover:shadow-rose-500/40"
+                  className="shadow-sm hover:shadow-md"
                 >
                   {confirmLabel}
                 </Button>

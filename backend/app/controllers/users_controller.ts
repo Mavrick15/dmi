@@ -119,6 +119,28 @@ export default class UsersController {
     )
   }
 
+  /**
+   * Liste des médecins (docteurs) pour le partage de documents.
+   * Nécessite document_view pour être utilisable depuis la modale de partage.
+   */
+  public async doctorsForShare({ response }: HttpContext) {
+    const doctors = await UserProfile.query()
+      .where('role', 'docteur')
+      .where('actif', true)
+      .select('id', 'nom_complet', 'email')
+      .orderBy('nom_complet', 'asc')
+
+    const data = doctors.map((u) => ({
+      id: u.id,
+      nomComplet: u.nomComplet || null,
+      name: u.nomComplet || null,
+      email: u.email || null,
+      role: 'docteur',
+    }))
+
+    return response.json(ApiResponse.success(data))
+  }
+
   public async store({ request, response, auth }: HttpContext) {
     // Gestion de l'upload d'avatar (doit être fait avant request.only pour FormData)
     const avatarFile = request.file('file') || request.file('avatar')

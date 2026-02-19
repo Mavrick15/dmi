@@ -1,8 +1,9 @@
 import React from 'react';
 import { usePermissions } from '../hooks/usePermissions';
+import Icon from './AppIcon';
 
 /**
- * Composant pour protéger des sections de l'interface basé sur les permissions
+ * Protège des sections de l'interface selon les permissions (PBAC).
  * @param {string|string[]} requiredPermission - Permission(s) requise(s)
  * @param {React.ReactNode} children - Contenu à afficher si la permission est accordée
  * @param {React.ReactNode} fallback - Contenu à afficher si la permission n'est pas accordée (optionnel)
@@ -16,22 +17,21 @@ const PermissionGuard = ({
 }) => {
   const { hasPermission, isLoading } = usePermissions();
 
-  // Si les permissions sont en cours de chargement, ne rien afficher
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex flex-col items-center justify-center py-8 px-4 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 min-h-[120px]">
+        <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
+        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
+      </div>
+    );
   }
 
-  // Vérifier la permission
   if (hasPermission(requiredPermission)) {
     return <>{children}</>;
   }
-
-  // Afficher le fallback si demandé
   if (showFallback) {
     return <>{fallback}</>;
   }
-
-  // Par défaut, ne rien afficher
   return null;
 };
 

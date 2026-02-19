@@ -5,12 +5,12 @@ import { cn } from "../../utils/cn";
 import Icon from '../AppIcon';
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5",
+    "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] hover:shadow-md",
     {
         variants: {
             variant: {
                 default: 
-                    "bg-primary text-white shadow-lg shadow-primary/25 hover:bg-blue-700 hover:shadow-primary/40 dark:bg-blue-600 dark:hover:bg-blue-500 border border-transparent",
+                    "bg-primary text-white shadow-sm hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 border border-transparent",
                 destructive: 
                     "bg-rose-500 text-white hover:bg-rose-600 shadow-sm dark:bg-rose-600 dark:hover:bg-rose-700",
                 outline: 
@@ -32,7 +32,7 @@ const buttonVariants = cva(
                 lg: "h-12 rounded-xl px-6 text-base",
                 icon: "h-10 w-10",
                 xs: "h-7 rounded-md px-2 text-[10px]",
-                xl: "h-14 rounded-2xl px-8 text-lg",
+                xl: "h-14 rounded-xl px-8 text-lg",
             },
         },
         defaultVariants: {

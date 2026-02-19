@@ -44,13 +44,15 @@ export const updateMedicamentValidator = vine.compile(
 export const createOrderValidator = vine.compile(
   vine.object({
     fournisseurId: vine.string().uuid(),
-    items: vine.array(
-      vine.object({
-        medicamentId: vine.string().uuid(),
-        quantity: vine.number().min(1).max(10000),
-        price: vine.number().min(0),
-      })
-    ).minLength(1),
+    items: vine
+      .array(
+        vine.object({
+          medicamentId: vine.string().uuid(),
+          quantity: vine.number().min(1).max(10000),
+          price: vine.number().min(0),
+        })
+      )
+      .minLength(1),
   })
 )
 
@@ -64,4 +66,3 @@ export const adjustStockValidator = vine.compile(
     reason: vine.string().trim().minLength(3).maxLength(500),
   })
 )
-

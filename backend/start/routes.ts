@@ -164,7 +164,7 @@ router
           .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
         router
           .post('/documents/:id/sign', [DocumentsController, 'sign'])
-          .use(middleware.permission(['document_view', 'clinical_write']))
+          .use(middleware.permission(['document_sign']))
           .use(middleware.rateLimit({ maxRequests: 20, windowMs: 60 * 1000 })) // 20 req/min
         router
           .delete('/documents/:id', [DocumentsController, 'destroy'])
@@ -684,6 +684,10 @@ router
           .get('/users', [UsersController, 'index'])
           .use(middleware.permission(['user_view']))
           .use(middleware.rateLimit({ maxRequests: 100, windowMs: 60 * 1000 })) // 100 req/min
+        router
+          .get('/users/doctors', [UsersController, 'doctorsForShare'])
+          .use(middleware.permission(['document_view']))
+          .use(middleware.rateLimit({ maxRequests: 60, windowMs: 60 * 1000 })) // 60 req/min
         router
           .get('/users/:id', [UsersController, 'show'])
           .use(middleware.permission(['user_view']))

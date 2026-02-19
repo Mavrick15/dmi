@@ -244,11 +244,7 @@ const DocumentManagement = () => {
             setSelectedDoc(updatedDocument);
         } else if (selectedDoc) {
             // Fallback si les données ne sont pas disponibles
-            setSelectedDoc(prev => ({
-                ...prev, 
-                title: prev.title.includes('(Signé)') ? prev.title : `${prev.title} (Signé)`, 
-                isSigned: true
-            }));
+            setSelectedDoc(prev => ({ ...prev, isSigned: true }));
         }
     } catch (err) {
         // L'erreur est déjà gérée par le hook
@@ -362,7 +358,7 @@ const DocumentManagement = () => {
         {documentsError && (
           <div className="mb-6 flex items-center gap-3 p-4 rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-l-4 border-l-red-500">
             <Icon name="AlertCircle" size={20} className="shrink-0" />
-            <p className="text-sm">{documentsError.message || 'Impossible de charger les documents.'}</p>
+            <p className="text-sm">{documentsError.userMessage || documentsError.message || 'Impossible de charger les documents.'}</p>
           </div>
         )}
 

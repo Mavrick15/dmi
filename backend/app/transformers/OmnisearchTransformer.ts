@@ -4,6 +4,9 @@ import type Medicament from '#models/Medicament'
 import type UserProfile from '#models/UserProfile'
 import type Facture from '#models/Facture'
 import type Analyse from '#models/Analyse'
+import type Fournisseur from '#models/Fournisseur'
+import type CommandeFournisseur from '#models/CommandeFournisseur'
+import type Document from '#models/Document'
 
 /**
  * Transformer pour les résultats de recherche globale
@@ -19,6 +22,9 @@ export class OmnisearchTransformer extends BaseTransformer {
     users: UserProfile[]
     factures: Facture[]
     analyses?: Analyse[]
+    fournisseurs?: Fournisseur[]
+    commandes?: CommandeFournisseur[]
+    documents?: Document[]
   }): any[] {
     const transformer = new OmnisearchTransformer()
     const formattedResults: any[] = []
@@ -50,6 +56,27 @@ export class OmnisearchTransformer extends BaseTransformer {
       )
     }
 
+    // Fournisseurs
+    if (results.fournisseurs) {
+      formattedResults.push(
+        ...results.fournisseurs.map(f => transformer.transformFournisseurResult(f))
+      )
+    }
+
+    // Commandes fournisseur
+    if (results.commandes) {
+      formattedResults.push(
+        ...results.commandes.map(c => transformer.transformCommandeFournisseurResult(c))
+      )
+    }
+
+    // Documents
+    if (results.documents) {
+      formattedResults.push(
+        ...results.documents.map(d => transformer.transformDocumentResult(d))
+      )
+    }
+
     return formattedResults
   }
 
@@ -62,6 +89,9 @@ export class OmnisearchTransformer extends BaseTransformer {
     users: UserProfile[]
     factures: Facture[]
     analyses?: Analyse[]
+    fournisseurs?: Fournisseur[]
+    commandes?: CommandeFournisseur[]
+    documents?: Document[]
   }): string[] {
     const suggestions: string[] = []
 
@@ -90,10 +120,27 @@ export class OmnisearchTransformer extends BaseTransformer {
     // Analyses
     if (results.analyses) {
       suggestions.push(
-        ...results.analyses.map(a => 
-          a.typeAnalyse?.nom || `Analyse ${a.id.substring(0, 8)}`
+        ...results.analyses.map((a) =>
+          (a.typeAnalyse ? String(a.typeAnalyse).replace(/^./, (c) => c.toUpperCase()) : '') || `Analyse ${a.id.substring(0, 8)}`
         )
       )
+    }
+
+    // Fournisseurs
+    if (results.fournisseurs) {
+      suggestions.push(...results.fournisseurs.map(f => f.nom))
+    }
+
+    // Commandes fournisseur
+    if (results.commandes) {
+      suggestions.push(
+        ...results.commandes.map(c => `Commande ${c.numeroCommande}`)
+      )
+    }
+
+    // Documents
+    if (results.documents) {
+      suggestions.push(...results.documents.map(d => d.title))
     }
 
     // Supprimer les doublons et limiter à 5
@@ -157,7 +204,7 @@ export class OmnisearchTransformer extends BaseTransformer {
 
   private transformAnalyseResult(a: Analyse): any {
     const patientName = a.patient?.user?.nomComplet || a.patient?.numeroPatient || 'Patient inconnu'
-    const typeAnalyse = a.typeAnalyse?.nom || 'Analyse'
+    const typeAnalyse = a.typeAnalyse ? String(a.typeAnalyse).replace(/^./, (c) => c.toUpperCase()) : 'Analyse'
     const statutLabels: Record<string, string> = {
       'prescrite': 'Prescrite',
       'en_cours': 'En cours',
@@ -173,6 +220,50 @@ export class OmnisearchTransformer extends BaseTransformer {
       subtitle: `${patientName} • ${statut}`,
       icon: 'TestTube',
       route: `/analyses-laboratoire?analyseId=${a.id}`,
+    }
+  }
+
+  private transformFournisseurResult(f: Fournisseur): any {
+    return {
+      id: f.id,
+      type: 'Fournisseur',
+      title: f.nom,
+      subtitle: [f.contactNom, f.email].filter(Boolean).join(' • ') || 'Aucun contact',
+      icon: 'Truck',
+      route: `/operations-pharmacie?tab=suppliers&supplierId=${f.id}`,
+    }
+  }
+
+  private transformCommandeFournisseurResult(c: CommandeFournisseur): any {
+    const fournisseurNom = c.fournisseur?.nom || 'Fournisseur inconnu'
+    const statutLabels: Record<string, string> = {
+      'brouillon': 'Brouillon',
+      'commandee': 'Commandée',
+      'partiellement_recue': 'Partiellement reçue',
+      'recue': 'Reçue',
+      'annulee': 'Annulée'
+    }
+    const statut = statutLabels[c.statut] || c.statut
+    return {
+      id: c.id,
+      type: 'Commande fournisseur',
+      title: `Commande ${c.numeroCommande}`,
+      subtitle: `${fournisseurNom} • ${statut} • ${Number(c.montantTotal).toFixed(2)} €`,
+      icon: 'Package',
+      route: `/operations-pharmacie?tab=orders&orderId=${c.id}`,
+    }
+  }
+
+  private transformDocumentResult(d: Document): any {
+    const patientName = d.patient?.user?.nomComplet || d.patient?.numeroPatient || '—'
+    const category = d.category || 'Document'
+    return {
+      id: d.id,
+      type: 'Document',
+      title: d.title,
+      subtitle: `${patientName} • ${category}`,
+      icon: 'FileText',
+      route: `/gestion-documents?documentId=${d.id}`,
     }
   }
 }

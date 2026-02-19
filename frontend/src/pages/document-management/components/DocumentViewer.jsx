@@ -41,10 +41,18 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
     return `${API_URL}/documents/${document.id}/preview?token=${token}`;
   };
 
-  const isOwner = document?.uploadedBy && user?.id && document.uploadedBy === user.id;
-  const canSign = isOwner && document.mimeType === 'application/pdf' && !document.title?.includes('(Signé)');
-  const isPdf = document.mimeType === 'application/pdf';
-  const isImage = document.mimeType?.startsWith('image');
+  // Propriétaire : comparer en string pour éviter erreurs de type (UUID, etc.)
+  const uploadedById = document?.uploadedBy ?? document?.uploaded_by;
+  const isOwner = Boolean(
+    user?.id && (
+      (uploadedById != null && String(uploadedById) === String(user.id)) ||
+      (document?.uploader?.id != null && String(document.uploader.id) === String(user.id))
+    )
+  );
+  const isPdf = (document?.mimeType || '').toLowerCase().includes('pdf');
+  const alreadySigned = document?.isSigned === true || (document?.title || '').includes('(Signé)');
+  const canSign = isOwner && isPdf && !alreadySigned;
+  const isImage = document?.mimeType?.startsWith('image');
 
   return (
     <div

@@ -49,11 +49,18 @@ export class AppException extends Error {
   }
 
   /**
-   * Accès interdit
+   * Accès interdit (message personnalisé, ex. accès à un document)
+   */
+  static forbiddenWithMessage(message: string) {
+    return new AppException(message, 403, 'FORBIDDEN')
+  }
+
+  /**
+   * Accès interdit (permissions insuffisantes)
    */
   static forbidden(userName?: string) {
-    const message = userName 
-      ? `Vous n'avez pas le droit ${userName}, Veuillez contacter l'Administrateur Système.`
+    const message = userName
+      ? `Vous n'avez pas les droits nécessaires pour cette action. Veuillez contacter l'administrateur système.`
       : "Vous n'avez pas les droits nécessaires pour effectuer cette action."
     return new AppException(message, 403, 'FORBIDDEN')
   }

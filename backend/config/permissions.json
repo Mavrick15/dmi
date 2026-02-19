@@ -135,6 +135,11 @@
     "description": "Suppression de documents"
   },
   {
+    "name": "document_sign",
+    "category": "Documents",
+    "description": "Signer électroniquement un document (PDF)"
+  },
+  {
     "name": "billing_view",
     "category": "Finance",
     "description": "Accès à l'historique financier"

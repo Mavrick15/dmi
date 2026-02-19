@@ -15,10 +15,10 @@ const QRCode = ({ value, size = 150, className = '' }) => {
   if (!value || !qrCodeUrl) {
     return (
       <div 
-        className={`bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center ${className}`}
+        className={`bg-slate-100 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center ${className}`}
         style={{ width: size, height: size }}
       >
-        <span className="text-xs text-slate-400">Pas de données</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">Pas de données</span>
       </div>
     );
   }
@@ -28,7 +28,7 @@ const QRCode = ({ value, size = 150, className = '' }) => {
       <img
         src={qrCodeUrl}
         alt={`QR Code pour ${value}`}
-        className="rounded-lg border-2 border-slate-200 dark:border-slate-700"
+        className="rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm"
         style={{ width: size, height: size }}
       />
     </div>

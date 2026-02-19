@@ -27,13 +27,13 @@ const AnimatedModal = ({ isOpen, onClose, children, className, closeOnBackdropCl
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           onClick={closeOnBackdropClick ? onClose : undefined}
         >
-          {/* Backdrop avec animation */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           />
 
           {/* Modal Content avec animation */}
