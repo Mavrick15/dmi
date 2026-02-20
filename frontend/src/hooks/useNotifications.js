@@ -10,6 +10,8 @@ export const useNotifications = (options = {}) => {
 
   return useQuery({
     queryKey: ['notifications', { unreadOnly, category, page, limit }],
+    staleTime: 60 * 1000, // 1 min : éviter le refetch à chaque navigation (Header remonte dans chaque page)
+    gcTime: 5 * 60 * 1000, // 5 min : garder le cache pour navigation fluide
     queryFn: async () => {
       try {
         const params = new URLSearchParams()
@@ -37,11 +39,9 @@ export const useNotifications = (options = {}) => {
         return { success: true, data: [], meta: { total: 0, unread_count: 0 } }
       }
     },
-    refetchInterval: false, // Pas de rafraîchissement automatique, les notifications temps réel gèrent l'immédiat
-    staleTime: 0, // Les données doivent être rafraîchies après invalidation
-    gcTime: 1000, // Temps de garbage collection (1 seconde)
-    refetchOnMount: 'always', // Toujours refetch au montage
-    refetchOnWindowFocus: false, // Ne pas refetch au focus de la fenêtre
+    refetchInterval: false,
+    refetchOnMount: true, // Refetch seulement si données périmées, pas à chaque montage
+    refetchOnWindowFocus: false,
     retry: 1,
   })
 }
@@ -52,6 +52,8 @@ export const useNotifications = (options = {}) => {
 export const useUnreadCount = () => {
   return useQuery({
     queryKey: ['notifications', 'unread-count'],
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
     queryFn: async () => {
       try {
         const response = await api.get('/notifications/unread-count')
@@ -73,11 +75,9 @@ export const useUnreadCount = () => {
         return 0
       }
     },
-    refetchInterval: false, // Pas de rafraîchissement automatique, les notifications temps réel gèrent l'immédiat
-    staleTime: 0, // Les données doivent être rafraîchies après invalidation
-    gcTime: 1000, // Temps de garbage collection (1 seconde)
-    refetchOnMount: 'always', // Toujours refetch au montage
-    refetchOnWindowFocus: false, // Ne pas refetch au focus de la fenêtre
+    refetchInterval: false,
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     retry: 1,
   })
 }

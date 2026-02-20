@@ -348,32 +348,43 @@ const LoadingScreen = ({ onComplete }) => {
   );
 };
 
-// --- TRANSITION DE PAGE AMÉLIORÉE ---
+// --- TRANSITION DE PAGE : GLISSEMENT FLUIDE (SLIDE) ---
 const PageTransition = ({ children }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20, filter: 'blur(4px)' }} 
-    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
-    exit={{ opacity: 0, y: -20, filter: 'blur(4px)' }} 
-    transition={{ 
-      type: "spring", 
-      stiffness: 300, 
-      damping: 30,
-      duration: 0.4
-    }} 
-    className="absolute top-0 left-0 w-full h-full min-h-screen"
-  >
+  <div className="absolute top-0 left-0 w-full min-h-screen">
     {children}
-  </motion.div>
+  </div>
 );
+
+// Variantes pour le glissement : nouvelle page entre par la droite, ancienne sort par la gauche
+const pageSlideVariants = {
+  initial: { opacity: 0, x: 48 },
+  animate: { 
+    opacity: 1, 
+    x: 0,
+    transition: { type: "spring", stiffness: 400, damping: 38, mass: 0.8 }
+  },
+  exit: { 
+    opacity: 0, 
+    x: -48,
+    transition: { type: "spring", stiffness: 400, damping: 38, mass: 0.8 }
+  }
+};
 
 // --- ROUTAGE ---
 const AnimatedRoutes = () => {
   const location = useLocation();
   
   return (
-    // On retire mode="wait" pour permettre le chevauchement fluide grâce à position: absolute
-    <AnimatePresence>
-      <RouterRoutes location={location} key={location.pathname}>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        variants={pageSlideVariants}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        className="absolute top-0 left-0 w-full min-h-screen overflow-x-hidden"
+      >
+        <RouterRoutes location={location}>
         <Route path="/portail-connexion" element={<PageTransition><LoginPortal /></PageTransition>} />
         <Route path="/mot-de-passe-oublie" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
@@ -423,7 +434,8 @@ const AnimatedRoutes = () => {
             <Route path="/integration-center" element={<Navigate to="/centre-integration" replace />} />
         </Route>
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </RouterRoutes>
+        </RouterRoutes>
+      </motion.div>
     </AnimatePresence>
   );
 };

@@ -491,7 +491,7 @@ const Header = () => {
   const handleLogout = () => { signOut(); };
   const handleSearchSubmit = (e) => { e?.preventDefault(); /* La recherche est gérée par le debounce */ };
 
-  const { openPatientModal } = usePatientModal();
+  const { openPatientModal, openPatientRegistrationModal } = usePatientModal();
 
   const handleSearchResultClick = async (result) => {
     // Si c'est un patient, ouvrir le modal de détail
@@ -605,7 +605,7 @@ const Header = () => {
     }
   };
 
-  const handleNewPatient = () => navigate('/gestion-patients?action=nouveau');
+  const handleNewPatient = () => openPatientRegistrationModal();
   const handleEmergencyConsultation = () => navigate('/console-clinique?mode=urgence');
   const getThemeIcon = () => actualTheme === 'light' ? 'Sun' : actualTheme === 'dark' ? 'Moon' : 'Monitor';
   const getThemeLabel = () => theme === 'light' ? 'Mode Clair' : theme === 'dark' ? 'Mode Sombre' : theme === 'auto' ? 'Mode Auto (jour/nuit)' : 'Mode Système';
@@ -682,9 +682,10 @@ const Header = () => {
         zIndex: 100,
         width: '100%'
       }}
-      className={`backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm transition-all duration-300 ${isScrolled
-          ? 'bg-white/95 dark:bg-slate-950/95 shadow-lg'
-          : 'bg-white/80 dark:bg-slate-950/80'
+      className={`backdrop-blur-2xl transition-all duration-500 ease-out
+        ${isScrolled
+          ? 'bg-white/50 dark:bg-slate-950/50 border-b border-white/25 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-b-2xl'
+          : 'bg-white/30 dark:bg-slate-950/30 border-b border-white/20 dark:border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.25)] rounded-b-2xl'
         }`}
     >
       <div className="w-full flex items-center justify-between h-16 px-4 lg:px-6">
@@ -692,7 +693,7 @@ const Header = () => {
         <div className="flex items-center space-x-6">
           {/* ... (Logo) ... */}
           <motion.div className="flex items-center space-x-3 cursor-pointer" whileHover={{ scale: 1.02 }} onClick={() => navigate('/tableau-de-bord')}>
-            <div className="relative flex items-center justify-center w-11 h-11 bg-primary rounded-xl shadow-sm overflow-hidden">
+            <div className="relative flex items-center justify-center w-11 h-11 bg-primary rounded-2xl shadow-lg shadow-primary/25 overflow-hidden ring-1 ring-white/20">
               {/* Icône croix médicale avec serpent */}
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white relative z-10">
                 {/* Cercle de fond */}
@@ -746,10 +747,10 @@ const Header = () => {
                     key={item.path}
                     onClick={() => handleNavigation(item.path)}
                     className={`
-                      nav-item relative flex items-center px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300
+                      nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 overflow-visible
                       ${isActivePath(item.path)
-                        ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 shadow-sm'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'}
+                        ? 'text-primary dark:text-blue-400'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/30 dark:hover:bg-white/5'}
                     `}
                     whileHover={{ scale: 1.03, y: -1 }}
                     whileTap={{ scale: 0.97 }}
@@ -757,9 +758,10 @@ const Header = () => {
                     {isActivePath(item.path) && (
                       <motion.div
                         layoutId="activeNavIndicator"
-                        className="absolute inset-0 bg-primary/5 dark:bg-primary/10 rounded-xl border border-slate-200 dark:border-slate-700"
+                        className="absolute inset-0 rounded-2xl
+                          border-2 border-slate-300/60 dark:border-slate-500/50"
                         initial={false}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        transition={{ type: "spring", stiffness: 360, damping: 30 }}
                       />
                     )}
                     <Icon
@@ -773,19 +775,20 @@ const Header = () => {
                     <div className="relative" ref={clinicalMenuRef}>
                       <motion.button
                         onClick={() => setIsClinicalMenuOpen(!isClinicalMenuOpen)}
-                        className={`nav-item relative flex items-center px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire'))
-                            ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 shadow-sm'
-                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
-                          } ${isClinicalMenuOpen ? 'bg-slate-100 dark:bg-slate-800/50 shadow-sm' : ''}`}
+                        className={`nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 overflow-visible ${(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire'))
+                            ? 'text-primary dark:text-blue-400'
+                            : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/30 dark:hover:bg-white/5'
+                          } ${isClinicalMenuOpen ? 'bg-white/25 dark:bg-white/5' : ''}`}
                         whileHover={{ scale: 1.03, y: -1 }}
                         whileTap={{ scale: 0.97 }}
                       >
                         {(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire')) && (
                           <motion.div
                             layoutId="activeClinicalIndicator"
-                            className="absolute inset-0 bg-primary/5 dark:bg-primary/10 rounded-xl border border-slate-200 dark:border-slate-700"
+                            className="absolute inset-0 rounded-2xl
+                              border-2 border-slate-300/60 dark:border-slate-500/50"
                             initial={false}
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            transition={{ type: "spring", stiffness: 360, damping: 30 }}
                           />
                         )}
                         <Icon name="HeartPulse" size={18} className="mr-2 relative z-10" />
@@ -805,7 +808,7 @@ const Header = () => {
                             initial="hidden"
                             animate="visible"
                             exit="exit"
-                            className="absolute top-full left-0 mt-2 w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
+                            className="absolute top-full left-0 mt-2 w-64 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/85 border border-white/30 dark:border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 overflow-hidden"
                           >
                             <div className="p-2">
                               {Array.isArray(clinicalMenuItems) && clinicalMenuItems.map((clinicalItem, clinicalIndex) => {
@@ -859,7 +862,7 @@ const Header = () => {
               <div className="relative" ref={moreMenuRef}>
                 <motion.button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className={`nav-item relative flex items-center px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 ${isMoreMenuOpen ? 'bg-slate-100 dark:bg-slate-800/50 shadow-sm' : ''}`}
+                  className={`nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white border border-transparent hover:border-white/20 dark:hover:border-white/5 ${isMoreMenuOpen ? 'bg-white/50 dark:bg-white/10 shadow-sm border-white/20' : ''}`}
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -879,7 +882,7 @@ const Header = () => {
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      className="absolute top-full left-0 mt-2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 dark:ring-white/5"
+                      className="absolute top-full left-0 mt-2 w-72 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/85 border border-white/30 dark:border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 overflow-hidden"
                     >
                       <div className="p-2">
                         {Array.isArray(secondaryNavItems) && secondaryNavItems.map((item, index) => {
@@ -938,7 +941,7 @@ const Header = () => {
             <motion.button
               type="button"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-primary/10 dark:hover:bg-primary/20 transition-all duration-200 flex-shrink-0 group"
+              className="flex items-center justify-center w-10 h-10 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-white/60 dark:hover:bg-white/10 hover:border hover:border-white/30 dark:hover:border-white/10 backdrop-blur-sm transition-all duration-200 flex-shrink-0 group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -954,13 +957,13 @@ const Header = () => {
                   exit={{ opacity: 0, width: 40 }}
                   transition={{ duration: 0.25, ease: "easeInOut" }}
                   onSubmit={handleSearchSubmit}
-                  className={`absolute right-0 top-0 z-50 flex items-center bg-white dark:bg-slate-900 rounded-xl border shadow-xl ${isSearchOpen
-                      ? 'border-primary/30 dark:border-primary/30 ring-2 ring-primary/20 dark:ring-primary/20'
-                      : 'border-slate-200 dark:border-slate-700'
+                  className={`absolute right-0 top-0 z-50 flex items-center backdrop-blur-2xl bg-white/70 dark:bg-slate-900/80 rounded-2xl border shadow-xl ${isSearchOpen
+                      ? 'border-white/40 dark:border-white/15'
+                      : 'border-white/25 dark:border-white/10'
                     }`}
                   style={{ minWidth: 280 }}
                 >
-                  <div className="flex items-center justify-center w-10 h-10 text-slate-500 dark:text-slate-400 flex-shrink-0 rounded-l-xl">
+                  <div className="flex items-center justify-center w-10 h-10 text-slate-500 dark:text-slate-400 flex-shrink-0 rounded-l-2xl">
                     <Icon name="Search" size={16} />
                   </div>
                   <div className="flex-1 overflow-hidden flex items-center relative min-w-0">
@@ -1047,10 +1050,10 @@ const Header = () => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute top-full right-0 mt-3 w-[380px] sm:w-[420px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                  className="absolute top-full right-0 mt-3 w-[380px] sm:w-[420px] backdrop-blur-2xl bg-white/80 dark:bg-slate-900/85 border border-white/30 dark:border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 overflow-hidden"
                   ref={searchResultsRef}
                 >
-                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center gap-3">
+                    <div className="p-3 border-b border-white/20 dark:border-white/5 bg-white/40 dark:bg-white/5 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
                       <Icon name="Search" size={20} className="text-primary dark:text-blue-400" />
                     </div>
@@ -1311,7 +1314,7 @@ const Header = () => {
           <motion.button
             onClick={toggleTheme}
             title={getThemeLabel()}
-            className="flex items-center justify-center w-10 h-10 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all duration-200 hover:text-amber-500 dark:hover:text-amber-400 group"
+            className="flex items-center justify-center w-10 h-10 rounded-2xl text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/10 hover:border hover:border-white/30 dark:hover:border-white/10 backdrop-blur-sm transition-all duration-200 hover:text-amber-500 dark:hover:text-amber-400 group"
             whileHover={{ scale: 1.05, rotate: 15 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -1322,22 +1325,20 @@ const Header = () => {
           <div className="relative" ref={notificationsRef}>
             <motion.button
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-200 group ${isNotificationsOpen
-                  ? 'bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 ring-2 ring-primary/20 dark:ring-primary/30'
-                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-primary dark:hover:text-blue-400'
+              className={`relative flex items-center justify-center w-10 h-10 rounded-2xl transition-all duration-200 group ${isNotificationsOpen
+                  ? 'bg-white/60 dark:bg-white/10 text-primary dark:text-blue-400 border border-white/30 dark:border-white/10 backdrop-blur-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:bg-white/60 dark:hover:bg-white/10 hover:border hover:border-white/30 dark:hover:border-white/10 hover:text-primary dark:hover:text-blue-400 backdrop-blur-sm'
                 }`}
               whileHover={!isNotificationsOpen ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.95 }}
             >
               <Icon name="Bell" size={20} className="group-hover:scale-110 transition-transform" />
               {unreadCount > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 text-[10px] font-bold text-white leading-none"
+                <span
+                  className="absolute -top-0.5 -right-0.5 min-w-[20px] h-[20px] px-1 flex items-center justify-center bg-rose-500 rounded-full border-2 border-white dark:border-slate-900 text-[10px] font-bold text-white leading-none tabular-nums"
                 >
                   {unreadCount > 99 ? '99+' : unreadCount}
-                </motion.span>
+                </span>
               )}
             </motion.button>
             <AnimatePresence>
@@ -1347,9 +1348,9 @@ const Header = () => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute top-full right-0 mt-3 w-[380px] sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                  className="absolute top-full right-0 mt-3 w-[380px] sm:w-96 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/85 border border-white/30 dark:border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 overflow-hidden"
                 >
-                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
+                    <div className="p-4 border-b border-white/20 dark:border-white/5 bg-white/40 dark:bg-white/5 flex justify-between items-center">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
                         <Icon name="Bell" size={20} className="text-primary dark:text-blue-400" />
@@ -1556,7 +1557,7 @@ const Header = () => {
                       </div>
                     )}
                   </div>
-                  <div className="p-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                  <div className="p-3 border-t border-white/20 dark:border-white/5 bg-white/40 dark:bg-white/5">
                     {/* Bouton de test pour créer des notifications (dev uniquement) */}
                     {process.env.NODE_ENV === 'development' && (
                       <Button
@@ -1590,12 +1591,12 @@ const Header = () => {
 
           {/* Actions Rapides */}
           {(canAddPatient || canStartUrgency) && (
-            <div className="hidden md:flex items-center gap-2 border-l border-slate-200/50 dark:border-slate-700/50 pl-3 ml-1">
+            <div className="hidden md:flex items-center gap-2 border-l border-white/20 dark:border-white/5 pl-3 ml-1">
               <PermissionGuard requiredPermission="patient_create">
                 {canAddPatient && (
                   <motion.button
                     onClick={handleNewPatient}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-primary/10 dark:hover:bg-primary/20 hover:border-primary/30 dark:hover:border-primary/30 hover:text-primary dark:hover:text-blue-400 transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium text-slate-700 dark:text-slate-300 backdrop-blur-sm bg-white/50 dark:bg-white/5 border border-white/30 dark:border-white/10 hover:bg-white/70 dark:hover:bg-white/15 hover:border-white/40 dark:hover:border-white/15 hover:text-primary dark:hover:text-blue-400 transition-all duration-200 shadow-sm hover:shadow-md"
                     whileHover={{ scale: 1.05, y: -1 }}
                     whileTap={{ scale: 0.95 }}
                     disabled={!hasPermission('patient_create')}
@@ -1611,7 +1612,7 @@ const Header = () => {
                 {canStartUrgency && (
                   <motion.button
                     onClick={handleEmergencyConsultation}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 border border-transparent shadow-sm hover:shadow-md transition-all duration-200"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 border border-white/20 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/35 transition-all duration-200"
                     whileHover={{ scale: 1.05, y: -1 }}
                     whileTap={{ scale: 0.95 }}
                     disabled={!hasPermission('consultation_create')}
@@ -1630,7 +1631,11 @@ const Header = () => {
           <div className="relative ml-2" ref={profileMenuRef}>
             <motion.button
               onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-              className={`relative flex items-center justify-center w-10 h-10 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 overflow-hidden hover:shadow-md hover:border-primary/30 dark:hover:border-primary/40 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary dark:ring-offset-slate-900 ${isProfileMenuOpen ? 'ring-2 ring-primary/20 dark:ring-primary/30 ring-offset-2 dark:ring-offset-slate-900 border-primary/30' : ''}`}
+              className={`relative flex items-center justify-center w-10 h-10 rounded-2xl border-2 overflow-hidden transition-all duration-200 focus:outline-none focus:ring-0
+                ${isProfileMenuOpen
+                  ? 'border-white/40 dark:border-white/20 bg-white/60 dark:bg-white/10 backdrop-blur-sm shadow-md'
+                  : 'border-white/30 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-sm hover:bg-white/70 dark:hover:bg-white/10 hover:border-white/40 dark:hover:border-white/15 hover:shadow-md'
+                }`}
               whileHover={!isProfileMenuOpen ? { scale: 1.05 } : {}}
               whileTap={{ scale: 0.95 }}
             >
@@ -1651,10 +1656,10 @@ const Header = () => {
                   initial="hidden"
                   animate="visible"
                   exit="exit"
-                  className="absolute top-full right-0 mt-3 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                  className="absolute top-full right-0 mt-3 w-72 backdrop-blur-2xl bg-white/80 dark:bg-slate-900/85 border border-white/30 dark:border-white/10 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] z-50 overflow-hidden"
                 >
                   {/* En-tête profil */}
-                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                  <div className="p-4 border-b border-white/20 dark:border-white/5 bg-white/40 dark:bg-white/5">
                     <div className="flex items-center gap-3">
                       <div className="relative flex-shrink-0">
                         <div className="w-12 h-12 rounded-xl border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-800">

@@ -1,6 +1,6 @@
 // openclinic/frontend/src/pages/patient-management/components/AppointmentScheduler.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import api from '../../../lib/axios';
@@ -11,10 +11,11 @@ import Button from '../../../components/ui/Button';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAppointments, useAppointmentMutations, useDoctors } from '../../../hooks/useAppointments';
+import { usePatientsList } from '../../../hooks/usePatients';
 import { getTodayInBusinessTimezone, isSlotInPastBusinessTimezone } from '../../../utils/dateTime';
 
 const TIME_SLOTS_MORNING = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30'];
-const TIME_SLOTS_AFTERNOON = ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '19:00', '19:05', '19:10', '19:15', '19:20', '19:25', '19:30', '19:35', '19:40', '19:45', '19:50', '19:55', '20:00'];
+const TIME_SLOTS_AFTERNOON = ['14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'];
 const ALL_TIME_SLOTS = [...TIME_SLOTS_MORNING, ...TIME_SLOTS_AFTERNOON];
 /** Retourne true si le créneau (date + heure) est déjà passé. */
 const isSlotInPast = (dateStr, timeStr) => isSlotInPastBusinessTimezone(dateStr, timeStr);
@@ -59,6 +60,30 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
   const [providers, setProviders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [patientSearch, setPatientSearch] = useState('');
+  const [selectedPatientInternal, setSelectedPatientInternal] = useState(null);
+
+  const effectivePatient = selectedPatientInternal || patient;
+
+  // Synchro patient prop -> état interne (quand ouvert avec un patient pré-sélectionné)
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedPatientInternal(patient || null);
+      if (!patient) setPatientSearch('');
+    }
+  }, [isOpen, patient]);
+
+  const patientsListParams = useMemo(() => ({
+    limit: 20,
+    ...(patientSearch.trim().length >= 2 ? { search: patientSearch.trim() } : {}),
+  }), [patientSearch]);
+  const { data: patientsListData } = usePatientsList(patientsListParams, {
+    enabled: isOpen && !effectivePatient,
+  });
+  const patientsForSelect = useMemo(() => {
+    const list = patientsListData?.data || [];
+    return Array.isArray(list) ? list : [];
+  }, [patientsListData]);
 
   const [appointmentData, setAppointmentData] = useState({
     date: getTodayInBusinessTimezone(),
@@ -147,7 +172,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
       showToast("Veuillez choisir une heure.", 'error');
       return;
     }
-    if (!patient || !patient.id) {
+    if (!effectivePatient || !effectivePatient.id) {
       showToast("Erreur: Aucun patient sélectionné.", 'error');
       return;
     }
@@ -166,7 +191,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
     setLoading(true);
     try {
       const payload = {
-        patientId: patient.id,
+        patientId: effectivePatient.id,
         medecinId: appointmentData.provider,
         date: appointmentData.date,
         time: appointmentData.time,
@@ -192,7 +217,9 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
 
   const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
-  const patientName = patient?.user?.nomComplet || patient?.name || 'Patient';
+  const patientName = effectivePatient?.user?.nomComplet || effectivePatient?.name || 'Patient';
+
+  const showPatientSelectStep = isOpen && !effectivePatient;
 
   const modalContent = (
     <AnimatePresence>
@@ -222,10 +249,19 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">Nouveau rendez-vous</h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 flex items-center gap-1.5">
-                    <Icon name="User" size={14} className="text-slate-400" />
-                    <span className="font-medium text-primary truncate">{patientName}</span>
-                  </p>
+                  {effectivePatient ? (
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 flex items-center gap-2">
+                      <Icon name="User" size={14} className="text-slate-400" />
+                      <span className="font-medium text-primary truncate">{patientName}</span>
+                      {!patient && (
+                        <button type="button" onClick={() => setSelectedPatientInternal(null)} className="text-xs text-primary hover:underline">
+                          Changer
+                        </button>
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">Choisissez un patient</p>
+                  )}
                 </div>
               </div>
               <Button variant="ghost" size="icon" onClick={onClose} className="shrink-0 text-slate-500 hover:text-slate-700 dark:hover:text-white rounded-xl">
@@ -233,7 +269,49 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
               </Button>
             </div>
 
-            {/* Contenu scrollable */}
+            {/* Étape 1 : Sélection du patient (si aucun patient fourni) */}
+            {showPatientSelectStep ? (
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Rechercher un patient</label>
+                    <Input
+                      type="text"
+                      placeholder="Nom, prénom ou numéro patient (min. 2 caractères)"
+                      value={patientSearch}
+                      onChange={(e) => setPatientSearch(e.target.value)}
+                      className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                    />
+                  </div>
+                  {patientsForSelect.length === 0 ? (
+                    <p className="text-sm text-slate-500 dark:text-slate-400 py-4">
+                      {patientSearch.trim().length < 2 ? 'Saisissez au moins 2 caractères ou attendez le chargement des patients.' : 'Aucun patient trouvé.'}
+                    </p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                      {patientsForSelect.map((p) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => setSelectedPatientInternal(p)}
+                          className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 text-left transition-all"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
+                            <Icon name="User" size={18} className="text-primary" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="font-medium text-slate-900 dark:text-white truncate">{p.name || p.user?.nomComplet || `Patient ${p.numeroPatient || p.id}`}</p>
+                            {p.numeroPatient && <p className="text-xs text-slate-500 dark:text-slate-400">{p.numeroPatient}</p>}
+                          </div>
+                          <Icon name="ChevronRight" size={16} className="text-slate-400 shrink-0" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+            /* Contenu scrollable : formulaire RDV */
             <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
               {/* Date, type et durée */}
               <section className="space-y-4">
@@ -395,8 +473,10 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                 />
               </section>
             </div>
+            )}
 
-            {/* Pied */}
+            {/* Pied (masqué pendant la sélection patient) */}
+            {effectivePatient && (
             <div className="shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 bg-slate-50/80 dark:bg-slate-800/30 rounded-b-2xl">
               <Button variant="ghost" onClick={onClose} disabled={loading}>
                 Annuler
@@ -405,6 +485,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                 Confirmer le rendez-vous
               </Button>
             </div>
+            )}
           </motion.div>
         </motion.div>
       )}

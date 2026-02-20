@@ -13,6 +13,7 @@ import PermissionGuard from '../../components/PermissionGuard';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useEstablishments } from '../../hooks/useAdmin';
 import { useAppointments, useDoctors, useAppointmentMutations } from '../../hooks/useAppointments';
+import AppointmentScheduler from '../patient-management/components/AppointmentScheduler';
 import { useToast } from '../../contexts/ToastContext';
 import { usePatientModal } from '../../contexts/PatientModalContext';
 import {
@@ -72,6 +73,7 @@ const Agenda = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [listPage, setListPage] = useState(1);
   const [dayViewPage, setDayViewPage] = useState(1);
+  const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
 
   const { data: establishmentsData } = useEstablishments({ limit: 100 });
   const establishmentsList = useMemo(() => {
@@ -99,7 +101,7 @@ const Agenda = () => {
   }), [dateRange, establishmentId, medecinId, statusFilter]);
 
   const doctorsParams = useMemo(() => (establishmentId ? { establishmentId } : {}), [establishmentId]);
-  const { data: appointmentsData, isLoading } = useAppointments(params, { refetchInterval: 10000 });
+  const { data: appointmentsData, isLoading, refetch: refetchAppointments } = useAppointments(params, { refetchInterval: 10000 });
   const { data: doctorsData } = useDoctors(doctorsParams);
   const { updateAppointmentStatus, deleteAppointment } = useAppointmentMutations();
 
@@ -189,7 +191,7 @@ const Agenda = () => {
               variant="default"
               size="lg"
               iconName="CalendarPlus"
-              onClick={() => navigate('/gestion-patients?action=rdv')}
+              onClick={() => setIsSchedulerOpen(true)}
               className="shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
             >
               Nouveau rendez-vous
@@ -322,7 +324,7 @@ const Agenda = () => {
             title="Aucun rendez-vous"
             description="Aucun rendez-vous pour la période et les filtres sélectionnés."
             actionLabel={hasPermission('appointment_create') ? 'Créer un rendez-vous' : undefined}
-            action={hasPermission('appointment_create') ? () => navigate('/gestion-patients?action=rdv') : undefined}
+            action={hasPermission('appointment_create') ? () => setIsSchedulerOpen(true) : undefined}
           />
         ) : viewMode === 'day' ? (
           <DayView
@@ -354,6 +356,13 @@ const Agenda = () => {
           />
         )}
       </main>
+
+      <AppointmentScheduler
+        isOpen={isSchedulerOpen}
+        onClose={() => setIsSchedulerOpen(false)}
+        patient={null}
+        onSchedule={refetchAppointments}
+      />
     </div>
   );
 };
