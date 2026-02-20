@@ -96,13 +96,13 @@ export const useAppointmentMutations = () => {
       }
     }),
     updateAppointmentStatus: useMutation({
-      mutationFn: async ({ id, status }) => {
-        const response = await api.patch(`/appointments/${id}/status`, { status });
+      mutationFn: async ({ id, status, notes }) => {
+        const response = await api.patch(`/appointments/${id}/status`, { status, notes });
         return response.data;
       },
-      onSuccess: (data) => {
+      onSuccess: (data, variables) => {
         invalidate();
-        if (data?.message) {
+        if (!variables?.silent && data?.message) {
           showToast(data.message, 'success');
         }
       },
@@ -112,7 +112,11 @@ export const useAppointmentMutations = () => {
           showToast('Trop de requêtes. Veuillez patienter quelques instants.', 'error');
         } else {
           const message = error.userMessage || 'Erreur lors de la mise à jour du rendez-vous.';
-          showToast(message, 'error');
+          const isBusinessWarning = typeof message === 'string' && (
+            message.toLowerCase().includes('déjà une consultation en cours') ||
+            message.toLowerCase().includes('deja une consultation en cours')
+          );
+          showToast(message, isBusinessWarning ? 'warning' : 'error');
         }
       }
     }),

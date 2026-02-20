@@ -111,9 +111,10 @@ api.interceptors.response.use(
     const isAuthEndpoint = error.config.url?.includes('/auth/login') || 
                           error.config.url?.includes('/auth/refresh') ||
                           error.config.url?.includes('/auth/register');
+    const isLogoutRequest = error.config._isLogout === true || error.config.url?.includes('/auth/logout');
     
-    // Gestion des erreurs 401 : Token expiré ou invalide
-    if (status === 401 && !error.config._retry && !isAuthEndpoint) {
+    // Gestion des erreurs 401 : Token expiré ou invalide (ne pas traiter la déconnexion volontaire)
+    if (status === 401 && !error.config._retry && !isAuthEndpoint && !isLogoutRequest) {
       error.config._retry = true;
       const msg = data?.error?.message || data?.message || '';
       const isTokenExpired = /expiré|expirée|Token expiré/i.test(msg);

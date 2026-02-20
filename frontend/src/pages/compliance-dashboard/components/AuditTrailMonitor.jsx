@@ -4,6 +4,7 @@ import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useExportMutations } from '../../../hooks/useExport';
+import { formatTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const AuditTrailMonitor = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -73,7 +74,7 @@ const AuditTrailMonitor = () => {
                 {/* Time & User */}
                 <div className="sm:w-48 flex-shrink-0">
                    <div className="text-xs font-mono text-slate-400 dark:text-slate-500 mb-1">
-                      {activity.timestamp.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}
+                      {formatTimeInBusinessTimezone(activity.timestamp)}
                    </div>
                    <div className="font-bold text-slate-700 dark:text-slate-200 text-sm">{activity.user}</div>
                    <div className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wide">{activity.role}</div>

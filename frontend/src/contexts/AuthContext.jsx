@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState, useMemo, useCallback } 
 import api from "../lib/axios";
 import tokenService from "../services/tokenService";
 
+const LOGOUT_REDIRECT_FLAG = "openclinic_just_logged_out";
+
 const AuthContext = createContext({});
 
 export const useAuth = () => {
@@ -13,13 +15,14 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // --- VÉRIFICATION DE SESSION ---
   useEffect(() => {
     const checkSession = async () => {
       const token = tokenService.getAccessToken();
       const storedUser = tokenService.getUser();
-      
+
       if (!token) {
         setLoading(false);
         return;
@@ -49,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         // Token expiré ou 401 : nettoyer et rediriger (l'intercepteur peut déjà avoir redirigé)
         const is401 = error.response?.status === 401;
-        const isTokenExpired = error._tokenExpired || 
+        const isTokenExpired = error._tokenExpired ||
           (is401 && /expiré|expirée|Token expiré/i.test(error.response?.data?.error?.message || ''));
         const isSessionRevoked = error._sessionRevoked ||
           (is401 && /déconnectée|révoqué/i.test(error.response?.data?.error?.message || ''));
@@ -84,54 +87,52 @@ export const AuthProvider = ({ children }) => {
       // Utiliser tokenService pour stocker les tokens
       tokenService.setTokens(token, rememberMe);
       tokenService.setUser(user);
-      
+
       // Stocker le refresh token (en production, idéalement dans un cookie httpOnly)
       if (refreshToken) {
         localStorage.setItem('refresh_token', refreshToken);
       }
 
       setUser(user);
-      
+
       // Afficher un message si d'autres sessions ont été déconnectées
       if (message && message.includes('déconnectées')) {
         // Le message sera affiché par le composant de connexion
       }
-      
+
       return { success: true, user, message };
-      
+
     } catch (err) {
       if (process.env.NODE_ENV === 'development') {
         console.error("Erreur Login Context:", err);
       }
-      
+
       // C'EST ICI QUE LA CORRECTION OPÈRE :
       // On utilise 'userMessage' préparé par l'intercepteur Axios
       const errorMessage = err.userMessage || "Impossible de se connecter.";
 
-      return { 
-        success: false, 
-        error: errorMessage 
+      return {
+        success: false,
+        error: errorMessage
       };
     }
   }, []);
 
   // --- DÉCONNEXION (Sign Out) ---
   const signOut = useCallback(async () => {
+    setLoggingOut(true);
     try {
-      // Appeler le backend pour invalider la session
-      await api.post('/auth/logout');
+      await api.post('/auth/logout', null, { _isLogout: true });
     } catch (e) {
-      // Ignorer erreur réseau au logout (on nettoie quand même localement)
       if (process.env.NODE_ENV === 'development') {
         console.warn("Logout serveur échoué (réseau?), nettoyage local effectué.");
       }
     }
-    
-    // Destruction complète de la session locale
     tokenService.clearTokens();
     localStorage.removeItem('refresh_token');
-    localStorage.clear(); // Nettoyer tout le localStorage
-    sessionStorage.clear(); // Nettoyer tout le sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    sessionStorage.setItem(LOGOUT_REDIRECT_FLAG, '1');
     setUser(null);
     window.location.href = '/portail-connexion';
   }, []);
@@ -148,15 +149,47 @@ export const AuthProvider = ({ children }) => {
   const value = useMemo(() => ({
     user,
     loading,
+    loggingOut,
     signIn,
     signOut,
     updateUser,
     isAuthenticated: !!user,
-  }), [user, loading, signIn, signOut, updateUser]);
+  }), [user, loading, loggingOut, signIn, signOut, updateUser]);
+
+  const isLogoutRedirect =
+    typeof window !== 'undefined' &&
+    window.location.pathname.includes('portail-connexion') &&
+    sessionStorage.getItem(LOGOUT_REDIRECT_FLAG) === '1';
+
+  const fullScreenMessage = (message) => (
+    <div
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-4 bg-slate-950 text-white transition-opacity duration-300"
+      aria-live="polite"
+      role="status"
+    >
+      <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+      <p className="text-lg font-medium">{message}</p>
+    </div>
+  );
+
+  const logoutOverlay = loggingOut && fullScreenMessage('Déconnexion du système en cours...');
+
+  if (loading) {
+    return (
+      <AuthContext.Provider value={value}>
+        {fullScreenMessage(
+          isLogoutRedirect ? 'Déconnexion du système en cours...' : 'Chargement...'
+        )}
+      </AuthContext.Provider>
+    );
+  }
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {logoutOverlay}
+      {children}
     </AuthContext.Provider>
   );
 };
+
+export { LOGOUT_REDIRECT_FLAG };

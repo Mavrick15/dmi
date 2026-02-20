@@ -6,6 +6,11 @@ import { usePermissions } from '../../../hooks/usePermissions';
 import Badge from '../../../components/ui/Badge';
 import Image from '../../../components/AppImage';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import {
+  formatShortDateInBusinessTimezone,
+  getTodayInBusinessTimezone,
+  toBusinessDateKey,
+} from '../../../utils/dateTime';
 
 const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
   const { hasPermission } = usePermissions();
@@ -51,18 +56,18 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    return formatShortDateInBusinessTimezone(dateString);
   };
 
 
   const getDaysOverdue = (dateEcheance) => {
     if (!dateEcheance) return null;
-    const today = new Date();
-    const dueDate = new Date(dateEcheance);
+    const todayKey = getTodayInBusinessTimezone();
+    const dueKey = toBusinessDateKey(dateEcheance);
+    const [ty, tm, td] = todayKey.split('-').map((v) => Number.parseInt(v, 10));
+    const [dy, dm, dd] = dueKey.split('-').map((v) => Number.parseInt(v, 10));
+    const today = Date.UTC(ty, tm - 1, td, 12, 0, 0);
+    const dueDate = Date.UTC(dy, dm - 1, dd, 12, 0, 0);
     const diffTime = today - dueDate;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays > 0 ? diffDays : null;

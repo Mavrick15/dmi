@@ -10,6 +10,7 @@ import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../contexts/CurrencyContext'; 
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => { 
   const { hasPermission } = usePermissions();
@@ -362,7 +363,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                             <td className="p-4">
                                 <div className="flex items-center gap-1.5 text-sm text-slate-700 dark:text-slate-300">
                                     <Icon name="Calendar" size={14} className="text-slate-400" />
-                                    {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString('fr-FR') : 'N/A'}
+                                    {item.expiryDate ? formatDateInBusinessTimezone(item.expiryDate) : 'N/A'}
                                 </div>
                             </td>
                             <td className="p-4">

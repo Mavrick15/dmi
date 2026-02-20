@@ -6,6 +6,7 @@ import Button from '../../../components/ui/Button';
 import Select from '../../../components/ui/Select';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 import { useToast } from '../../../contexts/ToastContext';
+import { getTodayInBusinessTimezone } from '../../../utils/dateTime';
 
 const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
   const { formatCurrency } = useCurrency();
@@ -247,7 +248,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      const date = new Date().toISOString().split('T')[0];
+      const date = getTodayInBusinessTimezone();
       link.download = `rapport_ia_recommandations_${date}.csv`;
       document.body.appendChild(link);
       link.click();

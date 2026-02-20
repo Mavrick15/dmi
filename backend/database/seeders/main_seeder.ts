@@ -165,26 +165,18 @@ export default class MainSeeder extends BaseSeeder {
     // --------------------------------------------------------
     const etablissements = await Etablissement.createMany([
       {
-        nom: 'Hôpital Central de Kinshasa',
-        adresse: '123 Blvd du 30 Juin, Gombe',
-        telephone: '+243 81 000 0000',
-        email: 'contact@hck.cd',
-        typeEtablissement: 'hopital',
+        nom: 'Cmedith_Lemba',
+        adresse: 'Clinique Lemba Foire — Avenue Labue n°13, Lemba Foire',
+        telephone: '+243 999 952 335',
+        email: 'contact.lemba@cmedith.cd',
+        typeEtablissement: 'centre_medical',
         actif: true
       },
       {
-        nom: 'Clinique Sainte-Anne',
-        adresse: '456 Avenue Kasa-Vubu, Lingwala',
-        telephone: '+243 81 111 1111',
-        email: 'contact@sainteanne.cd',
-        typeEtablissement: 'clinique',
-        actif: true
-      },
-      {
-        nom: 'Centre Médical Ngaliema',
-        adresse: '789 Route de Matadi, Ngaliema',
-        telephone: '+243 81 222 2222',
-        email: 'contact@ngaliema.cd',
+        nom: 'Cmedith_Gombe',
+        adresse: 'Cabinet Centre-Ville — Boulevard du 30 Juin n°364, En face de la grande poste',
+        telephone: '+243 999 952 335',
+        email: 'contact.gombe@cmedith.cd',
         typeEtablissement: 'centre_medical',
         actif: true
       }
@@ -217,28 +209,28 @@ export default class MainSeeder extends BaseSeeder {
       { email: 'pharma3@openclinic.cd', password, nomComplet: 'Alexander Fleming', role: 'pharmacien', actif: true }
     ])
 
-    // Médecins (Liste très enrichie - 20 médecins)
-    const doctorsData = [
-      { name: 'Dr. Gregory House', email: 'house', spec: 'Médecine Interne' },
-      { name: 'Dr. Derek Shepherd', email: 'shepherd', spec: 'Neurochirurgie' },
-      { name: 'Dr. Meredith Grey', email: 'grey', spec: 'Chirurgie Générale' },
-      { name: 'Dr. Stephen Strange', email: 'strange', spec: 'Traumatologie' },
-      { name: 'Dr. Michaela Quinn', email: 'quinn', spec: 'Pédiatrie' },
-      { name: 'Dr. Leonard McCoy', email: 'mccoy', spec: 'Cardiologie' },
-      { name: 'Dr. James Wilson', email: 'wilson', spec: 'Oncologie' },
-      { name: 'Dr. Lisa Cuddy', email: 'cuddy', spec: 'Endocrinologie' },
-      { name: 'Dr. Eric Foreman', email: 'foreman', spec: 'Neurologie' },
-      { name: 'Dr. Allison Cameron', email: 'cameron', spec: 'Immunologie' },
-      { name: 'Dr. Robert Chase', email: 'chase', spec: 'Chirurgie Cardiaque' },
-      { name: 'Dr. Chris Taub', email: 'taub', spec: 'Chirurgie Plastique' },
-      { name: 'Dr. Remy Hadley', email: 'hadley', spec: 'Psychiatrie' },
-      { name: 'Dr. Lawrence Kutner', email: 'kutner', spec: 'Médecine du Sport' },
-      { name: 'Dr. Amber Volakis', email: 'volakis', spec: 'Radiologie' },
-      { name: 'Dr. Martha Masters', email: 'masters', spec: 'Gynécologie' },
-      { name: 'Dr. Jessica Adams', email: 'adams', spec: 'Dermatologie' },
-      { name: 'Dr. Chi Park', email: 'park', spec: 'Ophtalmologie' },
-      { name: 'Dr. Dominika Petrovic', email: 'petrovic', spec: 'Urologie' },
-      { name: 'Dr. Marcus Andrews', email: 'andrews', spec: 'ORL' }
+    // Médecins (Médecine générale + Médecin biologiste)
+    const doctorsData: { name: string; email: string; spec: string; doctorRole: 'docteur_clinique' | 'docteur_labo' }[] = [
+      { name: 'Dr. Gregory House', email: 'house', spec: 'Médecine Interne', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Derek Shepherd', email: 'shepherd', spec: 'Neurochirurgie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Meredith Grey', email: 'grey', spec: 'Chirurgie Générale', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Stephen Strange', email: 'strange', spec: 'Traumatologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Michaela Quinn', email: 'quinn', spec: 'Pédiatrie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Leonard McCoy', email: 'mccoy', spec: 'Cardiologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. James Wilson', email: 'wilson', spec: 'Oncologie', doctorRole: 'docteur_labo' },
+      { name: 'Dr. Lisa Cuddy', email: 'cuddy', spec: 'Endocrinologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Eric Foreman', email: 'foreman', spec: 'Neurologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Allison Cameron', email: 'cameron', spec: 'Immunologie', doctorRole: 'docteur_labo' },
+      { name: 'Dr. Robert Chase', email: 'chase', spec: 'Chirurgie Cardiaque', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Chris Taub', email: 'taub', spec: 'Chirurgie Plastique', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Remy Hadley', email: 'hadley', spec: 'Psychiatrie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Lawrence Kutner', email: 'kutner', spec: 'Médecine du Sport', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Amber Volakis', email: 'volakis', spec: 'Radiologie', doctorRole: 'docteur_labo' },
+      { name: 'Dr. Martha Masters', email: 'masters', spec: 'Gynécologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Jessica Adams', email: 'adams', spec: 'Dermatologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Chi Park', email: 'park', spec: 'Ophtalmologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Dominika Petrovic', email: 'petrovic', spec: 'Urologie', doctorRole: 'docteur_clinique' },
+      { name: 'Dr. Marcus Andrews', email: 'andrews', spec: 'ORL', doctorRole: 'docteur_labo' }
     ]
 
     const doctorsList: Medecin[] = []
@@ -247,7 +239,7 @@ export default class MainSeeder extends BaseSeeder {
         email: `${d.email}@openclinic.cd`,
         password,
         nomComplet: d.name,
-        role: 'docteur',
+        role: d.doctorRole,
         actif: true
       })
       

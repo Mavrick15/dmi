@@ -66,7 +66,7 @@ export default class ConsultationController {
         // Si pas de filtre médecin, on peut filtrer par le médecin connecté
         // Optimisation : Charger le médecin une seule fois au début si nécessaire
         let medecin = null
-        if (!patientId && (user.role === 'docteur' || user.role === 'infirmiere')) {
+        if (!patientId && (['docteur_clinique', 'docteur_labo'].includes(user.role) || user.role === 'infirmiere')) {
           medecin = await Medecin.findBy('userId', user.id)
           if (medecin) {
             // Si on filtre par patient, on montre toutes les consultations de ce patient
@@ -107,10 +107,8 @@ export default class ConsultationController {
         throw AppException.unauthorized('Session expirée')
     }
     
-    // 2. Vérification du rôle : Seuls les docteurs peuvent créer des consultations
-    // Les infirmières peuvent accéder à la console clinique pour voir les informations
-    // mais ne peuvent pas créer de consultations complètes (diagnostic, prescription)
-    if (user.role !== 'docteur') {
+    // 2. Vérification du rôle : Seuls les médecins clinique (docteur_clinique) peuvent créer des consultations
+    if (!['docteur_clinique'].includes(user.role)) {
         const userName = user.nomComplet || user.email || 'Utilisateur'
         throw AppException.forbidden(userName)
     }
@@ -358,8 +356,8 @@ export default class ConsultationController {
         throw AppException.unauthorized('Session expirée')
     }
     
-    // 2. Vérification du rôle : Seuls les docteurs peuvent modifier des consultations
-    if (user.role !== 'docteur') {
+    // 2. Vérification du rôle : Seuls les médecins clinique peuvent modifier des consultations
+    if (!['docteur_clinique'].includes(user.role)) {
         const userName = user.nomComplet || user.email || 'Utilisateur'
         throw AppException.forbidden(userName)
     }

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import { useKnowledgeBase } from '../../../hooks/useClinical';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 // --- MODAL DE DÉTAILS ---
 const KnowledgeDetailModal = ({ item, type, onClose }) => {
@@ -269,7 +270,7 @@ const ClinicalKnowledgeBase = () => {
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed line-clamp-2">{item.description}</p>
                     <div className="flex items-center space-x-4 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Icon name="Folder" size={12} /> {item.category}</span>
-                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> Mis à jour: {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('fr-FR') : '—'}</span>
+                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> Mis à jour: {item.lastUpdated ? formatDateInBusinessTimezone(item.lastUpdated) : '—'}</span>
                     </div>
                   </div>
                   <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${getUrgencyStyle(item.urgency)}`}>
@@ -364,7 +365,7 @@ const ClinicalKnowledgeBase = () => {
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-2 leading-relaxed line-clamp-2">{item.description}</p>
                     <div className="flex items-center space-x-4 text-xs text-slate-400 dark:text-slate-500">
                       <span className="flex items-center gap-1"><Icon name="Folder" size={12} /> {item.category}</span>
-                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> {item.lastUpdated ? new Date(item.lastUpdated).toLocaleDateString('fr-FR') : '—'}</span>
+                      <span className="flex items-center gap-1"><Icon name="Clock" size={12} /> {item.lastUpdated ? formatDateInBusinessTimezone(item.lastUpdated) : '—'}</span>
                     </div>
                   </div>
                   <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border ${getUrgencyStyle(item.urgency)}`}>

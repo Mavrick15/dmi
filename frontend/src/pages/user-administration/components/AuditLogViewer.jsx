@@ -6,6 +6,11 @@ import Input from '../../../components/ui/Input';
 import api from '../../../lib/axios'; 
 import { useToast } from '../../../contexts/ToastContext'; 
 import Pagination from '../../../components/ui/Pagination'; 
+import {
+  addDaysToBusinessDateKey,
+  formatShortDateTimeInBusinessTimezone,
+  getTodayInBusinessTimezone,
+} from '../../../utils/dateTime';
 const AuditLogViewer = () => {
   // États
   const [filters, setFilters] = useState({ dateRange: '7days', action: 'all', search: '' });
@@ -45,20 +50,14 @@ const AuditLogViewer = () => {
     
     // Calcul de la date de début
     let dateFrom = undefined;
-    const now = new Date();
+    const todayKey = getTodayInBusinessTimezone();
     
     if (filters.dateRange === '7days') {
-        const d = new Date(now);
-        d.setDate(now.getDate() - 7);
-        dateFrom = d.toISOString();
+        dateFrom = addDaysToBusinessDateKey(todayKey, -7);
     } else if (filters.dateRange === '30days') {
-        const d = new Date(now);
-        d.setDate(now.getDate() - 30);
-        dateFrom = d.toISOString();
+        dateFrom = addDaysToBusinessDateKey(todayKey, -30);
     } else if (filters.dateRange === '90days') {
-        const d = new Date(now);
-        d.setDate(now.getDate() - 90);
-        dateFrom = d.toISOString();
+        dateFrom = addDaysToBusinessDateKey(todayKey, -90);
     }
     
     try {
@@ -130,10 +129,7 @@ const AuditLogViewer = () => {
       try {
         const date = new Date(dateStr);
         if (isNaN(date.getTime())) return '-';
-        return date.toLocaleString('fr-FR', { 
-            day: '2-digit', month: '2-digit', year: 'numeric', 
-            hour: '2-digit', minute: '2-digit' 
-        });
+        return formatShortDateTimeInBusinessTimezone(date);
       } catch (error) {
         return '-';
       }

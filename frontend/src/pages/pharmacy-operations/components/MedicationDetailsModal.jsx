@@ -5,6 +5,7 @@ import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const MedicationDetailsModal = ({ isOpen, onClose, medication }) => {
   const { formatCurrency } = useCurrency();
@@ -180,7 +181,7 @@ const MedicationDetailsModal = ({ isOpen, onClose, medication }) => {
                     <div>
                       <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date d'expiration</p>
                       <p className="font-medium text-slate-800 dark:text-slate-200">
-                        {new Date(data.dateExpiration).toLocaleDateString('fr-FR')}
+                        {formatDateInBusinessTimezone(data.dateExpiration)}
                       </p>
                     </div>
                   </div>

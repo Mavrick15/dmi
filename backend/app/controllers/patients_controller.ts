@@ -186,7 +186,7 @@ export default class PatientsController {
     const query = Patient.query().preload('user').orderBy('createdAt', 'desc')
 
     // Si c'est un docteur, filtrer pour ne voir que ses patients
-    if (!canSeeAllPatients && user.role === 'docteur') {
+    if (!canSeeAllPatients && ['docteur_clinique', 'docteur_labo'].includes(user.role)) {
       const medecin = await Medecin.findBy('userId', user.id)
 
       if (medecin) {

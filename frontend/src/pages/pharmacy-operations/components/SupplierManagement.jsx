@@ -9,6 +9,7 @@ import RecentOrdersTable from './RecentOrdersTable';
 import { useToast } from '../../../contexts/ToastContext';
 import { useSuppliers } from '../../../hooks/usePharmacy';
 import AddSupplierModal from './AddSupplierModal';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onReceiveOrder, onViewOrderDetails, onViewHistory, onViewSupplier, onCreateOrder }) => { 
   const { hasPermission } = usePermissions();
@@ -131,7 +132,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
     );
   };
   
-  const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A';
+  const formatDate = (dateString) => (dateString ? formatDateInBusinessTimezone(dateString) : 'N/A');
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">

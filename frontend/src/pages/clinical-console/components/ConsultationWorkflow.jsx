@@ -16,6 +16,7 @@ import CIM10Search from './CIM10Search';
 import ConsultationTemplates from './ConsultationTemplates';
 import MedicalCalculators from './MedicalCalculators';
 import QuickNotes from './QuickNotes';
+import { formatShortDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultation }) => {
   const { hasPermission } = usePermissions();
@@ -410,7 +411,7 @@ const ConsultationWorkflow = ({ patient, appointmentId = null, onSaveConsultatio
               duration: med.duration,
               quantity: med.quantity || 1, // Quantité prescrite
               // Informations supplémentaires pour l'audit
-              prescribedAt: new Date().toISOString(),
+              prescribedAt: formatShortDateTimeInBusinessTimezone(new Date()),
               prescribedBy: user?.id || null
             })) || []
         },

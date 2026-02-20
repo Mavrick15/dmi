@@ -2,6 +2,11 @@ import '#start/validator'
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
 import transmit from '@adonisjs/transmit/services/main'
+import { Settings } from 'luxon'
+import AppointmentExpirationService from '#services/AppointmentExpirationService'
+
+// Harmonise toute l'application backend sur le fuseau horaire métier.
+Settings.defaultZone = process.env.TZ || 'Africa/Kinshasa'
 
 // --- IMPORTS DES CONTRÔLEURS ---
 const AuthController = () => import('#controllers/auth_controller')
@@ -37,6 +42,9 @@ const UploadsController = () => import('#controllers/uploads_controller')
 
 // --- ACTIVATION DU TEMPS RÉEL (SSE) ---
 transmit.registerRoutes()
+
+// Auto-annulation des rendez-vous expirés (surveillance continue, 1 seconde).
+AppointmentExpirationService.start(1000)
 
 // --- API V1 ---
 router

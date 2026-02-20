@@ -19,12 +19,12 @@ export const registerValidator = vine.compile(
     password: vine.string().minLength(8).maxLength(32),
     
     // Force le rôle à être une des valeurs autorisées
-    role: vine.enum(['admin', 'docteur', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient', 'it_specialist']),
+    role: vine.enum(['admin', 'docteur_clinique', 'docteur_labo', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient']),
     
     telephone: vine.string().optional(),
     adresse: vine.string().optional(),
 
-    // Champs spécifiques docteur (optionnels dans le payload global)
+    // Champs spécifiques médecin (docteur_clinique / docteur_labo, optionnels dans le payload global)
     specialite: vine.string().optional(),
     numeroOrdre: vine.string().optional(),
     etablissementId: vine.string().uuid().optional(),

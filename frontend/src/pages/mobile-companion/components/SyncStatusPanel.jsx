@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { formatTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const SyncStatusPanel = () => {
   const [syncStatus, setSyncStatus] = useState('idle');
@@ -48,7 +49,7 @@ const SyncStatusPanel = () => {
     const diff = Math.floor((now - date) / 1000);
     if (diff < 60) return "À l'instant";
     if (diff < 3600) return `${Math.floor(diff / 60)} min`;
-    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return formatTimeInBusinessTimezone(date);
   };
 
   return (

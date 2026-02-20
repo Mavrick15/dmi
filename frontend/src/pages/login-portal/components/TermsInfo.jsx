@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { formatMonthYearInBusinessTimezone } from '../../../utils/dateTime';
 
 const TermsInfo = () => {
   const [showModal, setShowModal] = useState(false);
@@ -101,7 +102,7 @@ const TermsInfo = () => {
                       {termsInfo.title}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Version en vigueur : {new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}
+                      Version en vigueur : {formatMonthYearInBusinessTimezone(new Date())}
                     </p>
                   </div>
                 </div>

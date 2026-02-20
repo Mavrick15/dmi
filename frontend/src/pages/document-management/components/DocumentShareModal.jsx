@@ -10,7 +10,10 @@ import api from '../../../lib/axios';
 import { useAuth } from '../../../contexts/AuthContext';
 
 // Partage réservé aux docteurs uniquement
-const ROLES_DOCTEURS = [{ value: 'docteur', label: 'Tous les docteurs' }];
+const ROLES_DOCTEURS = [
+  { value: 'docteur_clinique', label: 'Médecine générale' },
+  { value: 'docteur_labo', label: 'Médecin biologiste' },
+];
 
 const DocumentShareModal = ({ document, isOpen, onClose }) => {
   const { user } = useAuth();

@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import Icon from '../../../components/AppIcon';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { formatNumberInFrenchLocale } from '../../../utils/dateTime';
 
 const ChartContainer = ({
   title,
@@ -51,7 +52,7 @@ const ChartContainer = ({
                     style={{ backgroundColor: entry.color || entry.payload?.fill || colors[0] }}
                   />
                   <p className="text-base font-bold text-slate-700 dark:text-slate-200">
-                    {typeof entry.value === 'number' ? entry.value.toLocaleString() : String(entry.value || 0)} consultations
+                    {typeof entry.value === 'number' ? formatNumberInFrenchLocale(entry.value) : String(entry.value || 0)} consultations
                   </p>
                 </div>
                 
@@ -74,7 +75,7 @@ const ChartContainer = ({
                       <div className="flex justify-between text-xs">
                         <span className="text-slate-500 dark:text-slate-400">Revenus:</span>
                         <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                          {formatCurrency ? formatCurrency(data.revenue, { maximumFractionDigits: 0 }) : data.revenue.toLocaleString()}
+                          {formatCurrency ? formatCurrency(data.revenue, { maximumFractionDigits: 0 }) : formatNumberInFrenchLocale(data.revenue)}
                         </span>
                       </div>
                     )}

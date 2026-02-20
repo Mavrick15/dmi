@@ -9,6 +9,7 @@ import PermissionGuard from '../PermissionGuard';
 import { useToast } from '../../contexts/ToastContext';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import api from '../../lib/axios';
+import { formatLongDateInBusinessTimezone } from '../../utils/dateTime';
 
 const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
   const { showToast } = useToast();
@@ -96,18 +97,7 @@ const InvoiceDetailsModal = ({ isOpen, onClose, invoiceId }) => {
     );
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric'
-      });
-    } catch {
-      return dateString;
-    }
-  };
+  const formatDate = (dateString) => (dateString ? formatLongDateInBusinessTimezone(dateString) : 'N/A');
 
 
   if (isLoading) {

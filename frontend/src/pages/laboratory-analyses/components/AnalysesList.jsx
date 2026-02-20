@@ -6,6 +6,10 @@ import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import AnalyseQRCode from './AnalyseQRCode';
+import {
+  formatDateTimeInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDelete, onPageChange }) => {
   const { hasPermission } = usePermissions();
@@ -42,7 +46,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
       const now = new Date();
       const diffTime = now - date;
       const diffDays = Math.floor(Math.abs(diffTime) / (1000 * 60 * 60 * 24));
-      const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const timeStr = formatTimeInBusinessTimezone(date);
       
       if (diffDays === 0) {
         return `Aujourd'hui à ${timeStr}`;
@@ -56,13 +60,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
         return `Dans ${diffDays} jour${diffDays > 1 ? 's' : ''}`;
       }
       
-      return date.toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(date);
     } catch {
       return 'Date invalide';
     }

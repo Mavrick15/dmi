@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { useToast } from '../contexts/ToastContext';
+import { getTodayInBusinessTimezone } from '../utils/dateTime';
 import { useAuth } from '../contexts/AuthContext';
 
 export const useDocuments = (params) => {
@@ -352,7 +353,7 @@ export const useDocumentMutations = () => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `documents_export_${new Date().toISOString().split('T')[0]}.zip`;
+        link.download = `documents_export_${getTodayInBusinessTimezone()}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

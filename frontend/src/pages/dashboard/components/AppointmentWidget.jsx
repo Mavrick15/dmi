@@ -38,16 +38,19 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
   
   const getStatusStyle = (status) => {
     switch (status) {
-      case 'confirmed':
-        return { accent: 'bg-emerald-500', card: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800', label: 'Confirmé' };
+      case 'programme':
       case 'pending':
         return { accent: 'bg-amber-500', card: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800', label: 'En attente' };
+      case 'en_cours':
       case 'consulted':
+      case 'confirmed':
         return { accent: 'bg-blue-500', card: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800', label: 'En cours' };
+      case 'termine':
+      case 'completed':
+        return { accent: 'bg-emerald-500', card: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800', label: 'Terminée' };
+      case 'annule':
       case 'cancelled':
         return { accent: 'bg-rose-500', card: 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800', label: 'Annulé' };
-      case 'completed':
-        return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700', label: 'Terminé' };
       default:
         return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700', label: status };
     }
@@ -118,7 +121,7 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
                   <span className="text-[10px] font-bold uppercase tracking-wide flex-shrink-0 text-slate-600 dark:text-slate-400">
                     {style.label}
                   </span>
-                  {appointment?.status === 'consulted' && (
+                  {(appointment?.status === 'en_cours' || appointment?.status === 'consulted') && (
                     <button
                       type="button"
                       onClick={(e) => handleRemoveAppointment(e, appointment.id)}

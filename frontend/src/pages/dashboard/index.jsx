@@ -101,7 +101,8 @@ const Dashboard = () => {
   // Fonction pour obtenir le titre selon le rôle
   const getRoleTitle = (role) => {
     const roleMap = {
-      'docteur': 'Dr.',
+      'docteur_clinique': 'Dr.',
+      'docteur_labo': 'Dr.',
       'medecin': 'Dr.',
       'infirmiere': 'Infirmier',
       'pharmacien': 'Pharmacien',
@@ -120,7 +121,8 @@ const Dashboard = () => {
     
     // Messages personnalisés selon le rôle
     const messageTemplates = {
-      'docteur': `Bienvenue ${title} {name}, voici votre activité clinique.`,
+      'docteur_clinique': `Bienvenue ${title} {name}, voici votre activité clinique.`,
+      'docteur_labo': `Bienvenue ${title} {name}, voici votre activité laboratoire.`,
       'medecin': `Bienvenue ${title} {name}, voici votre activité clinique.`,
       'infirmiere': `Bienvenue ${title} {name}, voici votre activité.`,
       'pharmacien': `Bienvenue ${title} {name}, voici votre activité pharmaceutique.`,

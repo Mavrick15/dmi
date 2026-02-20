@@ -5,6 +5,7 @@ import Button from '../../../components/ui/Button';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
   const [order, setOrder] = useState(null);
@@ -60,13 +61,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(dateString);
     } catch (error) {
       return 'N/A';
     }

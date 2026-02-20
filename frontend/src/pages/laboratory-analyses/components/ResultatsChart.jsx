@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import Icon from '../../../components/AppIcon';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const ResultatsChart = ({ resultats, historique = [] }) => {
   // Préparer les données pour le graphique de tendance
@@ -16,7 +17,7 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
           grouped[r.parametre] = [];
         }
         grouped[r.parametre].push({
-          date: new Date(item.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+          date: formatDateInBusinessTimezone(item.date),
           valeur: parseFloat(r.valeur) || 0,
           min: r.valeurNormaleMin,
           max: r.valeurNormaleMax

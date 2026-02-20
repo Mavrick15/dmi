@@ -4,6 +4,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMarkAllConfirmed, onViewMedication, onTreatAlert }) => { 
   const { hasPermission } = usePermissions();
   const [expiryAlerts, setExpiryAlerts] = useState([]);
@@ -97,7 +98,7 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
   };
   
   // FONCTION UTILITAIRE AJOUTÉE
-  const formatDate = (dateString) => dateString ? new Date(dateString).toLocaleDateString('fr-FR') : 'N/A';
+  const formatDate = (dateString) => (dateString ? formatDateInBusinessTimezone(dateString) : 'N/A');
 
 
   return (

@@ -138,7 +138,7 @@ export default class DocumentsController {
         )
       }
       const attributedUser = await UserProfile.find(attributedToUserId)
-      if (!attributedUser || attributedUser.role !== 'docteur') {
+      if (!attributedUser || !['docteur_clinique', 'docteur_labo'].includes(attributedUser.role)) {
         throw AppException.badRequest('Le document doit être attribué à un médecin valide.')
       }
       uploadedByUserId = attributedUser.id
@@ -557,16 +557,16 @@ export default class DocumentsController {
       ? DateTime.fromISO(request.input('expiresAt'))
       : null
 
-    // Les documents ne peuvent être partagés qu'avec des docteurs
-    const allowedRole = 'docteur'
-    const invalidRoleIds = roleIds.filter((r) => r !== allowedRole)
+    // Les documents ne peuvent être partagés qu'avec des médecins
+    const doctorRoles = ['docteur_clinique', 'docteur_labo']
+    const invalidRoleIds = roleIds.filter((r) => !doctorRoles.includes(r))
     if (invalidRoleIds.length > 0) {
-      throw AppException.badRequest('Le partage est autorisé uniquement avec le rôle Docteurs.')
+      throw AppException.badRequest('Le partage est autorisé uniquement avec des rôles Médecins.')
     }
 
     if (userIds.length > 0) {
       const profiles = await UserProfile.query().whereIn('id', userIds).where('actif', true)
-      const nonDoctors = profiles.filter((p) => p.role !== 'docteur')
+      const nonDoctors = profiles.filter((p) => !doctorRoles.includes(p.role))
       if (nonDoctors.length > 0) {
         throw AppException.badRequest(
           'Le partage est autorisé uniquement avec des médecins (docteurs).'
@@ -589,9 +589,9 @@ export default class DocumentsController {
 
     // Déterminer les médecins à notifier (IDs utilisateur)
     const doctorIdsToNotify: string[] = [...userIds]
-    if (roleIds.includes('docteur')) {
+    if (roleIds.some((r) => ['docteur_clinique', 'docteur_labo'].includes(r))) {
       const doctorsByRole = await UserProfile.query()
-        .where('role', 'docteur')
+        .whereIn('role', ['docteur_clinique', 'docteur_labo'])
         .where('actif', true)
         .select('id')
       for (const d of doctorsByRole) {

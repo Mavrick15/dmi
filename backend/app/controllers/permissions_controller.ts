@@ -279,7 +279,7 @@ export default class PermissionsController {
    */
   public async getAllRolePermissions({ response }: HttpContext) {
     try {
-      const roles = ['admin', 'docteur', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient', 'it_specialist']
+      const roles = ['admin', 'docteur_clinique', 'docteur_labo', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient']
       
       const rolePermissions: Record<string, string[]> = {}
       

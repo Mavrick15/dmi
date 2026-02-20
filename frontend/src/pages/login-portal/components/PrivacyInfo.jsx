@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { formatMonthYearInBusinessTimezone } from '../../../utils/dateTime';
 
 const PrivacyInfo = () => {
   const [showModal, setShowModal] = useState(false);
@@ -91,7 +92,7 @@ const PrivacyInfo = () => {
                       {privacyInfo.title}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Dernière mise à jour : {new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long' })}
+                      Dernière mise à jour : {formatMonthYearInBusinessTimezone(new Date())}
                     </p>
                   </div>
                 </div>

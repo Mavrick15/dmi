@@ -118,9 +118,14 @@ export class DashboardTransformer extends BaseTransformer {
     
     return appointments.map(apt => {
       const hasConsultation = (apt as any).hasConsultation || false
-      const baseStatus = apt.statut === 'programme' ? 'pending' : 
-                        apt.statut === 'en_cours' ? 'confirmed' :
-                        apt.statut === 'termine' ? 'completed' : 'cancelled'
+      const mappedStatus =
+        apt.statut === 'programme'
+          ? 'programme'
+          : apt.statut === 'en_cours'
+            ? 'en_cours'
+            : apt.statut === 'termine'
+              ? 'termine'
+              : 'annule'
       
       return {
         id: apt.id,
@@ -142,7 +147,8 @@ export class DashboardTransformer extends BaseTransformer {
         motif: apt.motif || 'Consultation',
         type: apt.motif || 'Consultation',
         statut: apt.statut,
-        status: hasConsultation ? 'consulted' : baseStatus,
+        // Le statut d'affichage suit la source métier unique: statut rendez-vous.
+        status: mappedStatus,
         priorite: apt.priorite || 'normale',
         priority: apt.priorite || 'normale',
         duration: apt.dureeMinutes || 30,

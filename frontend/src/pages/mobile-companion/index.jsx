@@ -17,6 +17,7 @@ import { useDashboardData } from '../../hooks/useDashboard';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../hooks/usePermissions';
+import { getTodayInBusinessTimezone } from '../../utils/dateTime';
 
 const MobileCompanion = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const MobileCompanion = () => {
   const { hasPermission } = usePermissions();
   const { data: syncStatus, isLoading: loadingSync } = useSyncStatus();
   const { data: dashboardData } = useDashboardData();
-  const { data: appointments = [] } = useAppointments({ date: new Date().toISOString().split('T')[0] });
+  const { data: appointments = [] } = useAppointments({ date: getTodayInBusinessTimezone() });
   const { triggerSync } = useMobileMutations();
   
   // Protéger les données

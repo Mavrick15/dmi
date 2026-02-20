@@ -6,6 +6,7 @@ import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
 import api from '../../../lib/axios';
 import { useToast } from '../../../contexts/ToastContext';
+import { getTodayInBusinessTimezone } from '../../../utils/dateTime';
 
 const ExportData = () => {
   const { hasPermission } = usePermissions();
@@ -25,7 +26,7 @@ const ExportData = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${type}_export_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `${type}_export_${getTodayInBusinessTimezone()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
+import { formatWeekdayDateInBusinessTimezone, getBusinessHour } from '../../../utils/dateTime';
 
 const WelcomeHeader = () => {
   const date = new Date();
-  const hour = date.getHours();
+  const hour = getBusinessHour();
   
   let greeting = 'Bonsoir';
   let icon = 'MoonStar';
@@ -19,11 +20,7 @@ const WelcomeHeader = () => {
     gradient = 'from-orange-400 to-rose-500';
   }
 
-  const formattedDate = date.toLocaleDateString('fr-FR', { 
-    weekday: 'long', 
-    day: 'numeric', 
-    month: 'long' 
-  });
+  const formattedDate = formatWeekdayDateInBusinessTimezone(date);
 
   return (
     <div className="space-y-4 text-center">

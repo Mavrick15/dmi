@@ -15,6 +15,12 @@ import { useEstablishments } from '../../hooks/useAdmin';
 import { useAppointments, useDoctors, useAppointmentMutations } from '../../hooks/useAppointments';
 import { useToast } from '../../contexts/ToastContext';
 import { usePatientModal } from '../../contexts/PatientModalContext';
+import {
+  formatDateInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+  getTodayInBusinessTimezone,
+  toBusinessDateKey,
+} from '../../utils/dateTime';
 
 const STATUTS = [
   { value: '', label: 'Tous les statuts' },
@@ -23,30 +29,34 @@ const STATUTS = [
   { value: 'termine', label: 'Terminé' },
   { value: 'annule', label: 'Annulé' },
 ];
-
 const formatDate = (dateStr) => {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  return formatDateInBusinessTimezone(dateStr);
 };
 
 const formatTime = (dateStr) => {
-  if (!dateStr) return '';
-  return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  return formatTimeInBusinessTimezone(dateStr);
 };
 
 const isToday = (dateKey) => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = getTodayInBusinessTimezone();
   return dateKey === today;
 };
 
 const getStatutStyle = (statut) => {
   const s = (statut || '').toLowerCase();
-  if (s === 'programme') return 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
-  if (s === 'en_cours') return 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+  if (s === 'programme') return 'bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300';
+  if (s === 'en_cours') return 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300';
   if (s === 'termine') return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300';
   if (s === 'annule') return 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400';
   return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
+};
+
+const getConsultationProgressLabel = (statut) => {
+  const s = (statut || '').toLowerCase();
+  if (s === 'en_cours') return 'En cours';
+  if (s === 'termine') return 'Terminée';
+  if (s === 'annule') return 'Annulé';
+  return 'En attente';
 };
 
 const APPOINTMENTS_PER_PAGE = 10;
@@ -56,10 +66,7 @@ const Agenda = () => {
   const { showToast } = useToast();
   const { hasPermission } = usePermissions();
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'day'
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const d = new Date();
-    return d.toISOString().split('T')[0];
-  });
+  const [selectedDate, setSelectedDate] = useState(() => getTodayInBusinessTimezone());
   const [establishmentId, setEstablishmentId] = useState('');
   const [medecinId, setMedecinId] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -78,8 +85,8 @@ const Agenda = () => {
     start.setDate(1);
     const end = new Date(d.getFullYear(), d.getMonth() + 1, 0);
     return {
-      startDate: start.toISOString().split('T')[0],
-      endDate: end.toISOString().split('T')[0],
+      startDate: toBusinessDateKey(start),
+      endDate: toBusinessDateKey(end),
     };
   }, [selectedDate]);
 
@@ -92,7 +99,7 @@ const Agenda = () => {
   }), [dateRange, establishmentId, medecinId, statusFilter]);
 
   const doctorsParams = useMemo(() => (establishmentId ? { establishmentId } : {}), [establishmentId]);
-  const { data: appointmentsData, isLoading } = useAppointments(params, { refetchInterval: 30000 });
+  const { data: appointmentsData, isLoading } = useAppointments(params, { refetchInterval: 10000 });
   const { data: doctorsData } = useDoctors(doctorsParams);
   const { updateAppointmentStatus, deleteAppointment } = useAppointmentMutations();
 
@@ -107,16 +114,16 @@ const Agenda = () => {
 
   const { openPatientModal } = usePatientModal();
 
-  const setToday = () => setSelectedDate(new Date().toISOString().split('T')[0]);
+  const setToday = () => setSelectedDate(getTodayInBusinessTimezone());
   const setTomorrow = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(toBusinessDateKey(d));
   };
   const shiftMonth = (delta) => {
     const d = new Date(selectedDate);
     d.setMonth(d.getMonth() + delta);
-    setSelectedDate(d.toISOString().split('T')[0]);
+    setSelectedDate(toBusinessDateKey(d));
   };
 
   const goToPatient = (patientId) => {
@@ -135,6 +142,15 @@ const Agenda = () => {
   const handleDelete = (id) => {
     if (!window.confirm('Annuler ce rendez-vous ?')) return;
     deleteAppointment.mutate(id);
+  };
+
+  const handleOpenConsultation = (appointment) => {
+    const patientId = appointment?.patientId || appointment?.patient?.id;
+    if (!patientId) {
+      showToast('Patient introuvable pour ce rendez-vous.', 'error');
+      return;
+    }
+    navigate(`/console-clinique?patientId=${patientId}&appointmentId=${appointment.id}&startConsultation=true`);
   };
 
   useEffect(() => {
@@ -315,7 +331,9 @@ const Agenda = () => {
             onPatientClick={goToPatient}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
+            onOpenConsultation={handleOpenConsultation}
             getStatutStyle={getStatutStyle}
+            getConsultationProgressLabel={getConsultationProgressLabel}
             pageSize={APPOINTMENTS_PER_PAGE}
             currentPage={dayViewPage}
             onPageChange={setDayViewPage}
@@ -326,7 +344,9 @@ const Agenda = () => {
             onPatientClick={goToPatient}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
+            onOpenConsultation={handleOpenConsultation}
             getStatutStyle={getStatutStyle}
+            getConsultationProgressLabel={getConsultationProgressLabel}
             sortByLastFirst
             pageSize={APPOINTMENTS_PER_PAGE}
             currentPage={listPage}
@@ -338,7 +358,7 @@ const Agenda = () => {
   );
 };
 
-function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getStatutStyle, compact }) {
+function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, onOpenConsultation, getStatutStyle, getConsultationProgressLabel, compact }) {
   const patientName = apt.patient?.user?.nomComplet || apt.patientName || '—';
   const medecinName = apt.medecin?.user?.nomComplet || apt.medecinName || '—';
   const motif = apt.motif || apt.type || null;
@@ -359,12 +379,15 @@ function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getSta
           {motif && <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{motif}</p>}
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Badge className={getStatutStyle(apt.statut)}>{(apt.statut || 'programme').replace('_', ' ')}</Badge>
+          <Badge className={getStatutStyle(apt.statut)}>{getConsultationProgressLabel(apt.statut)}</Badge>
           {apt.statut === 'programme' && (
             <>
               <Button variant="ghost" size="sm" onClick={() => onStatusChange(apt.id, 'en_cours')}>Démarrer</Button>
               <Button variant="ghost" size="sm" className="text-rose-600" onClick={() => onDelete(apt.id)}>Annuler</Button>
             </>
+          )}
+          {apt.statut === 'en_cours' && (
+            <Button variant="ghost" size="sm" onClick={() => onOpenConsultation(apt)}>Reprendre</Button>
           )}
         </div>
       </div>
@@ -372,7 +395,7 @@ function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, getSta
   );
 }
 
-function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getStatutStyle, sortByLastFirst = true, title, pageSize = 12, currentPage = 1, onPageChange }) {
+function ListView({ appointments, onPatientClick, onStatusChange, onDelete, onOpenConsultation, getStatutStyle, getConsultationProgressLabel, sortByLastFirst = true, title, pageSize = 12, currentPage = 1, onPageChange }) {
   const sorted = useMemo(() => {
     const list = [...appointments].sort((a, b) => {
       const dateA = a?.dateHeure ? new Date(a.dateHeure).getTime() : 0;
@@ -434,7 +457,7 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
                   <td className="px-6 py-4 text-slate-700 dark:text-slate-300">{apt.medecin?.user?.nomComplet || apt.medecinName || '—'}</td>
                   <td className="px-6 py-4 text-slate-600 dark:text-slate-400 hidden lg:table-cell max-w-[180px] truncate">{apt.motif || apt.type || '—'}</td>
                   <td className="px-6 py-4">
-                    <Badge className={getStatutStyle(apt.statut)}>{(apt.statut || 'programme').replace('_', ' ')}</Badge>
+                    <Badge className={getStatutStyle(apt.statut)}>{getConsultationProgressLabel(apt.statut)}</Badge>
                   </td>
                   <td className="px-6 py-4">
                     {apt.statut === 'programme' && (
@@ -442,6 +465,14 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
                         <Button variant="ghost" size="sm" onClick={() => onStatusChange(apt.id, 'en_cours')}>Démarrer</Button>
                         <Button variant="ghost" size="sm" className="text-rose-600" onClick={() => onDelete(apt.id)}>Annuler</Button>
                       </div>
+                    )}
+                    {apt.statut === 'en_cours' && (
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => onOpenConsultation(apt)}>Reprendre</Button>
+                      </div>
+                    )}
+                    {apt.statut === 'termine' && (
+                      <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Terminée</span>
                     )}
                   </td>
                 </tr>
@@ -459,7 +490,9 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, getS
             onPatientClick={onPatientClick}
             onStatusChange={onStatusChange}
             onDelete={onDelete}
+            onOpenConsultation={onOpenConsultation}
             getStatutStyle={getStatutStyle}
+            getConsultationProgressLabel={getConsultationProgressLabel}
             compact
           />
         ))}
@@ -511,12 +544,12 @@ const TIMELINE_START_H = 7;
 const TIMELINE_END_H = 20;
 const SLOT_HEIGHT_PX = 52;
 
-function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, onDelete, getStatutStyle, pageSize = 12, currentPage = 1, onPageChange }) {
+function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, onDelete, onOpenConsultation, getStatutStyle, getConsultationProgressLabel, pageSize = 12, currentPage = 1, onPageChange }) {
   const dayAppointments = useMemo(() => {
     const key = selectedDate;
     return appointments
       .filter((apt) => {
-        const d = apt.dateHeure ? new Date(apt.dateHeure).toISOString().split('T')[0] : apt.date;
+        const d = apt.dateHeure ? toBusinessDateKey(apt.dateHeure) : apt.date;
         return d === key;
       })
       .sort((a, b) => new Date(a.dateHeure) - new Date(b.dateHeure));
@@ -600,10 +633,10 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
             <div
               key={apt.id}
               className="absolute left-2 right-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden flex flex-col"
-              style={{ top: `${top}px`, height: `${height}px`, minHeight: 36 }}
+              style={{ top: `${top}px`, height: `${height}px`, minHeight: 40 }}
             >
               <div
-                className={`flex-1 p-2 flex flex-col justify-center border-l-4 ${
+                className={`flex-1 px-2 py-1 flex flex-col justify-center border-l-4 ${
                   apt.statut === 'programme'
                     ? 'bg-blue-50 dark:bg-blue-950/40 border-blue-500'
                     : apt.statut === 'en_cours'
@@ -613,25 +646,39 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
                     : 'bg-slate-50 dark:bg-slate-800/50 border-slate-300 dark:border-slate-600'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
-                    {formatTime(apt.dateHeure)} — {(apt.dureeMinutes || 30)} min
-                  </span>
-                  <Badge className={`text-[10px] px-1.5 py-0 ${getStatutStyle(apt.statut)}`}>
-                    {(apt.statut || 'programme').replace('_', ' ')}
+                <div className="flex items-center justify-between gap-2 min-w-0">
+                  <div className="min-w-0 flex items-center gap-2 text-[11px] text-slate-700 dark:text-slate-300">
+                    <span className="font-semibold shrink-0">
+                      {formatTime(apt.dateHeure)} — {(apt.dureeMinutes || 30)} min
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-600 shrink-0">|</span>
+                    <button
+                      type="button"
+                      onClick={() => onPatientClick(apt.patientId || apt.patient?.id)}
+                      className="text-primary hover:underline min-w-0 flex-1 text-left truncate"
+                      title={apt.patient?.user?.nomComplet || apt.patientName || '—'}
+                    >
+                      Patient: {apt.patient?.user?.nomComplet || apt.patientName || '—'}
+                    </button>
+                    <span className="text-slate-300 dark:text-slate-600 shrink-0">|</span>
+                    <span
+                      className="min-w-0 flex-1 text-center truncate"
+                      title={apt.medecin?.user?.nomComplet || apt.medecinName || '—'}
+                    >
+                      Docteur: {apt.medecin?.user?.nomComplet || apt.medecinName || '—'}
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-600 shrink-0">|</span>
+                    <span
+                      className="min-w-0 flex-1 text-right truncate"
+                      title={apt.motif || apt.type || '—'}
+                    >
+                      Motif: {apt.motif || apt.type || '—'}
+                    </span>
+                  </div>
+                  <Badge className={`text-[9px] px-1 py-0 shrink-0 ${getStatutStyle(apt.statut)}`}>
+                    {getConsultationProgressLabel(apt.statut)}
                   </Badge>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onPatientClick(apt.patientId || apt.patient?.id)}
-                  className="text-sm font-medium text-primary hover:underline truncate text-left"
-                >
-                  {apt.patient?.user?.nomComplet || apt.patientName || '—'}
-                </button>
-                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                  {apt.medecin?.user?.nomComplet || apt.medecinName || '—'}
-                  {apt.motif || apt.type ? ` • ${apt.motif || apt.type}` : ''}
-                </p>
                 {apt.statut === 'programme' && height >= 56 && (
                   <div className="flex gap-1 mt-1">
                     <Button variant="default" size="sm" className="h-6 text-xs" onClick={() => onStatusChange(apt.id, 'en_cours')}>
@@ -639,6 +686,13 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
                     </Button>
                     <Button variant="ghost" size="sm" className="h-6 text-xs text-rose-600" onClick={() => onDelete(apt.id)}>
                       Annuler
+                    </Button>
+                  </div>
+                )}
+                {apt.statut === 'en_cours' && height >= 56 && (
+                  <div className="flex gap-1 mt-1">
+                    <Button variant="default" size="sm" className="h-6 text-xs" onClick={() => onOpenConsultation(apt)}>
+                      Reprendre
                     </Button>
                   </div>
                 )}

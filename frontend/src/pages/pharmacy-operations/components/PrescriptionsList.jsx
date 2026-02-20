@@ -7,6 +7,7 @@ import Input from '../../../components/ui/Input';
 import { usePendingPrescriptions, usePharmacyMutations } from '../../../hooks/usePharmacy';
 import { useToast } from '../../../contexts/ToastContext';
 import api from '../../../lib/axios';
+import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 const PrescriptionsList = () => {
   const [page, setPage] = useState(1);
   const itemsPerPage = 20;
@@ -33,13 +34,7 @@ const PrescriptionsList = () => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+      return formatDateTimeInBusinessTimezone(dateString);
     } catch {
       return dateString;
     }

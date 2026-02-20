@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
@@ -9,12 +9,18 @@ import PermissionGuard from '../../components/PermissionGuard';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useToast } from '../../contexts/ToastContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { useAppointments } from '../../hooks/useAppointments';
+import { useAppointments, useAppointmentMutations } from '../../hooks/useAppointments';
 import { usePatientStats } from '../../hooks/usePatients';
 import { useDashboardData } from '../../hooks/useDashboard';
 import { useNotifications, useNotificationMutations } from '../../hooks/useNotifications';
 import api from '../../lib/axios';
 import AnimatedModal from '../../components/ui/AnimatedModal';
+import {
+  formatDateInBusinessTimezone,
+  formatDateTimeInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+  getTodayInBusinessTimezone,
+} from '../../utils/dateTime';
 
 // Sous-composants
 import PatientSelector from './components/PatientSelector';
@@ -29,8 +35,9 @@ const ClinicalConsole = () => {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: appointmentsToday } = useAppointments({ 
-    date: new Date().toISOString().split('T')[0] 
+    date: getTodayInBusinessTimezone()
   });
+  const { updateAppointmentStatus } = useAppointmentMutations();
   const { data: patientStats } = usePatientStats();
   const { data: dashboardData } = useDashboardData();
   
@@ -46,6 +53,38 @@ const ClinicalConsole = () => {
   const [isNotificationDetailsOpen, setIsNotificationDetailsOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [loadingAppointmentDetails, setLoadingAppointmentDetails] = useState(false);
+  const normalizeAppointmentStatus = useCallback((status) => {
+    if (status === 'pending') return 'programme';
+    if (status === 'consulted') return 'en_cours';
+    if (status === 'completed') return 'termine';
+    if (status === 'cancelled') return 'annule';
+    return status;
+  }, []);
+
+  const markAppointmentInProgress = useCallback(async (appointmentId, currentStatus = null) => {
+    if (!appointmentId) return true;
+    const normalizedStatus = normalizeAppointmentStatus(currentStatus);
+    // Si le statut est inconnu, on tente quand même le passage à en_cours.
+    // On évite seulement les transitions inutiles/invalides.
+    if (normalizedStatus === 'en_cours' || normalizedStatus === 'termine' || normalizedStatus === 'annule') {
+      return normalizedStatus === 'en_cours';
+    }
+
+    try {
+      await updateAppointmentStatus.mutateAsync({
+        id: appointmentId,
+        status: 'en_cours',
+        silent: true,
+      });
+      return true;
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Erreur mise à jour statut rendez-vous:', error);
+      }
+      return false;
+    }
+  }, [normalizeAppointmentStatus, updateAppointmentStatus]);
+
   
   // --- NOTIFICATIONS CRITIQUES ---
   const [isCriticalNotificationsOpen, setIsCriticalNotificationsOpen] = useState(false);
@@ -60,7 +99,7 @@ const ClinicalConsole = () => {
   // - Toutes les notifications de patients si le médecin est concerné
   const doctorRelatedNotifications = useMemo(() => {
     const allNotifications = Array.isArray(notificationsData?.data) ? notificationsData.data : [];
-    const isDoctor = user?.role === 'docteur';
+    const isDoctor = user?.role === 'docteur_clinique';
     
     if (!isDoctor) {
       // Si ce n'est pas un médecin, retourner seulement les critiques
@@ -166,7 +205,7 @@ const ClinicalConsole = () => {
       if (diffHours < 24) return `Il y a ${diffHours} h`;
       if (diffDays === 1) return 'Hier';
       if (diffDays < 7) return `Il y a ${diffDays} j`;
-      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+      return formatDateInBusinessTimezone(date);
     } catch {
       return 'À l\'instant';
     }
@@ -210,12 +249,16 @@ const ClinicalConsole = () => {
     if (patientId && startConsultation) {
       setLoadingPatient(true);
       api.get(`/patients/${patientId}`)
-        .then(response => {
+        .then(async (response) => {
           if (response.data.success) {
-            setSelectedPatient(response.data.data);
             if (appointmentId) {
-              setCurrentAppointmentId(appointmentId);
+              const started = await markAppointmentInProgress(appointmentId);
+              if (!started) {
+                return;
+              }
             }
+            setSelectedPatient(response.data.data);
+            setCurrentAppointmentId(appointmentId || null);
             setActiveView('consultation');
             // Nettoyer les paramètres URL après chargement
             setSearchParams({});
@@ -232,7 +275,7 @@ const ClinicalConsole = () => {
           setLoadingPatient(false);
         });
     }
-  }, [searchParams, setSearchParams, showToast]);
+  }, [searchParams, setSearchParams, showToast, markAppointmentInProgress]);
 
 
   const viewOptions = [
@@ -247,16 +290,22 @@ const ClinicalConsole = () => {
   /**
    * Appelé quand on sélectionne un patient dans la colonne de gauche
    */
-  const handlePatientSelect = (patient) => {
-    setSelectedPatient(patient);
-    
+  const handlePatientSelect = async (patient) => {
     // Si l'objet patient contient un ID de rendez-vous (ex: via une liste de RDV du jour), on le capture.
     // Sinon, on le remet à null pour éviter de lier une consult à un vieux RDV.
     if (patient && patient.appointmentId) {
+        const started = await markAppointmentInProgress(
+          patient.appointmentId,
+          patient.appointmentStatus || patient.statut || patient.status
+        );
+        if (!started) {
+          return;
+        }
         setCurrentAppointmentId(patient.appointmentId);
     } else {
         setCurrentAppointmentId(null);
     }
+    setSelectedPatient(patient);
     
     // On bascule automatiquement sur la vue consultation
     setActiveView('consultation');
@@ -401,8 +450,15 @@ const ClinicalConsole = () => {
                 const patientId = appointment.patientId || appointment.patient.id;
                 setLoadingPatient(true);
                 api.get(`/patients/${patientId}`)
-                  .then(response => {
+                  .then(async (response) => {
                     if (response.data.success) {
+                      const started = await markAppointmentInProgress(
+                        appointment.id,
+                        appointment.statut || appointment.status
+                      );
+                      if (!started) {
+                        return;
+                      }
                       setSelectedPatient(response.data.data);
                       setCurrentAppointmentId(appointment.id);
                       setActiveView('consultation');
@@ -723,7 +779,7 @@ const ClinicalConsole = () => {
             {/* Footer */}
             <motion.div variants={itemVariants} className="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
               <div className="flex items-center space-x-4">
-                <span>Dernière synchro: {new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</span>
+                <span>Dernière synchro: {formatTimeInBusinessTimezone(new Date())}</span>
                 <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
                 <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
                    <span className="relative flex h-2 w-2">
@@ -918,7 +974,7 @@ const ClinicalConsole = () => {
                         <Icon name="FileText" size={14} className="text-slate-400" />
                         <span className="text-xs text-slate-500 dark:text-slate-400">Raison:</span>
                         <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                          {selectedNotification.metadata.reason}
+                          {(selectedNotification.metadata.reason || '').replace(/^Annulé automatiquement\s*:\s*/i, '').trim() || selectedNotification.metadata.reason}
                         </span>
                       </div>
                     )}
@@ -949,7 +1005,7 @@ const ClinicalConsole = () => {
                         if (Number.isNaN(d.getTime())) return null;
                         return (
                           <span className="text-slate-400 dark:text-slate-500">
-                            · {d.toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}
+                            · {formatDateTimeInBusinessTimezone(d)}
                           </span>
                         );
                       } catch {
@@ -999,6 +1055,13 @@ const ClinicalConsole = () => {
                               const patientResponse = await api.get(`/patients/${patientId}`);
                               if (patientResponse.data?.success && patientResponse.data?.data) {
                                 const patient = patientResponse.data.data;
+                                const started = await markAppointmentInProgress(
+                                  selectedNotification.targetId,
+                                  appointment.statut || appointment.status
+                                );
+                                if (!started) {
+                                  return;
+                                }
                                 // Sélectionner le patient et ouvrir la consultation
                                 setSelectedPatient(patient);
                                 setCurrentAppointmentId(selectedNotification.targetId);

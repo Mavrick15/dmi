@@ -10,7 +10,7 @@ export default class extends BaseSchema {
       table.string('nom_complet').notNullable()
       table.string('telephone').nullable()
       table.string('adresse').nullable()
-      table.enum('role', ['admin', 'docteur', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient', 'it_specialist']).defaultTo('patient')
+      table.enum('role', ['admin', 'docteur_clinique', 'infirmiere', 'pharmacien', 'gestionnaire', 'patient']).defaultTo('patient')
       table.string('specialite').nullable()
       table.string('numero_licence').nullable()
       table.string('photo_profil').nullable()

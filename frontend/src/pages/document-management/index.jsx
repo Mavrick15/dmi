@@ -208,8 +208,8 @@ const DocumentManagement = () => {
         return;
     }
     
-    // Vérifier que seul un docteur peut signer
-    const isDoctor = user?.role === 'docteur' || user?.role === 'admin';
+    // Vérifier que seul un médecin clinique peut signer
+    const isDoctor = user?.role === 'docteur_clinique' || user?.role === 'admin';
     if (!isDoctor) {
         showToast("Seuls les docteurs peuvent signer des documents.", 'error');
         return;

@@ -5,12 +5,12 @@ import Button from '../../components/ui/Button';
 import Header from '../../components/ui/Header';
 import PermissionGuard from '../../components/PermissionGuard';
 import { useToast } from '../../contexts/ToastContext';
-import ConfirmationModal from '../../components/ui/ConfirmationModal'; 
+import ConfirmationModal from '../../components/ui/ConfirmationModal';
 import { useUsersList, useUserMutations } from '../../hooks/useAdmin';
 import { useEstablishmentsList, useEstablishmentMutations } from '../../hooks/useAdmin';
 import { useDepartmentsList, useDepartmentMutations } from '../../hooks/useAdmin';
 import { usePermissions } from '../../hooks/usePermissions';
-import api from '../../lib/axios'; 
+import api from '../../lib/axios';
 
 // Sous-composants
 import UserCard from './components/UserCard';
@@ -28,18 +28,18 @@ import AppSettings from './components/AppSettings';
 const UserAdministration = () => {
   const { showToast } = useToast();
   const { hasPermission } = usePermissions();
-  
+
   // --- ÉTATS GLOBAUX ---
   const [activeTab, setActiveTab] = useState('users');
   const [activeRoleTab, setActiveRoleTab] = useState('all'); // Nouvel état pour les sous-onglets de rôles
   const [viewMode, setViewMode] = useState('grid');
-  
+
   // --- FILTRES & PAGINATION UTILISATEURS ---
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  
+
   // Pagination Users
   const [currentPage, setCurrentPage] = useState(1);
   const limit = viewMode === 'list' ? 15 : 9;
@@ -56,11 +56,11 @@ const UserAdministration = () => {
   // Pagination Établissements
   const [etabCurrentPage, setEtabCurrentPage] = useState(1);
   const etabItemsPerPage = 9;
-  
+
   // Pagination Départements
   const [deptCurrentPage, setDeptCurrentPage] = useState(1);
-  const deptItemsPerPage = 9; 
-  
+  const deptItemsPerPage = 9;
+
   // --- HOOKS ---
   // Récupérer les totaux pour chaque rôle via les métadonnées de pagination
   const { data: allUsersData } = useUsersList({
@@ -76,14 +76,6 @@ const UserAdministration = () => {
     limit: 1,
     search: '',
     role: 'patient',
-    status: ''
-  });
-
-  const { data: docteurData } = useUsersList({
-    page: 1,
-    limit: 1,
-    search: '',
-    role: 'docteur',
     status: ''
   });
 
@@ -119,11 +111,28 @@ const UserAdministration = () => {
     status: ''
   });
 
+  const { data: docteurCliniqueData } = useUsersList({
+    page: 1,
+    limit: 1,
+    search: '',
+    role: 'docteur_clinique',
+    status: ''
+  });
+
+  const { data: docteurLaboData } = useUsersList({
+    page: 1,
+    limit: 1,
+    search: '',
+    role: 'docteur_labo',
+    status: ''
+  });
+
   // Utiliser les métadonnées de pagination pour obtenir les vrais totaux
   const roleCounts = {
     all: allUsersData?.meta?.total || 0,
     patient: patientData?.meta?.total || 0,
-    docteur: docteurData?.meta?.total || 0,
+    docteur_clinique: docteurCliniqueData?.meta?.total || 0,
+    docteur_labo: docteurLaboData?.meta?.total || 0,
     infirmiere: infirmiereData?.meta?.total || 0,
     pharmacien: pharmacienData?.meta?.total || 0,
     gestionnaire: gestionnaireData?.meta?.total || 0,
@@ -133,7 +142,8 @@ const UserAdministration = () => {
   // Déterminer le rôle à filtrer selon l'onglet actif
   const getRoleFilter = () => {
     if (activeRoleTab === 'all') return '';
-    if (activeRoleTab === 'docteur') return 'docteur';
+    if (activeRoleTab === 'docteur_clinique') return 'docteur_clinique';
+    if (activeRoleTab === 'docteur_labo') return 'docteur_labo';
     if (activeRoleTab === 'infirmiere') return 'infirmiere';
     if (activeRoleTab === 'pharmacien') return 'pharmacien';
     if (activeRoleTab === 'gestionnaire') return 'gestionnaire';
@@ -148,35 +158,35 @@ const UserAdministration = () => {
     role: getRoleFilter() || filterRole, // Utiliser le rôle de l'onglet actif
     status: filterStatus
   });
-  
+
   const { data: establishmentsData, isLoading: isLoadingEstablishments } = useEstablishmentsList({
     page: etabCurrentPage,
     limit: etabItemsPerPage
   });
-  
+
   const { data: departmentsData, isLoading: isLoadingDepartments } = useDepartmentsList({
     page: deptCurrentPage,
     limit: deptItemsPerPage
   });
-  
+
   const { createUser, updateUser, deleteUser } = useUserMutations();
   const { createEstablishment, updateEstablishment, deleteEstablishment } = useEstablishmentMutations();
   const { createDepartment, updateDepartment, deleteDepartment } = useDepartmentMutations();
-  
+
   // Extraction des données
   const users = usersData?.data || [];
   const lastPage = usersData?.meta?.last_page || usersData?.meta?.lastPage || 1;
   const totalUsers = usersData?.meta?.total || 0;
-  
+
   const establishments = establishmentsData?.data || [];
   const etabLastPage = establishmentsData?.meta?.last_page || establishmentsData?.meta?.lastPage || 1;
   const etabTotal = establishmentsData?.meta?.total || 0;
-  
+
   const departments = departmentsData?.data || [];
   const deptLastPage = departmentsData?.meta?.last_page || departmentsData?.meta?.lastPage || 1;
   const deptTotal = departmentsData?.meta?.total || 0;
-  
-  const loading = isLoadingUsers || isLoadingEstablishments || isLoadingDepartments; 
+
+  const loading = isLoadingUsers || isLoadingEstablishments || isLoadingDepartments;
 
   // --- MODALES & ACTIONS ---
   const [selectedUser, setSelectedUser] = useState(null);
@@ -186,7 +196,7 @@ const UserAdministration = () => {
   const [isEstablishmentModalOpen, setIsEstablishmentModalOpen] = useState(false);
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  
+
   // --- ÉTATS DE SUPPRESSION/ACTION ---
   const [userToDelete, setUserToDelete] = useState(null); // Contient { id, name, action, ... }
   const [etabToDelete, setEtabToDelete] = useState(null);
@@ -206,10 +216,10 @@ const UserAdministration = () => {
 
   // --- GESTION DU CHANGEMENT DE MODE VUE ---
   const handleViewModeChange = (mode) => {
-      if (mode !== viewMode) {
-          setViewMode(mode);
-          setCurrentPage(1); 
-      }
+    if (mode !== viewMode) {
+      setViewMode(mode);
+      setCurrentPage(1);
+    }
   };
 
   // Gestion du changement d'onglet de rôle
@@ -222,11 +232,11 @@ const UserAdministration = () => {
 
   // Mapping des utilisateurs pour compatibilité avec l'UI
   const mappedUsers = Array.isArray(users) ? users.map(u => ({
-          ...u,
-          name: u.nomComplet || u.name, 
-          status: u.status || (u.actif ? 'Active' : 'Inactive'),
-          initials: (u.nomComplet || u.name || '?').charAt(0).toUpperCase()
-        })) : [];
+    ...u,
+    name: u.nomComplet || u.name,
+    status: u.status || (u.actif ? 'Active' : 'Inactive'),
+    initials: (u.nomComplet || u.name || '?').charAt(0).toUpperCase()
+  })) : [];
 
 
   // --- 3. ACTIONS UTILISATEURS ---
@@ -242,23 +252,23 @@ const UserAdministration = () => {
       setFilterStatus(newFilters.status || '');
     }
     setCurrentPage(1);
-      if (newFilters.search !== undefined) setSearchQuery(newFilters.search);
-      if (newFilters.role !== undefined) setFilterRole(newFilters.role);
-      if (newFilters.status !== undefined) setFilterStatus(newFilters.status);
-      setCurrentPage(1); 
+    if (newFilters.search !== undefined) setSearchQuery(newFilters.search);
+    if (newFilters.role !== undefined) setFilterRole(newFilters.role);
+    if (newFilters.status !== undefined) setFilterStatus(newFilters.status);
+    setCurrentPage(1);
   };
 
   const handleAddNewUser = () => { setSelectedUser(null); setIsUserModalOpen(true); };
-  
+
   const handleEditUser = async (user) => {
     try {
       // Afficher un indicateur de chargement
       showToast('Chargement des informations de l\'utilisateur...', 'info');
-      
+
       // Récupérer toutes les informations complètes de l'utilisateur depuis le backend
       const response = await api.get(`/users/${user.id}`);
       const fullUserData = response.data.data || response.data;
-      
+
       // Ouvrir le modal avec les données complètes
       setSelectedUser(fullUserData);
       setIsUserModalOpen(true);
@@ -277,22 +287,22 @@ const UserAdministration = () => {
 
   // Action pour basculer le statut (via la modale de confirmation)
   const handleToggleStatus = (user) => {
-      const newStatus = !(user.status === 'Active' || user.actif);
-      // On utilise userToDelete pour stocker l'action de toggle
-      setUserToDelete({ id: user.id, name: user.name, action: 'TOGGLE_STATUS', newStatus: newStatus });
-      setIsConfirmModalOpen(true);
+    const newStatus = !(user.status === 'Active' || user.actif);
+    // On utilise userToDelete pour stocker l'action de toggle
+    setUserToDelete({ id: user.id, name: user.name, action: 'TOGGLE_STATUS', newStatus: newStatus });
+    setIsConfirmModalOpen(true);
   };
 
   const handleSaveUser = async (formData) => {
     try {
       if (selectedUser) {
-          await updateUser.mutateAsync({ id: selectedUser.id, data: formData });
+        await updateUser.mutateAsync({ id: selectedUser.id, data: formData });
       } else {
-          await createUser.mutateAsync(formData);
+        await createUser.mutateAsync(formData);
       }
-      setIsUserModalOpen(false); 
+      setIsUserModalOpen(false);
       setSelectedUser(null);
-    } catch (error) { 
+    } catch (error) {
       // L'erreur est déjà gérée par le hook
       throw error;
     }
@@ -300,48 +310,48 @@ const UserAdministration = () => {
 
   // Initiation de la suppression d'utilisateur
   const initiateDeleteUser = (user) => {
-      setUserToDelete({ id: user.id, name: user.name, action: 'DELETE_USER' });
-      setEtabToDelete(null); 
-      setIsConfirmModalOpen(true);
+    setUserToDelete({ id: user.id, name: user.name, action: 'DELETE_USER' });
+    setEtabToDelete(null);
+    setIsConfirmModalOpen(true);
   };
-  
+
   // Confirmation de suppression d'utilisateur
   const handleConfirmDeleteUser = async () => {
     if (!userToDelete || userToDelete.action !== 'DELETE_USER') return;
     try {
       await deleteUser.mutateAsync(userToDelete.id);
-      
+
       if (users.length === 1 && currentPage > 1) {
-          setCurrentPage(prev => prev - 1);
+        setCurrentPage(prev => prev - 1);
       }
-      
+
       setIsConfirmModalOpen(false);
       setUserToDelete(null);
-    } catch(e) { 
+    } catch (e) {
       // L'erreur est déjà gérée par le hook
     }
   };
-  
+
   // --- 4. ACTIONS ÉTABLISSEMENTS ---
-  
+
   const initiateDeleteEtab = (etab) => {
-      setUserToDelete(null);
-      setEtabToDelete({ id: etab.id, nom: etab.nom });
-      setIsConfirmModalOpen(true);
+    setUserToDelete(null);
+    setEtabToDelete({ id: etab.id, nom: etab.nom });
+    setIsConfirmModalOpen(true);
   };
 
   const handleConfirmDeleteEtab = async () => {
     if (!etabToDelete) return;
-    try { 
+    try {
       await deleteEstablishment.mutateAsync(etabToDelete.id);
-      
+
       if (establishments.length === 1 && etabCurrentPage > 1) {
-          setEtabCurrentPage(prev => prev - 1);
+        setEtabCurrentPage(prev => prev - 1);
       }
-      
+
       setIsConfirmModalOpen(false);
       setEtabToDelete(null);
-    } catch(error) { 
+    } catch (error) {
       // L'erreur est déjà gérée par le hook
     }
   };
@@ -366,7 +376,7 @@ const UserAdministration = () => {
   };
 
   // --- 5. ACTIONS DÉPARTEMENTS ---
-  
+
   const initiateDeleteDept = (dept) => {
     setUserToDelete(null);
     setEtabToDelete(null);
@@ -376,16 +386,16 @@ const UserAdministration = () => {
 
   const handleConfirmDeleteDept = async () => {
     if (!deptToDelete) return;
-    try { 
+    try {
       await deleteDepartment.mutateAsync(deptToDelete.id);
-      
+
       if (departments.length === 1 && deptCurrentPage > 1) {
         setDeptCurrentPage(prev => prev - 1);
       }
-      
+
       setIsConfirmModalOpen(false);
       setDeptToDelete(null);
-    } catch(error) { 
+    } catch (error) {
       // L'erreur est déjà gérée par le hook
     }
   };
@@ -417,18 +427,18 @@ const UserAdministration = () => {
   // --- CONFIRMATION GÉNÉRIQUE (Logique unifiée) ---
   const handleConfirmToggleStatus = async () => {
     if (!userToDelete || userToDelete.action !== 'TOGGLE_STATUS') return;
-    
+
     try {
-        // newStatus est déjà un booléen (true = actif, false = inactif)
-        await updateUser.mutateAsync({ 
-            id: userToDelete.id,
-            data: { actif: userToDelete.newStatus }
-        });
-        
-        setIsConfirmModalOpen(false);
-        setUserToDelete(null);
-    } catch(e) { 
-        // L'erreur est déjà gérée par le hook
+      // newStatus est déjà un booléen (true = actif, false = inactif)
+      await updateUser.mutateAsync({
+        id: userToDelete.id,
+        data: { actif: userToDelete.newStatus }
+      });
+
+      setIsConfirmModalOpen(false);
+      setUserToDelete(null);
+    } catch (e) {
+      // L'erreur est déjà gérée par le hook
     }
   };
 
@@ -439,7 +449,8 @@ const UserAdministration = () => {
   const roleTabs = [
     { id: 'all', label: 'Tous', icon: 'Users', count: roleCounts.all },
     { id: 'patient', label: 'Patients', icon: 'User', count: roleCounts.patient },
-    { id: 'docteur', label: 'Médecins', icon: 'Stethoscope', count: roleCounts.docteur },
+    { id: 'docteur_clinique', label: 'Médecine générale', icon: 'Stethoscope', count: roleCounts.docteur_clinique },
+    { id: 'docteur_labo', label: 'Médecin biologiste', icon: 'TestTube', count: roleCounts.docteur_labo },
     { id: 'infirmiere', label: 'Infirmières', icon: 'Activity', count: roleCounts.infirmiere },
     { id: 'pharmacien', label: 'Pharmaciens', icon: 'Pill', count: roleCounts.pharmacien },
     { id: 'gestionnaire', label: 'Gestionnaires', icon: 'Briefcase', count: roleCounts.gestionnaire },
@@ -452,7 +463,7 @@ const UserAdministration = () => {
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Gestion des Utilisateurs</h2>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            {activeRoleTab === 'all' 
+            {activeRoleTab === 'all'
               ? <>Total : <span className="font-semibold text-primary">{roleCounts.all}</span> comptes</>
               : <>{roleTabs.find(t => t.id === activeRoleTab)?.label} : <span className="font-semibold text-primary">{roleCounts[activeRoleTab] || 0}</span> compte{(roleCounts[activeRoleTab] || 0) > 1 ? 's' : ''}</>
             }
@@ -483,11 +494,10 @@ const UserAdministration = () => {
                 onClick={() => handleRoleTabChange(tab.id)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className={`relative flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 whitespace-nowrap ${
-                  isActive 
-                    ? 'text-slate-900 dark:text-white' 
+                className={`relative flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 whitespace-nowrap ${isActive
+                    ? 'text-slate-900 dark:text-white'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {isActive && (
                   <motion.div
@@ -500,11 +510,10 @@ const UserAdministration = () => {
                   <Icon name={tab.icon} size={16} className={isActive ? 'text-violet-600 dark:text-violet-400' : 'opacity-70'} />
                   {tab.label}
                   {typeof tab.count === 'number' && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      isActive 
-                        ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400' 
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${isActive
+                        ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
                         : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                    }`}>
+                      }`}>
                       {tab.count}
                     </span>
                   )}
@@ -515,8 +524,8 @@ const UserAdministration = () => {
         </div>
       </div>
 
-      <UserFilters 
-        filters={{search: searchQuery, role: '', status: filterStatus}} 
+      <UserFilters
+        filters={{ search: searchQuery, role: '', status: filterStatus }}
         onFilterChange={handleFilterChange}
         hideRoleFilter={true} // Masquer le filtre de rôle car on utilise les onglets
       />
@@ -533,68 +542,68 @@ const UserAdministration = () => {
         </div>
       ) : (
         <div className="animate-fade-in">
-             {viewMode === 'grid' ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {Array.isArray(mappedUsers) && mappedUsers.map(user => {
-                      if (!user || typeof user !== 'object') return null;
-                      return (
-                        <UserCard key={user.id || Math.random()} user={user} onEdit={handleEditUser} onDelete={initiateDeleteUser} onToggleStatus={handleToggleStatus} />
-                      );
-                    }).filter(Boolean)}
-                </div>
-             ) : (
-                <UserListTable users={mappedUsers} onEdit={handleEditUser} onDelete={initiateDeleteUser} onToggleStatus={handleToggleStatus} />
-             )}
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {Array.isArray(mappedUsers) && mappedUsers.map(user => {
+                if (!user || typeof user !== 'object') return null;
+                return (
+                  <UserCard key={user.id || Math.random()} user={user} onEdit={handleEditUser} onDelete={initiateDeleteUser} onToggleStatus={handleToggleStatus} />
+                );
+              }).filter(Boolean)}
+            </div>
+          ) : (
+            <UserListTable users={mappedUsers} onEdit={handleEditUser} onDelete={initiateDeleteUser} onToggleStatus={handleToggleStatus} />
+          )}
         </div>
       )}
-      
+
       {/* PAGINATION UTILISATEURS */}
       {!loading && totalUsers > 0 && (
-          <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={currentPage <= 1} 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
-                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              >
-                <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
-              </Button>
-              
-              <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
-                  Page {currentPage || 1} / {lastPage || 1}
-              </span>
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                disabled={currentPage >= lastPage} 
-                onClick={() => setCurrentPage(p => Math.min(lastPage, p + 1))} 
-                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-              >
-                Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
-              </Button>
-          </div>
+        <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage <= 1}
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
+          </Button>
+
+          <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
+            Page {currentPage || 1} / {lastPage || 1}
+          </span>
+
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={currentPage >= lastPage}
+            onClick={() => setCurrentPage(p => Math.min(lastPage, p + 1))}
+            className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
+          </Button>
+        </div>
       )}
     </div>
   );
 
   const renderEstablishments = () => {
     const getTypeStyle = (type) => {
-        switch(type) {
-          case 'hopital': return { color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-l-blue-500', icon: 'Building' };
-          case 'clinique': return { color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-l-emerald-500', icon: 'Activity' };
-          case 'laboratoire': return { color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-l-violet-500', icon: 'TestTube' };
-          default: return { color: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800', border: 'border-l-slate-500', icon: 'Home' };
-        }
+      switch (type) {
+        case 'hopital': return { color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-l-blue-500', icon: 'Building' };
+        case 'clinique': return { color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-l-emerald-500', icon: 'Activity' };
+        case 'laboratoire': return { color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-l-violet-500', icon: 'TestTube' };
+        default: return { color: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800', border: 'border-l-slate-500', icon: 'Home' };
+      }
     };
 
     return (
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Établissements</h2>
-             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestion du réseau médical ({etabTotal} structures)</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Établissements</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Gestion du réseau médical ({etabTotal} structures)</p>
           </div>
           <PermissionGuard requiredPermission="settings_manage">
             <Button onClick={() => { setSelectedEstablishment(null); setIsEstablishmentModalOpen(true); }} iconName="Plus" className="shadow-lg shadow-indigo-500/20" disabled={!hasPermission('settings_manage')}>
@@ -602,89 +611,89 @@ const UserAdministration = () => {
             </Button>
           </PermissionGuard>
         </div>
-        
+
         {loading ? (
-           <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
-             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
-             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
-           </div>
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+            <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
+            <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
+          </div>
         ) : establishments.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building2" size={28} className="text-slate-400" /></div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun établissement</h3>
-              <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsEstablishmentModalOpen(true)}>Créer maintenant</Button>
+            <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building2" size={28} className="text-slate-400" /></div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun établissement</h3>
+            <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsEstablishmentModalOpen(true)}>Créer maintenant</Button>
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                {Array.isArray(establishments) && establishments.map(etab => {
-                    const style = getTypeStyle(etab.typeEtablissement);
-                    return (
-                      <div key={etab.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
-                          <div className="flex justify-between items-start mb-4">
-                              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.bg} ${style.color}`}>
-                                  <Icon name={style.icon} size={24} />
-                              </div>
-                              <PermissionGuard requiredPermission="settings_manage">
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <button onClick={(e) => { e.stopPropagation(); handleEditEstablishment(etab); }} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-400 hover:text-blue-500 rounded-lg transition-colors" title="Modifier" disabled={!hasPermission('settings_manage')}>
-                                    <Icon name="Edit2" size={16} />
-                                  </button>
-                                  <button onClick={(e) => { e.stopPropagation(); initiateDeleteEtab(etab); }} className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-400 hover:text-rose-500 rounded-lg transition-colors" title="Supprimer" disabled={!hasPermission('settings_manage')}>
-                                    <Icon name="Trash2" size={16} />
-                                  </button>
-                                </div>
-                              </PermissionGuard>
-                          </div>
-                          
-                          <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{etab.nom}</h3>
-                            {!etab.actif && (
-                              <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full">
-                                Inactif
-                              </span>
-                            )}
-                          </div>
-                          <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 mb-4">
-                              {etab.typeEtablissement}
-                          </span>
-
-                          <div className="space-y-2.5 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
-                              <div className="flex items-center gap-2"><Icon name="MapPin" size={14} className="text-slate-400 shrink-0"/> <span className="truncate">{etab.adresse}</span></div>
-                              <div className="flex items-center gap-2"><Icon name="Phone" size={14} className="text-slate-400 shrink-0"/> <span>{etab.telephone || 'N/A'}</span></div>
-                          </div>
+              {Array.isArray(establishments) && establishments.map(etab => {
+                const style = getTypeStyle(etab.typeEtablissement);
+                return (
+                  <div key={etab.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.bg} ${style.color}`}>
+                        <Icon name={style.icon} size={24} />
                       </div>
-                    );
-                })}
+                      <PermissionGuard requiredPermission="settings_manage">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={(e) => { e.stopPropagation(); handleEditEstablishment(etab); }} className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-400 hover:text-blue-500 rounded-lg transition-colors" title="Modifier" disabled={!hasPermission('settings_manage')}>
+                            <Icon name="Edit2" size={16} />
+                          </button>
+                          <button onClick={(e) => { e.stopPropagation(); initiateDeleteEtab(etab); }} className="p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-slate-400 hover:text-rose-500 rounded-lg transition-colors" title="Supprimer" disabled={!hasPermission('settings_manage')}>
+                            <Icon name="Trash2" size={16} />
+                          </button>
+                        </div>
+                      </PermissionGuard>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{etab.nom}</h3>
+                      {!etab.actif && (
+                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full">
+                          Inactif
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 mb-4">
+                      {etab.typeEtablissement}
+                    </span>
+
+                    <div className="space-y-2.5 pt-4 border-t border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center gap-2"><Icon name="MapPin" size={14} className="text-slate-400 shrink-0" /> <span className="truncate">{etab.adresse}</span></div>
+                      <div className="flex items-center gap-2"><Icon name="Phone" size={14} className="text-slate-400 shrink-0" /> <span>{etab.telephone || 'N/A'}</span></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* PAGINATION ÉTABLISSEMENTS */}
             {etabTotal > 0 && (
-                <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        disabled={etabCurrentPage <= 1} 
-                        onClick={() => setEtabCurrentPage(p => Math.max(1, p - 1))} 
-                        className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                    >
-                        <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
-                    </Button>
-                    
-                    <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
-                        Page {etabCurrentPage || 1} / {etabLastPage || 1}
-                    </span>
-                    
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        disabled={etabCurrentPage >= etabLastPage} 
-                        onClick={() => setEtabCurrentPage(p => Math.min(etabLastPage, p + 1))} 
-                        className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-                    >
-                        Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
-                    </Button>
-                </div>
+              <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={etabCurrentPage <= 1}
+                  onClick={() => setEtabCurrentPage(p => Math.max(1, p - 1))}
+                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
+                </Button>
+
+                <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
+                  Page {etabCurrentPage || 1} / {etabLastPage || 1}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={etabCurrentPage >= etabLastPage}
+                  onClick={() => setEtabCurrentPage(p => Math.min(etabLastPage, p + 1))}
+                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
+                </Button>
+              </div>
             )}
           </>
         )}
@@ -707,7 +716,7 @@ const UserAdministration = () => {
             </Button>
           </PermissionGuard>
         </div>
-        
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
@@ -740,7 +749,7 @@ const UserAdministration = () => {
                         </div>
                       </PermissionGuard>
                     </div>
-                    
+
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{dept.nom}</h3>
                       {!dept.actif && (
@@ -766,25 +775,25 @@ const UserAdministration = () => {
             {/* PAGINATION DÉPARTEMENTS */}
             {deptTotal > 0 && (
               <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  disabled={deptCurrentPage <= 1} 
-                  onClick={() => setDeptCurrentPage(p => Math.max(1, p - 1))} 
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={deptCurrentPage <= 1}
+                  onClick={() => setDeptCurrentPage(p => Math.max(1, p - 1))}
                   className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
                 </Button>
-                
+
                 <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
                   Page {deptCurrentPage || 1} / {deptLastPage || 1}
                 </span>
-                
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  disabled={deptCurrentPage >= deptLastPage} 
-                  onClick={() => setDeptCurrentPage(p => Math.min(deptLastPage, p + 1))} 
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={deptCurrentPage >= deptLastPage}
+                  onClick={() => setDeptCurrentPage(p => Math.min(deptLastPage, p + 1))}
                   className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   Suivant <Icon name="ChevronRight" size={16} className="ml-1" />
@@ -816,55 +825,55 @@ const UserAdministration = () => {
               <p className="text-sm text-slate-500 dark:text-slate-400">Gestion des utilisateurs, permissions et sécurité</p>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto pb-2">
             <div className="flex p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl w-fit shadow-sm">
-                {Array.isArray(tabs) && tabs.map((tab) => {
-                    if (!tab || typeof tab !== 'object') return null;
-                    const isActive = activeTab === tab.id;
-                    return (
-                        <motion.button
-                            key={tab.id || Math.random()}
-                            onClick={() => setActiveTab(tab.id)}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className={`relative flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
-                        >
-                            {isActive && (
-                                <motion.div
-                                    layoutId="activeTabBackground"
-                                    className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-lg border border-slate-200 dark:border-slate-700"
-                                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                />
-                            )}
-                            <span className="relative z-10 flex items-center gap-2">
-                                <Icon name={tab.icon} size={16} className={isActive ? 'text-violet-600 dark:text-violet-400' : 'opacity-70'} />
-                                {tab.label}
-                            </span>
-                        </motion.button>
-                    );
-                }).filter(Boolean)}
+              {Array.isArray(tabs) && tabs.map((tab) => {
+                if (!tab || typeof tab !== 'object') return null;
+                const isActive = activeTab === tab.id;
+                return (
+                  <motion.button
+                    key={tab.id || Math.random()}
+                    onClick={() => setActiveTab(tab.id)}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors z-10 ${isActive ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeTabBackground"
+                        className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-lg border border-slate-200 dark:border-slate-700"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Icon name={tab.icon} size={16} className={isActive ? 'text-violet-600 dark:text-violet-400' : 'opacity-70'} />
+                      {tab.label}
+                    </span>
+                  </motion.button>
+                );
+              }).filter(Boolean)}
             </div>
           </div>
         </motion.div>
 
         <AnimatePresence mode="wait">
-            <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-                {activeTab === 'users' && renderUserManagement()}
-                {activeTab === 'establishments' && renderEstablishments()}
-                {activeTab === 'departments' && renderDepartments()}
-                {activeTab === 'permissions' && <RolePermissionMatrix onSave={handleSavePermissions} onCancel={() => setActiveTab('users')} />}
-                {activeTab === 'audit' && <AuditLogViewer />}
-                {activeTab === 'export' && <ExportData />}
-                {activeTab === 'security' && <SecuritySettings />}
-                {activeTab === 'settings' && <AppSettings />}
-            </motion.div>
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            {activeTab === 'users' && renderUserManagement()}
+            {activeTab === 'establishments' && renderEstablishments()}
+            {activeTab === 'departments' && renderDepartments()}
+            {activeTab === 'permissions' && <RolePermissionMatrix onSave={handleSavePermissions} onCancel={() => setActiveTab('users')} />}
+            {activeTab === 'audit' && <AuditLogViewer />}
+            {activeTab === 'export' && <ExportData />}
+            {activeTab === 'security' && <SecuritySettings />}
+            {activeTab === 'settings' && <AppSettings />}
+          </motion.div>
         </AnimatePresence>
       </main>
 
@@ -873,60 +882,60 @@ const UserAdministration = () => {
         isOpen={isConfirmModalOpen}
         onClose={() => { setIsConfirmModalOpen(false); setUserToDelete(null); setEtabToDelete(null); setDeptToDelete(null); }}
         onConfirm={
-            userToDelete?.action === 'DELETE_USER' ? handleConfirmDeleteUser : 
-            userToDelete?.action === 'TOGGLE_STATUS' ? handleConfirmToggleStatus : 
-            deptToDelete ? handleConfirmDeleteDept :
-            handleConfirmDeleteEtab
+          userToDelete?.action === 'DELETE_USER' ? handleConfirmDeleteUser :
+            userToDelete?.action === 'TOGGLE_STATUS' ? handleConfirmToggleStatus :
+              deptToDelete ? handleConfirmDeleteDept :
+                handleConfirmDeleteEtab
         }
         isLoading={
-            (userToDelete?.action === 'DELETE_USER' && deleteUser.isPending) ||
-            (userToDelete?.action === 'TOGGLE_STATUS' && updateUser.isPending) ||
-            (deptToDelete && deleteDepartment.isPending) ||
-            (etabToDelete && deleteEstablishment.isPending)
+          (userToDelete?.action === 'DELETE_USER' && deleteUser.isPending) ||
+          (userToDelete?.action === 'TOGGLE_STATUS' && updateUser.isPending) ||
+          (deptToDelete && deleteDepartment.isPending) ||
+          (etabToDelete && deleteEstablishment.isPending)
         }
         // TITRE DYNAMIQUE
         title={userToDelete?.action === 'DELETE_USER'
           ? `Supprimer le compte ?`
           : deptToDelete
-          ? `Supprimer le département ?`
-          : etabToDelete 
-          ? `Supprimer l'établissement ?`
-          : userToDelete?.action === 'TOGGLE_STATUS'
-          ? `Changer le statut ?`
-          : "Confirmer l'action"
-        } 
+            ? `Supprimer le département ?`
+            : etabToDelete
+              ? `Supprimer l'établissement ?`
+              : userToDelete?.action === 'TOGGLE_STATUS'
+                ? `Changer le statut ?`
+                : "Confirmer l'action"
+        }
         // MESSAGE DYNAMIQUE
         message={userToDelete?.action === 'DELETE_USER'
           ? `Vous êtes sur le point de supprimer définitivement le compte de <strong><u>${userToDelete.name}</u></strong>. Cette action est irréversible.`
           : deptToDelete
-          ? `Vous êtes sur le point de supprimer le département <strong><u>${deptToDelete?.nom}</u></strong>. Assurez-vous qu'aucun médecin n'y est rattaché.`
-          : etabToDelete
-          ? `Vous êtes sur le point de supprimer l'établissement <strong><u>${etabToDelete?.nom}</u></strong>. Assurez-vous qu'aucun utilisateur n'y est rattaché.`
-          : userToDelete?.action === 'TOGGLE_STATUS'
-          ? `Voulez-vous vraiment ${userToDelete.newStatus ? 'activer' : 'désactiver'} le compte de <strong><u>${userToDelete.name}</u></strong> ?`
-          : "Confirmer cette action critique."
-        } 
+            ? `Vous êtes sur le point de supprimer le département <strong><u>${deptToDelete?.nom}</u></strong>. Assurez-vous qu'aucun médecin n'y est rattaché.`
+            : etabToDelete
+              ? `Vous êtes sur le point de supprimer l'établissement <strong><u>${etabToDelete?.nom}</u></strong>. Assurez-vous qu'aucun utilisateur n'y est rattaché.`
+              : userToDelete?.action === 'TOGGLE_STATUS'
+                ? `Voulez-vous vraiment ${userToDelete.newStatus ? 'activer' : 'désactiver'} le compte de <strong><u>${userToDelete.name}</u></strong> ?`
+                : "Confirmer cette action critique."
+        }
         confirmLabel={userToDelete?.action === 'TOGGLE_STATUS' ? "Changer Statut" : "Oui, Supprimer"}
         iconName={userToDelete?.action === 'TOGGLE_STATUS' ? "RefreshCw" : "Trash2"}
         iconColor={userToDelete?.action === 'TOGGLE_STATUS' ? "text-primary" : "text-rose-500"}
       />
-      
-      <UserModal 
-        isOpen={isUserModalOpen} 
-        onClose={() => setIsUserModalOpen(false)} 
-        user={selectedUser} 
-        onSave={handleSaveUser} 
+
+      <UserModal
+        isOpen={isUserModalOpen}
+        onClose={() => setIsUserModalOpen(false)}
+        user={selectedUser}
+        onSave={handleSaveUser}
       />
-      <EstablishmentModal 
-        isOpen={isEstablishmentModalOpen} 
-        onClose={() => { setIsEstablishmentModalOpen(false); setSelectedEstablishment(null); }} 
+      <EstablishmentModal
+        isOpen={isEstablishmentModalOpen}
+        onClose={() => { setIsEstablishmentModalOpen(false); setSelectedEstablishment(null); }}
         onSave={handleSaveEstablishment}
         establishment={selectedEstablishment}
       />
-      
-      <DepartmentModal 
-        isOpen={isDepartmentModalOpen} 
-        onClose={() => { setIsDepartmentModalOpen(false); setSelectedDepartment(null); }} 
+
+      <DepartmentModal
+        isOpen={isDepartmentModalOpen}
+        onClose={() => { setIsDepartmentModalOpen(false); setSelectedDepartment(null); }}
         onSave={handleSaveDepartment}
         department={selectedDepartment}
       />

@@ -12,20 +12,66 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
   const { user, loading: authLoading } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [loadingDetails, setLoadingDetails] = useState(false);
-  const isDoctor = user?.role === 'docteur';
+  const isDoctor = user?.role === 'docteur_clinique';
 
   const fetchPatients = useCallback(async () => {
     const params = { limit: 1000 };
     if (isDoctor) params.forMyAppointments = 1;
-    const response = await api.get('/patients', { params });
-    const list = response.data?.data ?? [];
+    const [patientsResponse, appointmentsResponse] = await Promise.all([
+      api.get('/patients', { params }),
+      isDoctor
+        ? api.get('/appointments', { params: { includeAutoCancelled: 1 } })
+        : Promise.resolve({ data: { data: [] } }),
+    ]);
+
+    const list = patientsResponse.data?.data ?? [];
     if (!Array.isArray(list)) return [];
+
+    const appointmentsByPatient = new Map();
+    const appointmentsList = appointmentsResponse?.data?.data;
+    if (Array.isArray(appointmentsList)) {
+      appointmentsList.forEach((appointment) => {
+        if (!appointment || typeof appointment !== 'object' || !appointment.patientId) return;
+        if (!appointmentsByPatient.has(appointment.patientId)) {
+          appointmentsByPatient.set(appointment.patientId, []);
+        }
+        appointmentsByPatient.get(appointment.patientId).push(appointment);
+      });
+    }
+
     return list.map((p) => {
       if (!p || typeof p !== 'object') return null;
+      const fallbackAppointments = Array.isArray(p.appointments) ? p.appointments : [];
+      // Pour un médecin, utiliser uniquement /appointments (source de vérité des statuts RDV).
+      const appointments = isDoctor
+        ? (appointmentsByPatient.get(p.id) || [])
+        : (appointmentsByPatient.get(p.id) || fallbackAppointments);
+      const normalizeStatus = (status) => {
+        if (status === 'pending') return 'programme';
+        if (status === 'confirmed') return 'en_cours';
+        if (status === 'consulted') return 'en_cours';
+        if (status === 'completed') return 'termine';
+        if (status === 'cancelled') return 'annule';
+        return status;
+      };
+      const appointmentForStatus =
+        appointments.find((a) => a && normalizeStatus(a.statut || a.status) === 'en_cours') ||
+        appointments.find((a) => a && normalizeStatus(a.statut || a.status) === 'programme') ||
+        appointments.find((a) => a && normalizeStatus(a.statut || a.status) === 'termine') ||
+        appointments.find((a) => a && normalizeStatus(a.statut || a.status) === 'annule') ||
+        appointments[0] ||
+        null;
+
       return {
         ...p,
         condition: p.medicalHistory?.substring(0, 30) || 'Dossier sans antécédent',
-        urgency: (Array.isArray(p.appointments) && p.appointments.some((a) => a && a.priority === 'urgente')) ? 'urgent' : (Array.isArray(p.appointments) && p.appointments.some((a) => a && a.priority === 'elevee')) ? 'priority' : 'routine',
+        urgency: appointments.some((a) => a && (a.priority === 'urgente' || a.priorite === 'urgente'))
+          ? 'urgent'
+          : appointments.some((a) => a && (a.priority === 'elevee' || a.priorite === 'elevee'))
+            ? 'priority'
+            : 'routine',
+        appointmentId: appointmentForStatus?.id || null,
+        appointmentStatus: normalizeStatus(appointmentForStatus?.statut || appointmentForStatus?.status) || 'programme',
       };
     }).filter(Boolean);
   }, [isDoctor]);
@@ -38,6 +84,8 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
     queryKey: ['patients', 'clinical', isDoctor ? 'forMyAppointments' : 'all'],
     queryFn: fetchPatients,
     enabled: !authLoading && !!user,
+    refetchInterval: isDoctor ? 10000 : false,
+    refetchOnWindowFocus: true,
   });
 
   // Filtrage par recherche (nom, n° patient, id)
@@ -64,7 +112,13 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
     try {
         const response = await api.get(`/patients/${patient.id}`);
         if (response.data.success) {
-             onPatientSelect(response.data.data);
+             onPatientSelect({
+               ...response.data.data,
+               appointmentId: patient.appointmentId || null,
+               appointmentStatus: patient.appointmentStatus || null,
+               urgency: patient.urgency || 'routine',
+               condition: patient.condition || response.data.data?.condition,
+             });
         }
     } catch (error) {
         if (process.env.NODE_ENV === 'development') {
@@ -79,19 +133,48 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
     switch (urgency) {
       case 'urgent': 
         return {
-          badge: 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-900/20 dark:text-rose-400 dark:border-rose-900/50',
+          border: 'border-rose-400 dark:border-rose-500',
+          borderStrong: 'border-rose-500 dark:border-rose-400',
           dot: 'bg-rose-500'
         };
       case 'priority': 
         return {
-          badge: 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/50',
+          border: 'border-amber-400 dark:border-amber-500',
+          borderStrong: 'border-amber-500 dark:border-amber-400',
           dot: 'bg-amber-500'
         };
       default: 
         return {
-          badge: 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-900/50',
+          border: 'border-emerald-400 dark:border-emerald-500',
+          borderStrong: 'border-emerald-500 dark:border-emerald-400',
           dot: 'bg-emerald-500'
         };
+    }
+  }, []);
+
+  const getConsultationStatusStyles = useCallback((status) => {
+    switch (status) {
+      case 'en_cours':
+        return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/50';
+      case 'termine':
+        return 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-900/50';
+      case 'annule':
+        return 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/40 dark:text-slate-300 dark:border-slate-700';
+      default:
+        return 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-900/50';
+    }
+  }, []);
+
+  const getConsultationStatusLabel = useCallback((status) => {
+    switch (status) {
+      case 'en_cours':
+        return 'En cours';
+      case 'termine':
+        return 'Terminée';
+      case 'annule':
+        return 'Annulé';
+      default:
+        return 'En attente';
     }
   }, []);
 
@@ -167,10 +250,10 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
                   transition={{ delay: Math.min(index * 0.02, 0.15) }}
                   onClick={() => handleSelect(patient)}
                   className={`
-                    p-3 rounded-xl border cursor-pointer transition-all duration-200 group relative overflow-hidden
+                    p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 group relative overflow-hidden
                     ${isSelected
-                      ? 'bg-primary/10 dark:bg-primary/20 border-primary dark:border-primary/50 shadow-sm ring-1 ring-primary/20'
-                      : 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30 hover:bg-slate-50 dark:hover:bg-slate-800/80'
+                      ? `bg-primary/10 dark:bg-primary/20 ${styles.borderStrong} shadow-sm ring-1 ring-primary/20`
+                      : `bg-white dark:bg-slate-800/80 ${styles.border} hover:brightness-[0.98] dark:hover:brightness-110`
                     }
                   `}
                 >
@@ -209,8 +292,8 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
                         <span className="text-xs text-slate-600 dark:text-slate-400 truncate max-w-[100px]" title={patient.condition}>
                           {patient.condition}
                         </span>
-                        <span className={`px-2 py-0.5 text-[10px] font-semibold uppercase rounded-md ${styles.badge}`}>
-                          {patient.urgency === 'urgent' ? 'Urgent' : patient.urgency === 'priority' ? 'Priorité' : 'Routine'}
+                        <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-md border ${getConsultationStatusStyles(patient.appointmentStatus)}`}>
+                          {getConsultationStatusLabel(patient.appointmentStatus)}
                         </span>
                       </div>
                     </div>

@@ -17,6 +17,7 @@ import { useExportMutations } from '../../hooks/useExport';
 import { useToast } from '../../contexts/ToastContext';
 import { getApiParamsFromFilters } from '../../utils/analyticsFilters';
 import { aggregateDepartmentData } from '../../utils/departmentDataTransformer';
+import { formatNumberInFrenchLocale, formatTimeInBusinessTimezone } from '../../utils/dateTime';
 
 const AnalyticsCenter = () => {
   const { hasPermission } = usePermissions();
@@ -143,7 +144,7 @@ const AnalyticsCenter = () => {
     return [
     { 
       title: "Patients totaux", 
-      value: patientsTotal.toLocaleString(), 
+      value: formatNumberInFrenchLocale(patientsTotal), 
       change: statsOverview.patientsGrowth ? `+${statsOverview.patientsGrowth}%` : "+0%", 
       changeType: "positive", 
       icon: "Users", 
@@ -151,7 +152,7 @@ const AnalyticsCenter = () => {
     },
     { 
       title: "Consultations", 
-      value: consultationsThisMonth.toLocaleString(), 
+      value: formatNumberInFrenchLocale(consultationsThisMonth), 
       change: statsOverview.consultationsGrowth ? `+${statsOverview.consultationsGrowth}%` : "+0%", 
       changeType: "positive", 
       icon: "Calendar", 
@@ -159,7 +160,7 @@ const AnalyticsCenter = () => {
     },
     { 
       title: "Revenus", 
-      value: formatCurrency && typeof revenueThisMonth === 'number' ? formatCurrency(revenueThisMonth, { maximumFractionDigits: 0 }) : revenueThisMonth.toLocaleString(), 
+      value: formatCurrency && typeof revenueThisMonth === 'number' ? formatCurrency(revenueThisMonth, { maximumFractionDigits: 0 }) : formatNumberInFrenchLocale(revenueThisMonth), 
       change: statsOverview.revenueGrowth ? `+${statsOverview.revenueGrowth}%` : "+0%", 
       changeType: "positive", 
       icon: "DollarSign", 
@@ -167,7 +168,7 @@ const AnalyticsCenter = () => {
     },
     { 
         title: "Médicaments", 
-        value: totalMedications.toLocaleString(), 
+        value: formatNumberInFrenchLocale(totalMedications), 
         change: lowStock > 0 ? `${lowStock} en alerte` : "0", 
         changeType: lowStock > 0 ? "negative" : "positive", 
         icon: "Package", 
@@ -425,7 +426,7 @@ const AnalyticsCenter = () => {
                                          entry.name === 'enAttente' ? 'En attente' : entry.name || 'Valeur'}:
                                       </span>
                                       <span className="text-sm font-bold text-slate-900 dark:text-white">
-                                        {formatCurrency && typeof entry.value === 'number' ? formatCurrency(entry.value) : (typeof entry.value === 'number' ? entry.value.toLocaleString() : String(entry.value || 0))}
+                                        {formatCurrency && typeof entry.value === 'number' ? formatCurrency(entry.value) : (typeof entry.value === 'number' ? formatNumberInFrenchLocale(entry.value) : String(entry.value || 0))}
                                       </span>
                                     </div>
                                   );
@@ -705,7 +706,7 @@ const AnalyticsCenter = () => {
         {/* Footer */}
         <div className="pt-6 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
             <div className="flex items-center space-x-4">
-                <span>Dernière synchro: {new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}</span>
+                <span>Dernière synchro: {formatTimeInBusinessTimezone(new Date())}</span>
                 <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
                 <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-medium">
                    <span className="relative flex h-2 w-2">

@@ -15,6 +15,7 @@ import PaymentModal from './PaymentModal';
 import api from '../../../lib/axios';
 import { useToast } from '../../../contexts/ToastContext';
 import { generateInvoicePDF } from '../../../utils/pdfGenerator';
+import { getTodayInBusinessTimezone } from '../../../utils/dateTime';
 
 const InvoicesList = () => {
   const { hasPermission } = usePermissions();
@@ -85,7 +86,7 @@ const InvoicesList = () => {
   const handleDownload = (invoice) => {
     try {
       const doc = generateInvoicePDF(invoice);
-      const fileName = `Facture_${invoice.numeroFacture}_${new Date().toISOString().split('T')[0]}.pdf`;
+      const fileName = `Facture_${invoice.numeroFacture}_${getTodayInBusinessTimezone()}.pdf`;
       doc.save(fileName);
       showToast(`Facture ${invoice.numeroFacture} téléchargée`, 'success');
     } catch (error) {
@@ -112,7 +113,7 @@ const InvoicesList = () => {
         };
       } else {
         // Fallback si popup bloquée : télécharger au lieu d'imprimer
-        doc.save(`Facture_${invoice.numeroFacture}_${new Date().toISOString().split('T')[0]}.pdf`);
+        doc.save(`Facture_${invoice.numeroFacture}_${getTodayInBusinessTimezone()}.pdf`);
         showToast('Téléchargement lancé. Ouvrez le fichier pour imprimer.', 'info');
       }
     } catch (error) {

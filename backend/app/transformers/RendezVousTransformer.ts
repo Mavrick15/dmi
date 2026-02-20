@@ -1,5 +1,6 @@
 import { BaseTransformer } from './BaseTransformer.js'
 import type RendezVous from '#models/RendezVous'
+import { BUSINESS_TIMEZONE } from '../utils/timezone.js'
 
 /**
  * Transformer pour les données RendezVous
@@ -27,14 +28,13 @@ export class RendezVousTransformer extends BaseTransformer {
     const baseStatus = r.statut === 'programme' ? 'pending' : 
                       r.statut === 'en_cours' ? 'confirmed' :
                       r.statut === 'termine' ? 'completed' : 'cancelled'
+    const zonedDateHeure = r.dateHeure?.setZone(BUSINESS_TIMEZONE)
 
     // Convertir la date en format ISO avec décalage de fuseau horaire local
     // pour éviter les problèmes de conversion UTC
     let dateHeureISO: string | null = null
-    if (r.dateHeure) {
-      // Utiliser toISO() qui retourne en UTC, mais le frontend utilisera les méthodes locales
-      // pour extraire la date et l'heure correctement
-      dateHeureISO = r.dateHeure.toISO()
+    if (zonedDateHeure) {
+      dateHeureISO = zonedDateHeure.toISO()
     }
 
     const baseData = {
@@ -42,8 +42,8 @@ export class RendezVousTransformer extends BaseTransformer {
       patientId: r.patientId,
       medecinId: r.medecinId,
       dateHeure: dateHeureISO,
-      date: r.dateHeure?.toISODate() || null,
-      time: r.dateHeure?.toFormat('HH:mm') || null,
+      date: zonedDateHeure?.toISODate() || null,
+      time: zonedDateHeure?.toFormat('HH:mm') || null,
       dureeMinutes: r.dureeMinutes || 30,
       duration: r.dureeMinutes || 30,
       statut: r.statut,

@@ -9,6 +9,10 @@ import api from '../../../lib/axios';
 import { usePatientDetails } from '../../../hooks/usePatients';
 import { normalizeApiResponse } from '../../../utils/apiNormalizers';
 import { Loader2 } from 'lucide-react';
+import {
+  formatDateTimeInBusinessTimezone,
+  formatLongDateInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const EmptyBlock = ({ icon, title, description, className = '' }) => (
   <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
@@ -55,13 +59,7 @@ const MedicalRecord = ({ patient }) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'N/A';
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateTimeInBusinessTimezone(date);
   };
 
   const formatDateOnly = (dateString) => {
@@ -72,22 +70,14 @@ const MedicalRecord = ({ patient }) => {
       const [day, month, year] = dateString.split('/');
       const date = new Date(`${year}-${month}-${day}`);
       if (!isNaN(date.getTime())) {
-        return date.toLocaleDateString('fr-FR', {
-          day: '2-digit',
-          month: 'long',
-          year: 'numeric'
-        });
+        return formatLongDateInBusinessTimezone(date);
       }
     }
     
     // Sinon, essayer de parser comme une date ISO ou autre format
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return 'Non renseigné';
-    return date.toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    });
+    return formatLongDateInBusinessTimezone(date);
   };
 
   const formatVitalValue = (value) => {

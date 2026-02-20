@@ -11,6 +11,10 @@ export const getDefaultRoute = (permissions = [], userRole = null) => {
   if (permissions.includes('clinical_view')) {
     return '/console-clinique';
   }
+
+  if (permissions.includes('analyses_view')) {
+    return '/analyses-laboratoire';
+  }
   
   if (permissions.includes('patient_view')) {
     return '/gestion-patients';
@@ -49,16 +53,16 @@ export const getDefaultRoute = (permissions = [], userRole = null) => {
   // (ceci ne devrait normalement pas arriver si les permissions sont bien configurées)
   if (userRole) {
     switch (userRole) {
-      case 'docteur':
+      case 'docteur_clinique':
         return '/console-clinique';
+      case 'docteur_labo':
+        return '/analyses-laboratoire';
       case 'infirmiere':
         return '/gestion-patients';
       case 'pharmacien':
         return '/operations-pharmacie';
       case 'gestionnaire':
         return '/operations-financieres';
-      case 'it_specialist':
-        return '/centre-integration';
       case 'admin':
         return '/tableau-de-bord';
       default:

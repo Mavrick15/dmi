@@ -9,6 +9,7 @@ import { usePharmacyStats, usePharmacyMutations } from '../../hooks/usePharmacy'
 import { useToast } from '../../contexts/ToastContext';
 import { useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/axios';
+import { getTodayInBusinessTimezone } from '../../utils/dateTime';
 
 // Sous-composants
 import InventoryOverview from './components/InventoryOverview';
@@ -156,7 +157,7 @@ const PharmacyOperations = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `inventaire_pharmacie_${new Date().toISOString().split('T')[0]}.csv`;
+      link.download = `inventaire_pharmacie_${getTodayInBusinessTimezone()}.csv`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

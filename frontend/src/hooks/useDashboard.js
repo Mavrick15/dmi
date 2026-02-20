@@ -37,10 +37,11 @@ export const useDashboardData = (options = {}) => {
         throw error;
       }
     },
-    refetchInterval: options.refetchInterval || 1000 * 30, // Rafraîchissement auto toutes les 30 secondes par défaut
+    refetchInterval: options.refetchInterval || 1000 * 15, // Rafraîchissement auto plus fréquent
     refetchOnWindowFocus: true, // Rafraîchir quand la fenêtre reprend le focus
-    refetchOnMount: true, // Rafraîchir à chaque montage
-    staleTime: 1000 * 20, // Considérer les données comme fraîches pendant 20 secondes
+    refetchOnMount: 'always', // Forcer un refetch à chaque montage
+    refetchOnReconnect: true, // Refetch après reconnexion réseau
+    staleTime: 0, // Désactiver le cache "frais" pour éviter des métriques figées
     retry: 1,
     ...options
   });

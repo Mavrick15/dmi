@@ -133,7 +133,7 @@ const MyAccount = () => {
     ? user.nomComplet.split(' ').map((n) => n?.[0]).filter(Boolean).join('').substring(0, 2).toUpperCase()
     : 'U';
 
-  const roleLabels = { admin: 'Administrateur', docteur: 'Médecin', infirmiere: 'Infirmier(ère)', pharmacien: 'Pharmacien', gestionnaire: 'Gestionnaire', patient: 'Patient', it_specialist: 'IT' };
+  const roleLabels = { admin: 'Administrateur', docteur_clinique: 'Médecine générale', docteur_labo: 'Médecin biologiste', infirmiere: 'Infirmier(ère)', pharmacien: 'Pharmacien', gestionnaire: 'Gestionnaire', patient: 'Patient' };
   const roleLabel = user?.role ? (roleLabels[user.role] || user.role) : '';
 
   return (

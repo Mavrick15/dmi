@@ -1,3 +1,7 @@
+import {
+  formatLongDateInBusinessTimezone,
+} from '../utils/dateTime';
+
 /**
  * Template d'impression / PDF : formulaire d'admission patient.
  * Génère le HTML du formulaire complet pour impression ou conversion en PDF.
@@ -8,8 +12,7 @@ const esc = (s) => (s ?? '').toString().replace(/&/g, '&amp;').replace(/</g, '&l
 
 const formatDatePrint = (dateStr) => {
   if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+  return formatLongDateInBusinessTimezone(dateStr);
 };
 
 const MARITAL_LABELS = {
@@ -63,7 +66,7 @@ export function getPatientRegistrationPrintHtml(formData) {
 </head>
 <body>
   <h1>Formulaire d'admission patient</h1>
-  <p class="meta">Document à remettre au patient — ${new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+  <p class="meta">Document à remettre au patient — ${formatLongDateInBusinessTimezone(new Date())}</p>
 
   <div class="block">
     <div class="block-title">1. Identité</div>

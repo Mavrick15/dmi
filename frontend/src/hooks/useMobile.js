@@ -19,8 +19,8 @@ export const useSyncStatus = () => {
         const lastLog = auditResponse.data.data?.[0];
         
         const lastSync = lastLog?.timestamp 
-          ? new Date(lastLog.timestamp).toISOString()
-          : new Date().toISOString();
+          ? new Date(lastLog.timestamp).toString()
+          : new Date().toString();
         
         // Déterminer le statut basé sur l'ancienneté de la dernière activité
         const lastSyncDate = new Date(lastSync);
@@ -49,7 +49,7 @@ export const useSyncStatus = () => {
         }
         // Retourner un statut par défaut en cas d'erreur
         return {
-          lastSync: new Date().toISOString(),
+          lastSync: new Date().toString(),
           status: 'error',
           lastActivity: 'Erreur de connexion',
           pendingChanges: 0

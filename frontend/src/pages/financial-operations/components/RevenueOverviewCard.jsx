@@ -1,6 +1,8 @@
 import Icon from '../../../components/AppIcon';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 
+const numberFormatterFr = new Intl.NumberFormat('fr-FR');
+
 /**
  * Carte de statistique inspirée du style des cartes du module Pharmacie (InventoryOverview).
  * Fond coloré léger, icône dans un carré thématique, valeur + libellé.
@@ -55,7 +57,7 @@ const RevenueOverviewCard = ({ title, amount, change, changeType, icon, color = 
       </div>
       <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
         {isCount
-          ? (typeof amount === 'number' ? amount.toLocaleString('fr-FR') : amount)
+          ? (typeof amount === 'number' ? numberFormatterFr.format(amount) : amount)
           : formatCurrency(typeof amount === 'number' ? amount : parseFloat(amount) || 0, { maximumFractionDigits: 0 })
         }
       </p>

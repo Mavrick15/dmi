@@ -9,6 +9,8 @@ import AuditService from '#services/AuditService'
 import logger from '@adonisjs/core/services/logger'
 import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
+import { CLINICAL_DOCTOR_ROLES, LAB_DOCTOR_ROLE } from '../constants/roles.js'
+import { formatBusinessDateTime } from '../utils/timezone.js'
 
 interface NotificationOptions {
   type?: 'info' | 'success' | 'warning' | 'error' | 'critical'
@@ -62,11 +64,14 @@ export default class NotificationService {
         const recipients = await UserProfile.query()
           .whereIn('id', recipientIds.slice(0, 10)) // Limiter à 10 pour éviter les requêtes trop longues
           .select('nomComplet', 'email', 'role')
-        
-        const recipientNames = recipients.map(u => `${u.nomComplet || u.email} (${u.role})`).join(', ')
-        recipientInfo = recipientIds.length > 10
-          ? `${recipientNames} et ${recipientIds.length - 10} autre(s)`
-          : recipientNames
+
+        const recipientNames = recipients
+          .map((u) => `${u.nomComplet || u.email} (${u.role})`)
+          .join(', ')
+        recipientInfo =
+          recipientIds.length > 10
+            ? `${recipientNames} et ${recipientIds.length - 10} autre(s)`
+            : recipientNames
       }
 
       // Récupérer le nom complet du créateur si un UUID est fourni
@@ -79,7 +84,10 @@ export default class NotificationService {
           }
         } catch (error) {
           // Si l'utilisateur n'est pas trouvé, garder l'UUID original
-          logger.debug({ createdBy, err: error }, 'Impossible de récupérer le nom du créateur pour l\'audit')
+          logger.debug(
+            { createdBy, err: error },
+            "Impossible de récupérer le nom du créateur pour l'audit"
+          )
         }
       }
 
@@ -91,7 +99,8 @@ export default class NotificationService {
             const patient = await Patient.find(targetId)
             if (patient) {
               await patient.load('user')
-              targetDisplay = patient.user?.nomComplet || patient.numeroPatient || targetId.substring(0, 8)
+              targetDisplay =
+                patient.user?.nomComplet || patient.numeroPatient || targetId.substring(0, 8)
             }
           } else if (targetType === 'document') {
             // Pour les documents, on garde juste l'ID numérique (pas un UUID)
@@ -104,7 +113,10 @@ export default class NotificationService {
             }
           }
         } catch (error) {
-          logger.debug({ targetId, targetType, err: error }, 'Impossible de résoudre le targetId pour l\'audit')
+          logger.debug(
+            { targetId, targetType, err: error },
+            "Impossible de résoudre le targetId pour l'audit"
+          )
         }
       } else if (targetId) {
         // Si ce n'est pas un UUID (ex: ID numérique de document), garder tel quel
@@ -136,7 +148,10 @@ export default class NotificationService {
       )
     } catch (error) {
       // Ne pas faire échouer l'opération principale si l'audit échoue
-      logger.error({ err: error, notificationType, title }, 'Erreur lors de l\'enregistrement du log d\'audit pour notification')
+      logger.error(
+        { err: error, notificationType, title },
+        "Erreur lors de l'enregistrement du log d'audit pour notification"
+      )
     }
   }
   /**
@@ -206,7 +221,7 @@ export default class NotificationService {
     // La colonne target_id dans la base de données est de type UUID
     let targetId: string | null = null
     let metadata = originalMetadata ? { ...originalMetadata } : {}
-    
+
     if (rawTargetId) {
       const targetIdStr = String(rawTargetId)
       // Vérifier si c'est un UUID valide
@@ -215,11 +230,14 @@ export default class NotificationService {
         targetId = targetIdStr
       } else {
         // Si ce n'est pas un UUID valide, l'ajouter aux métadonnées et mettre targetId à null (colonne UUID en base)
-        logger.debug({ targetId: targetIdStr, type: 'notification', category }, 'targetId non-UUID, stocké dans metadata.originalTargetId')
+        logger.debug(
+          { targetId: targetIdStr, type: 'notification', category },
+          'targetId non-UUID, stocké dans metadata.originalTargetId'
+        )
         metadata.originalTargetId = targetIdStr
       }
     }
-    
+
     // Normaliser metadata (null si vide, sinon l'objet)
     const finalMetadataForOptions = Object.keys(metadata).length > 0 ? metadata : null
 
@@ -227,19 +245,17 @@ export default class NotificationService {
 
     // Filtrer les IDs invalides
     const validUserIds = userIds.filter((uid) => uid && typeof uid === 'string')
-    
+
     if (validUserIds.length === 0) {
       logger.warn('Aucun utilisateur valide pour la notification')
       return { success: false, message: 'Aucun utilisateur valide' }
     }
 
     // Vérifier si les utilisateurs existent (optimisation)
-    const existingUsers = await UserProfile.query()
-      .whereIn('id', validUserIds)
-      .where('actif', true)
-    
+    const existingUsers = await UserProfile.query().whereIn('id', validUserIds).where('actif', true)
+
     let activeUserIds = existingUsers.map((u) => u.id)
-    
+
     if (activeUserIds.length === 0) {
       logger.warn({ userIds: validUserIds }, 'Aucun utilisateur actif trouvé pour la notification')
       return { success: false, message: 'Aucun utilisateur actif' }
@@ -255,21 +271,23 @@ export default class NotificationService {
         .where('isRead', false)
         .where('isArchived', false)
         .whereRaw("metadata->>'groupKey' = ?", [groupKey])
-      
+
       // Ajouter la condition targetId seulement si c'est un UUID valide
       if (targetId) {
         query.where('targetId', targetId)
       } else {
         query.whereNull('targetId')
       }
-      
+
       const existingGrouped = await query.exec()
-      
+
       if (existingGrouped.length > 0) {
         // Filtrer les utilisateurs qui ont déjà une notification
-        const usersWithNotification = existingGrouped.map(n => n.userId)
-        const usersWithoutNotification = activeUserIds.filter(uid => !usersWithNotification.includes(uid))
-        
+        const usersWithNotification = existingGrouped.map((n) => n.userId)
+        const usersWithoutNotification = activeUserIds.filter(
+          (uid) => !usersWithNotification.includes(uid)
+        )
+
         // Mettre à jour les notifications existantes
         for (const notification of existingGrouped) {
           notification.title = title
@@ -277,11 +295,13 @@ export default class NotificationService {
           notification.type = type
           notification.updatedAt = DateTime.now()
           await notification.save()
-        
-        // Diffuser la mise à jour via canal partagé
-        if (!silent) {
+
+          // Diffuser la mise à jour via canal partagé
+          if (!silent) {
             try {
-              const sharedChannel = category ? `shared_${category}_notifications` : 'shared_notifications'
+              const sharedChannel = category
+                ? `shared_${category}_notifications`
+                : 'shared_notifications'
               await transmit.broadcast(sharedChannel, {
                 type: 'update',
                 notificationId: notification.id,
@@ -293,20 +313,38 @@ export default class NotificationService {
                 timestamp: new Date().toISOString(),
               })
             } catch (broadcastError) {
-              logger.error({ err: broadcastError }, 'Erreur lors de la diffusion SSE de la mise à jour partagée')
+              logger.error(
+                { err: broadcastError },
+                'Erreur lors de la diffusion SSE de la mise à jour partagée'
+              )
             }
           }
         }
-        
+
         // Si tous les utilisateurs ont déjà une notification, ne pas en créer de nouvelles
         if (usersWithoutNotification.length === 0) {
-          logger.info({ groupKey, count: existingGrouped.length }, 'Toutes les notifications groupées déjà existantes, aucune nouvelle création')
-          return { success: true, notifications: existingGrouped, updated: true, count: existingGrouped.length }
+          logger.info(
+            { groupKey, count: existingGrouped.length },
+            'Toutes les notifications groupées déjà existantes, aucune nouvelle création'
+          )
+          return {
+            success: true,
+            notifications: existingGrouped,
+            updated: true,
+            count: existingGrouped.length,
+          }
         }
-        
+
         // Ne créer des notifications que pour les utilisateurs qui n'en ont pas encore
         activeUserIds = usersWithoutNotification
-        logger.info({ groupKey, existingCount: existingGrouped.length, newCount: usersWithoutNotification.length }, 'Certaines notifications groupées existent, création uniquement pour les utilisateurs sans notification')
+        logger.info(
+          {
+            groupKey,
+            existingCount: existingGrouped.length,
+            newCount: usersWithoutNotification.length,
+          },
+          'Certaines notifications groupées existent, création uniquement pour les utilisateurs sans notification'
+        )
       }
     }
 
@@ -350,8 +388,10 @@ export default class NotificationService {
       if (!silent) {
         try {
           // Créer un canal partagé basé sur la catégorie ou utiliser un canal global
-          const sharedChannel = category ? `shared_${category}_notifications` : 'shared_notifications'
-          
+          const sharedChannel = category
+            ? `shared_${category}_notifications`
+            : 'shared_notifications'
+
           await transmit.broadcast(sharedChannel, {
             type,
             title,
@@ -366,8 +406,11 @@ export default class NotificationService {
             sharedWith: activeUserIds, // Liste des utilisateurs concernés
             timestamp: new Date().toISOString(),
           })
-          
-          logger.info({ channel: sharedChannel, sharedWithCount: activeUserIds.length, type, category }, 'Toast partagé diffusé avec succès')
+
+          logger.info(
+            { channel: sharedChannel, sharedWithCount: activeUserIds.length, type, category },
+            'Toast partagé diffusé avec succès'
+          )
         } catch (broadcastError) {
           logger.error({ err: broadcastError }, 'Erreur lors de la diffusion SSE du toast partagé')
           // Ne pas faire échouer toute l'opération si la diffusion échoue
@@ -375,12 +418,17 @@ export default class NotificationService {
       }
 
       logger.info(
-        { count: createdNotifications.length, sharedWithCount: activeUserIds.length, type, category },
+        {
+          count: createdNotifications.length,
+          sharedWithCount: activeUserIds.length,
+          type,
+          category,
+        },
         'Notification partagée créée avec succès'
       )
 
       // Logger dans l'audit avec des informations précises
-      const recipientRoles = [...new Set(existingUsers.map(u => u.role))]
+      const recipientRoles = [...new Set(existingUsers.map((u) => u.role))]
       await this.logNotificationToAudit(
         'created',
         title,
@@ -393,9 +441,16 @@ export default class NotificationService {
         null // createdBy sera déterminé par le contexte appelant si disponible
       )
 
-      return { success: true, notifications: createdNotifications, count: createdNotifications.length }
+      return {
+        success: true,
+        notifications: createdNotifications,
+        count: createdNotifications.length,
+      }
     } catch (error) {
-      logger.error({ err: error, userIds: activeUserIds }, 'Erreur lors de la création de la notification')
+      logger.error(
+        { err: error, userIds: activeUserIds },
+        'Erreur lors de la création de la notification'
+      )
       throw error
     }
   }
@@ -426,8 +481,7 @@ export default class NotificationService {
             msg
               .to(user.email)
               .from(process.env.SMTP_FROM || 'noreply@openclinic.cd')
-              .subject(`Notification: ${title.substring(0, 50)}`)
-              .html(`
+              .subject(`Notification: ${title.substring(0, 50)}`).html(`
                 <h3>Notification OpenClinic</h3>
                 <p>${message}</p>
                 ${actionUrl ? `<p><a href="${actionUrl}">Voir les détails</a></p>` : ''}
@@ -448,7 +502,7 @@ export default class NotificationService {
           description: message,
         })
       } catch (error) {
-        logger.error({ err: error }, 'Erreur lors de la création du log d\'activité')
+        logger.error({ err: error }, "Erreur lors de la création du log d'activité")
       }
     }
   }
@@ -467,11 +521,7 @@ export default class NotificationService {
   /**
    * Notifier par rôle
    */
-  static async notifyByRole(
-    roles: string[],
-    message: string,
-    options: NotificationOptions = {}
-  ) {
+  static async notifyByRole(roles: string[], message: string, options: NotificationOptions = {}) {
     const users = await UserProfile.query().whereIn('role', roles).where('actif', true)
     const userIds = users.map((u) => u.id)
     await this.broadcastNotification(userIds, message, options)
@@ -483,9 +533,7 @@ export default class NotificationService {
    */
   static async notifyLowStock(medicamentId: string, medicamentName: string) {
     // Notifier uniquement les pharmaciens (leur domaine)
-    const pharmacists = await UserProfile.query()
-      .where('role', 'pharmacien')
-      .where('actif', true)
+    const pharmacists = await UserProfile.query().where('role', 'pharmacien').where('actif', true)
     const pharmacistIds = pharmacists.map((u) => u.id)
 
     if (pharmacistIds.length > 0) {
@@ -575,19 +623,17 @@ export default class NotificationService {
     orderNumber?: string
   ) {
     // Notifier TOUS les pharmaciens actifs (leur domaine)
-    const pharmacists = await UserProfile.query()
-      .where('role', 'pharmacien')
-      .where('actif', true)
+    const pharmacists = await UserProfile.query().where('role', 'pharmacien').where('actif', true)
     const pharmacistIds = pharmacists.map((u) => u.id)
 
     if (pharmacistIds.length === 0) {
-      logger.warn('Aucun pharmacien actif trouvé pour la notification de mouvement d\'inventaire')
+      logger.warn("Aucun pharmacien actif trouvé pour la notification de mouvement d'inventaire")
       return
     }
 
     logger.info(
       { pharmacistCount: pharmacistIds.length, medicamentName, movementType },
-      'Notification de mouvement d\'inventaire envoyée à tous les pharmaciens'
+      "Notification de mouvement d'inventaire envoyée à tous les pharmaciens"
     )
 
     const movementLabels = {
@@ -602,25 +648,20 @@ export default class NotificationService {
       ? `${movementLabels[movementType]} de ${Math.abs(quantity)} unité(s) de ${medicamentName} (Commande ${orderNumber})`
       : `${movementLabels[movementType]} de ${Math.abs(quantity)} unité(s) de ${medicamentName}${reason ? ` : ${reason}` : ''}`
 
-    await this.createNotification(
-      pharmacistIds,
-      title,
-      message,
-      {
-        type: movementType === 'entree' ? 'success' : movementType === 'sortie' ? 'warning' : 'info',
-        category: 'pharmacy',
-        targetId: medicamentId,
-        targetType: 'medication',
-        actionUrl: `/operations-pharmacie?medication=${medicamentId}`,
-        priority: 'normal',
-        metadata: {
-          movementType,
-          quantity: sign + Math.abs(quantity),
-          reason,
-          orderNumber,
-        },
-      }
-    )
+    await this.createNotification(pharmacistIds, title, message, {
+      type: movementType === 'entree' ? 'success' : movementType === 'sortie' ? 'warning' : 'info',
+      category: 'pharmacy',
+      targetId: medicamentId,
+      targetType: 'medication',
+      actionUrl: `/operations-pharmacie?medication=${medicamentId}`,
+      priority: 'normal',
+      metadata: {
+        movementType,
+        quantity: sign + Math.abs(quantity),
+        reason,
+        orderNumber,
+      },
+    })
 
     // Diffuser aussi via pharmacy_channel pour une notification instantanée à tous les pharmaciens
     try {
@@ -637,9 +678,15 @@ export default class NotificationService {
         actionUrl: `/operations-pharmacie?medication=${medicamentId}`,
         timestamp: new Date().toISOString(),
       } as any)
-      logger.info({ medicamentId, movementType, pharmacistCount: pharmacistIds.length }, 'Notification de mouvement d\'inventaire diffusée via pharmacy_channel')
+      logger.info(
+        { medicamentId, movementType, pharmacistCount: pharmacistIds.length },
+        "Notification de mouvement d'inventaire diffusée via pharmacy_channel"
+      )
     } catch (broadcastError) {
-      logger.error({ err: broadcastError, medicamentId }, 'Erreur lors de la diffusion du mouvement d\'inventaire via pharmacy_channel')
+      logger.error(
+        { err: broadcastError, medicamentId },
+        "Erreur lors de la diffusion du mouvement d'inventaire via pharmacy_channel"
+      )
       // Ne pas faire échouer l'opération si la diffusion échoue
     }
 
@@ -682,34 +729,59 @@ export default class NotificationService {
     let finalPatientName = patientName
     if (!finalPatientName && patientUserId) {
       try {
-        const patient = await Patient.query()
-          .where('userId', patientUserId)
-          .preload('user')
-          .first()
+        const patient = await Patient.query().where('userId', patientUserId).preload('user').first()
         if (patient?.user) {
           finalPatientName = patient.user.nomComplet || 'Patient'
         }
       } catch (error) {
-        logger.debug({ patientUserId, err: error }, 'Impossible de récupérer le nom du patient pour la notification')
+        logger.debug(
+          { patientUserId, err: error },
+          'Impossible de récupérer le nom du patient pour la notification'
+        )
       }
     }
 
     const recipientIds: string[] = []
     const recipientRoles: string[] = []
-    
+
     // Notifier le patient si un userId est fourni
     if (patientUserId) {
       recipientIds.push(patientUserId)
       recipientRoles.push('patient')
-      
+
       // Message personnalisé pour le patient
       const patientMessage = `Vous avez un rendez-vous avec ${doctorName} confirmé pour le ${appointmentDate}`
-      
-      await this.createNotification(
-        patientUserId,
-        'Rendez-vous confirmé',
-        patientMessage,
-        {
+
+      await this.createNotification(patientUserId, 'Rendez-vous confirmé', patientMessage, {
+        type: 'success',
+        category: 'appointment',
+        targetId: appointmentId,
+        targetType: 'appointment',
+        actionUrl: `/console-clinique?appointment=${appointmentId}`,
+        priority: 'normal',
+        metadata: {
+          doctorName,
+          appointmentDate,
+          patientName: finalPatientName,
+        },
+      })
+    }
+
+    // Toujours notifier le médecin concerné (obligatoire)
+    if (doctorUserId) {
+      // Vérifier que le médecin existe et est actif
+      const doctor = await UserProfile.find(doctorUserId)
+      if (doctor && doctor.actif) {
+        recipientIds.push(doctor.id)
+        recipientRoles.push('docteur_clinique')
+
+        // Message personnalisé pour le médecin
+        const appointmentTypeText = appointmentType ? ` pour un(e) ${appointmentType}` : ''
+        const doctorMessage = finalPatientName
+          ? `Le patient ${finalPatientName} a un rendez-vous avec vous ${doctorName} confirmé pour le ${appointmentDate}${appointmentTypeText}`
+          : `Vous avez un rendez-vous confirmé pour le ${appointmentDate}${appointmentTypeText}`
+
+        await this.createNotification(doctor.id, 'Rendez-vous confirmé', doctorMessage, {
           type: 'success',
           category: 'appointment',
           targetId: appointmentId,
@@ -721,49 +793,20 @@ export default class NotificationService {
             appointmentDate,
             patientName: finalPatientName,
           },
-        }
-      )
-    }
-    
-    // Toujours notifier le médecin concerné (obligatoire)
-    if (doctorUserId) {
-      // Vérifier que le médecin existe et est actif
-      const doctor = await UserProfile.find(doctorUserId)
-      if (doctor && doctor.actif) {
-        recipientIds.push(doctor.id)
-        recipientRoles.push('docteur')
-        
-        // Message personnalisé pour le médecin
-        const appointmentTypeText = appointmentType ? ` pour un(e) ${appointmentType}` : ''
-        const doctorMessage = finalPatientName
-          ? `Le patient ${finalPatientName} a un rendez-vous avec vous ${doctorName} confirmé pour le ${appointmentDate}${appointmentTypeText}`
-          : `Vous avez un rendez-vous confirmé pour le ${appointmentDate}${appointmentTypeText}`
-
-    await this.createNotification(
-          doctor.id,
-      'Rendez-vous confirmé',
-          doctorMessage,
-      {
-        type: 'success',
-        category: 'appointment',
-        targetId: appointmentId,
-        targetType: 'appointment',
-        actionUrl: `/console-clinique?appointment=${appointmentId}`,
-        priority: 'normal',
-            metadata: {
-              doctorName,
-              appointmentDate,
-              patientName: finalPatientName,
-            },
-      }
-    )
+        })
       } else {
-        logger.warn({ doctorUserId, doctorName }, 'Médecin non trouvé ou inactif pour la notification de rendez-vous')
+        logger.warn(
+          { doctorUserId, doctorName },
+          'Médecin non trouvé ou inactif pour la notification de rendez-vous'
+        )
       }
     }
 
     if (recipientIds.length === 0) {
-      logger.warn({ patientUserId, doctorUserId, appointmentId }, 'Aucun utilisateur à notifier pour le rendez-vous')
+      logger.warn(
+        { patientUserId, doctorUserId, appointmentId },
+        'Aucun utilisateur à notifier pour le rendez-vous'
+      )
       return
     }
 
@@ -804,69 +847,82 @@ export default class NotificationService {
     isAutomatic: boolean = false
   ) {
     const userIds: string[] = []
-    
-    // Notifier le patient si un userId est fourni
-    if (patientUserId) {
-      userIds.push(patientUserId)
-    }
-    
-    // Toujours notifier le médecin concerné (obligatoire)
-    // doctorUserId est déjà l'ID de UserProfile, pas besoin de chercher
-    if (doctorUserId) {
-      // Vérifier que le médecin existe et est actif
-      const doctor = await UserProfile.find(doctorUserId)
-      if (doctor && doctor.actif) {
-        userIds.push(doctor.id)
-      } else {
-        logger.warn({ doctorUserId, doctorName }, 'Médecin non trouvé ou inactif pour la notification d\'annulation')
-      }
-    }
 
-    const title = isAutomatic 
-      ? 'Rendez-vous annulé automatiquement'
-      : 'Rendez-vous annulé'
-    
+    const title = isAutomatic ? 'Rendez-vous annulé automatiquement' : 'Rendez-vous annulé'
+
     // Éviter la répétition "annulé automatiquement : Annulé automatiquement : ..."
-    const reasonDisplay = (reason && isAutomatic)
-      ? reason.replace(/^Annulé automatiquement\s*:\s*/i, '').trim() || reason
-      : reason
-    const message = isAutomatic
+    const reasonDisplay =
+      reason && isAutomatic
+        ? reason.replace(/^Annulé automatiquement\s*:\s*/i, '').trim() || reason
+        : reason
+    const patientMessage = isAutomatic
       ? `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé automatiquement : ${reasonDisplay}`
       : `Votre rendez-vous avec ${doctorName} prévu le ${appointmentDate} a été annulé. ${reason || ''}`
+    const doctorMessage = isAutomatic
+      ? `Le rendez-vous avec votre patient prévu le ${appointmentDate} a été annulé automatiquement : ${reasonDisplay}`
+      : `Le rendez-vous prévu le ${appointmentDate} a été annulé. ${reason || ''}`
 
-    await this.createNotification(
-      userIds,
-      title,
-      message,
-      {
+    // Notifier explicitement le patient
+    if (patientUserId) {
+      await this.createNotification(patientUserId, title, patientMessage, {
         type: 'warning',
         category: 'appointment',
         targetId: appointmentId,
         targetType: 'appointment',
         actionUrl: `/console-clinique?appointment=${appointmentId}`,
-        metadata: { 
+        metadata: {
           cancelled: true,
           automatic: isAutomatic,
           reason,
           appointmentDate,
         },
+      })
+      userIds.push(patientUserId)
+    }
+
+    // Toujours notifier explicitement le médecin concerné
+    if (doctorUserId) {
+      const doctor = await UserProfile.find(doctorUserId)
+      if (doctor && doctor.actif) {
+        await this.createNotification(doctor.id, title, doctorMessage, {
+          type: 'warning',
+          category: 'appointment',
+          targetId: appointmentId,
+          targetType: 'appointment',
+          actionUrl: `/console-clinique?appointment=${appointmentId}`,
+          metadata: {
+            cancelled: true,
+            automatic: isAutomatic,
+            reason,
+            appointmentDate,
+          },
+        })
+        userIds.push(doctor.id)
+      } else {
+        logger.warn(
+          { doctorUserId, doctorName },
+          "Médecin non trouvé ou inactif pour la notification d'annulation"
+        )
       }
-    )
+    }
 
     if (userIds.length === 0) {
-      logger.warn({ patientUserId, doctorUserId, appointmentId }, 'Aucun utilisateur à notifier pour l\'annulation du rendez-vous')
+      logger.warn(
+        { patientUserId, doctorUserId, appointmentId },
+        "Aucun utilisateur à notifier pour l'annulation du rendez-vous"
+      )
       return
     }
 
     // Logger dans l'audit avec informations précises
     const recipientRoles = []
     if (patientUserId) recipientRoles.push('patient')
-    if (doctorUserId) recipientRoles.push('docteur')
-    
+    if (doctorUserId) recipientRoles.push('docteur_clinique')
+
     await this.logNotificationToAudit(
       'appointment_cancelled',
       title,
-      message,
+      `${patientMessage} / ${doctorMessage}`,
       userIds,
       recipientRoles.length > 0 ? recipientRoles : null,
       'appointment',
@@ -928,23 +984,21 @@ export default class NotificationService {
 
   /**
    * Notification de rendez-vous urgent
-   * Notifie TOUS les médecins pour les notifications critiques + admins/gestionnaires
-   * @param doctorUserId - ID de UserProfile du médecin assigné (optionnel, pour les métadonnées)
+   * Notifie les médecins clinique (pas labo) + admins/gestionnaires
    */
   static async notifyUrgentAppointment(
     appointmentId: string,
     patientName: string,
-    doctorUserId: string, // ID de UserProfile du médecin assigné
+    doctorUserId: string,
     appointmentTime: string
   ) {
     const userIds: string[] = []
-    
-    // Notifier TOUS les médecins pour les notifications critiques
+
     const doctors = await UserProfile.query()
-      .whereIn('role', ['docteur'])
+      .whereIn('role', [...CLINICAL_DOCTOR_ROLES])
       .where('actif', true)
     userIds.push(...doctors.map((u) => u.id))
-    
+
     // Notifier aussi les admins et gestionnaires
     const admins = await UserProfile.query()
       .whereIn('role', ['admin', 'gestionnaire'])
@@ -972,7 +1026,7 @@ export default class NotificationService {
       'Rendez-vous urgent',
       `Rendez-vous urgent avec ${patientName} programmé pour ${appointmentTime}`,
       userIds,
-      ['docteur', 'admin', 'gestionnaire'],
+      ['docteur_clinique', 'admin', 'gestionnaire'],
       'appointment',
       appointmentId,
       'appointment',
@@ -987,23 +1041,22 @@ export default class NotificationService {
 
   /**
    * Notification d'alerte médicale
-   * Notifie TOUS les médecins pour les alertes critiques + admins
+   * Notifie les médecins clinique (pas labo) + admins
    */
   static async notifyMedicalAlert(
     patientId: string,
     patientName: string,
     alertType: string,
     message: string,
-    assignedDoctorId?: string // Gardé pour référence mais tous les médecins sont notifiés
+    assignedDoctorId?: string
   ) {
     const userIds: string[] = []
-    
-    // Notifier TOUS les médecins pour les alertes critiques
+
     const doctors = await UserProfile.query()
-      .whereIn('role', ['docteur'])
+      .whereIn('role', [...CLINICAL_DOCTOR_ROLES])
       .where('actif', true)
     userIds.push(...doctors.map((u) => u.id))
-    
+
     // Toujours notifier les admins et gestionnaires
     const admins = await UserProfile.query()
       .whereIn('role', ['admin', 'gestionnaire'])
@@ -1030,7 +1083,7 @@ export default class NotificationService {
       `Alerte médicale: ${alertType}`,
       `${patientName}: ${message}`,
       userIds,
-      ['docteur', 'admin', 'gestionnaire'],
+      ['docteur_clinique', 'admin', 'gestionnaire'],
       'patient',
       patientId,
       'patient',
@@ -1041,6 +1094,58 @@ export default class NotificationService {
         message,
         assignedDoctorId,
       }
+    )
+  }
+
+  /**
+   * Notification de nouvelle demande d'analyse
+   * Destinataires : uniquement les médecins biologistes (docteur_labo)
+   */
+  static async notifyNewAnalysisRequest(
+    analyseId: string,
+    numeroAnalyse: string,
+    patientName: string,
+    typeAnalyse: string,
+    priorite: 'normale' | 'urgente' = 'normale'
+  ) {
+    const labDoctors = await UserProfile.query().where('role', LAB_DOCTOR_ROLE).where('actif', true)
+    const userIds = labDoctors.map((u) => u.id)
+
+    if (userIds.length === 0) {
+      logger.debug('Aucun médecin biologiste actif pour la notification de nouvelle analyse')
+      return
+    }
+
+    const title =
+      priorite === 'urgente'
+        ? "Nouvelle demande d'analyse (priorité urgente)"
+        : "Nouvelle demande d'analyse"
+    const message =
+      priorite === 'urgente'
+        ? `Analyse "${typeAnalyse}" pour ${patientName} (${numeroAnalyse}) — priorité urgente.`
+        : `Nouvelle analyse "${typeAnalyse}" pour ${patientName} (${numeroAnalyse}).`
+
+    await this.createNotification(userIds, title, message, {
+      type: priorite === 'urgente' ? 'warning' : 'info',
+      category: 'analyses',
+      targetId: analyseId,
+      targetType: 'analyse',
+      actionUrl: `/analyses-laboratoire?analyseId=${analyseId}`,
+      priority: priorite === 'urgente' ? 'high' : 'normal',
+      metadata: { numeroAnalyse, patientName, typeAnalyse, priorite },
+    })
+
+    await this.logNotificationToAudit(
+      'new_analysis_request',
+      title,
+      message,
+      userIds,
+      [LAB_DOCTOR_ROLE],
+      'analyses',
+      analyseId,
+      'analyse',
+      null,
+      { numeroAnalyse, patientName, typeAnalyse, priorite }
     )
   }
 
@@ -1128,7 +1233,7 @@ export default class NotificationService {
       'Nouvelle consultation',
       `Consultation créée pour ${patientName}`,
       [doctorId],
-      ['docteur'],
+      ['docteur_clinique'],
       'clinical',
       consultationId,
       'consultation',
@@ -1222,9 +1327,12 @@ export default class NotificationService {
 
       // Logger dans l'audit
       const recipientRoles = uniqueRecipientIds.includes(uploadedBy)
-        ? [...(admins.some(a => a.id === uploadedBy) ? ['admin', 'gestionnaire'] : []), 'uploader']
+        ? [
+            ...(admins.some((a) => a.id === uploadedBy) ? ['admin', 'gestionnaire'] : []),
+            'uploader',
+          ]
         : ['admin', 'gestionnaire']
-      
+
       await this.logNotificationToAudit(
         'document_uploaded',
         'Document uploadé',
@@ -1259,7 +1367,7 @@ export default class NotificationService {
   ) {
     // Liste des destinataires : celui qui a supprimé (ou uploadé si différent) + admins/gestionnaires
     const recipientIds: string[] = [deletedBy]
-    
+
     // Si l'uploader est différent du suppresseur, l'ajouter aussi
     if (uploadedBy && uploadedBy !== deletedBy) {
       recipientIds.push(uploadedBy)
@@ -1277,9 +1385,7 @@ export default class NotificationService {
 
     if (uniqueRecipientIds.length > 0) {
       const patientInfo = patientName ? ` du dossier de ${patientName}` : ''
-      const actionUrl = patientId 
-        ? `/gestion-documents?patient=${patientId}`
-        : '/gestion-documents'
+      const actionUrl = patientId ? `/gestion-documents?patient=${patientId}` : '/gestion-documents'
 
       await this.createNotification(
         uniqueRecipientIds,
@@ -1298,9 +1404,9 @@ export default class NotificationService {
 
       // Logger dans l'audit
       const recipientRoles = uniqueRecipientIds.includes(deletedBy)
-        ? [...(admins.some(a => a.id === deletedBy) ? ['admin', 'gestionnaire'] : []), 'deleter']
+        ? [...(admins.some((a) => a.id === deletedBy) ? ['admin', 'gestionnaire'] : []), 'deleter']
         : ['admin', 'gestionnaire']
-      
+
       await this.logNotificationToAudit(
         'document_deleted',
         'Document supprimé',
@@ -1357,7 +1463,7 @@ export default class NotificationService {
       'Document partagé',
       `Document "${documentTitle}" partagé avec ${validIds.length} médecin(s) par ${sharedByName}`,
       validIds,
-      ['docteur'],
+      ['docteur_clinique'],
       'document',
       documentId,
       'document',
@@ -1387,9 +1493,7 @@ export default class NotificationService {
     }> = []
   ) {
     // Notifier TOUS les pharmaciens actifs
-    const pharmacists = await UserProfile.query()
-      .where('role', 'pharmacien')
-      .where('actif', true)
+    const pharmacists = await UserProfile.query().where('role', 'pharmacien').where('actif', true)
     const pharmacistIds = pharmacists.map((u) => u.id)
 
     if (pharmacistIds.length === 0) {
@@ -1406,37 +1510,32 @@ export default class NotificationService {
     let message = `Prescription de ${medicamentCount} médicament(s) pour ${patientName} par ${doctorName}`
     if (prescriptionsDetails.length > 0) {
       const medicationsList = prescriptionsDetails
-        .map(p => `• ${p.medicamentName} (${p.quantite} unité(s))`)
+        .map((p) => `• ${p.medicamentName} (${p.quantite} unité(s))`)
         .join('\n')
       message = `Nouvelle prescription pour ${patientName} par ${doctorName}:\n${medicationsList}`
     }
 
-    await this.createNotification(
-      pharmacistIds,
-      'Nouvelle prescription',
-      message,
-      {
-        type: 'info',
-        category: 'pharmacy',
-        targetId: consultationId,
-        targetType: 'prescription',
-        actionUrl: `/operations-pharmacie?consultation=${consultationId}`,
-        priority: 'normal',
-        metadata: { 
-          medicamentCount, 
-          doctorId, 
-          doctorName,
-          patientName,
-          prescriptionsDetails: prescriptionsDetails.map(p => ({
-            medicamentName: p.medicamentName,
-            quantite: p.quantite,
-            dosage: p.dosage,
-            frequency: p.frequency,
-            duration: p.duration
-          }))
-        },
-      }
-    )
+    await this.createNotification(pharmacistIds, 'Nouvelle prescription', message, {
+      type: 'info',
+      category: 'pharmacy',
+      targetId: consultationId,
+      targetType: 'prescription',
+      actionUrl: `/operations-pharmacie?consultation=${consultationId}`,
+      priority: 'normal',
+      metadata: {
+        medicamentCount,
+        doctorId,
+        doctorName,
+        patientName,
+        prescriptionsDetails: prescriptionsDetails.map((p) => ({
+          medicamentName: p.medicamentName,
+          quantite: p.quantite,
+          dosage: p.dosage,
+          frequency: p.frequency,
+          duration: p.duration,
+        })),
+      },
+    })
 
     // Diffuser aussi via pharmacy_channel pour une notification instantanée à tous les pharmaciens
     try {
@@ -1450,16 +1549,22 @@ export default class NotificationService {
         doctorName,
         medicamentCount,
         doctorId,
-        prescriptionsDetails: prescriptionsDetails.map(p => ({
+        prescriptionsDetails: prescriptionsDetails.map((p) => ({
           medicamentName: p.medicamentName,
-          quantite: p.quantite
+          quantite: p.quantite,
         })),
         actionUrl: `/operations-pharmacie?consultation=${consultationId}`,
         timestamp: new Date().toISOString(),
       })
-      logger.info({ consultationId, pharmacistCount: pharmacistIds.length }, 'Notification de prescription diffusée via pharmacy_channel')
+      logger.info(
+        { consultationId, pharmacistCount: pharmacistIds.length },
+        'Notification de prescription diffusée via pharmacy_channel'
+      )
     } catch (broadcastError) {
-      logger.error({ err: broadcastError, consultationId }, 'Erreur lors de la diffusion de la prescription via pharmacy_channel')
+      logger.error(
+        { err: broadcastError, consultationId },
+        'Erreur lors de la diffusion de la prescription via pharmacy_channel'
+      )
       // Ne pas faire échouer l'opération si la diffusion échoue
     }
 
@@ -1552,24 +1657,24 @@ export default class NotificationService {
     patientUserId: string | null = null,
     hoursBefore: number = 24
   ) {
-    const formattedDate = appointmentDate.toFormat("dd/MM/yyyy 'à' HH:mm")
+    const formattedDate = formatBusinessDateTime(appointmentDate)
     const userIds: string[] = []
-    
+
     // Notifier le médecin
     if (doctorId) {
       userIds.push(doctorId)
     }
-    
+
     // Notifier le patient si un userId est fourni
     if (patientUserId) {
       userIds.push(patientUserId)
     }
-    
+
     if (userIds.length === 0) {
       logger.warn({ appointmentId }, 'Aucun utilisateur à notifier pour le rappel de rendez-vous')
       return { success: false, message: 'Aucun utilisateur à notifier' }
     }
-    
+
     await this.createNotification(
       userIds,
       'Rappel de rendez-vous',
@@ -1581,7 +1686,7 @@ export default class NotificationService {
         targetType: 'appointment',
         actionUrl: `/console-clinique?appointment=${appointmentId}`,
         priority: hoursBefore <= 2 ? 'high' : 'normal',
-        metadata: { 
+        metadata: {
           appointmentDate: appointmentDate.toISO(),
           hoursBefore,
           reminderType: 'appointment',
@@ -1593,13 +1698,13 @@ export default class NotificationService {
     const recipientRoles: string[] = []
     if (doctorId) {
       const doctorUser = await UserProfile.find(doctorId)
-      if (doctorUser) recipientRoles.push('docteur')
+      if (doctorUser) recipientRoles.push('docteur_clinique')
     }
     if (patientUserId) {
       const patientUser = await UserProfile.find(patientUserId)
       if (patientUser) recipientRoles.push('patient')
     }
-    
+
     await this.logNotificationToAudit(
       'appointment_reminder',
       'Rappel de rendez-vous',
@@ -1632,20 +1737,15 @@ export default class NotificationService {
     const users = await UserProfile.query().where('actif', true)
     const userIds = users.map((u) => u.id)
 
-    await this.createNotification(
-      userIds,
-      title,
-      message,
-      {
-        type: severity,
-        category: 'system',
-        priority: severity === 'error' ? 'high' : 'normal',
-        metadata: { systemNotification: true, timestamp: DateTime.now().toISO() },
-      }
-    )
+    await this.createNotification(userIds, title, message, {
+      type: severity,
+      category: 'system',
+      priority: severity === 'error' ? 'high' : 'normal',
+      metadata: { systemNotification: true, timestamp: DateTime.now().toISO() },
+    })
 
     // Logger dans l'audit avec informations précises
-    const allRoles = [...new Set(users.map(u => u.role))]
+    const allRoles = [...new Set(users.map((u) => u.role))]
     await this.logNotificationToAudit(
       'system_update',
       title,
@@ -1697,27 +1797,43 @@ export default class NotificationService {
         const readBy = notif.metadata.readBy || []
         if (!readBy.includes(userId)) {
           notif.metadata.readBy = [...readBy, userId]
-          
+
           const sharedWith = notif.metadata.sharedWith || []
-          const allRead = sharedWith.every((uid: string) => 
-            notif.metadata!.readBy.includes(uid)
-          )
-          
+          const allRead = sharedWith.every((uid: string) => notif.metadata!.readBy.includes(uid))
+
           if (allRead) {
             notif.isRead = true
             notif.readAt = DateTime.now()
           }
-          
+
           await notif.save()
           sharedCount++
         }
       }
 
-      const totalCount = (Array.isArray(individualUpdated) ? individualUpdated.length : (typeof individualUpdated === 'number' ? individualUpdated : 0)) + sharedCount
-      logger.info({ count: totalCount, userId, individual: Array.isArray(individualUpdated) ? individualUpdated.length : individualUpdated, shared: sharedCount }, 'Notifications marquées comme lues')
+      const totalCount =
+        (Array.isArray(individualUpdated)
+          ? individualUpdated.length
+          : typeof individualUpdated === 'number'
+            ? individualUpdated
+            : 0) + sharedCount
+      logger.info(
+        {
+          count: totalCount,
+          userId,
+          individual: Array.isArray(individualUpdated)
+            ? individualUpdated.length
+            : individualUpdated,
+          shared: sharedCount,
+        },
+        'Notifications marquées comme lues'
+      )
       return { success: true, count: totalCount }
     } catch (error) {
-      logger.error({ err: error, notificationIds, userId }, 'Erreur lors du marquage des notifications')
+      logger.error(
+        { err: error, notificationIds, userId },
+        'Erreur lors du marquage des notifications'
+      )
       throw error
     }
   }
@@ -1728,7 +1844,7 @@ export default class NotificationService {
   static async archiveOldNotifications(daysOld: number = 90) {
     try {
       const cutoffDate = DateTime.now().minus({ days: daysOld })
-      
+
       const archived = await Notification.query()
         .where('isArchived', false)
         .where('createdAt', '<', cutoffDate.toSQL())
@@ -1739,7 +1855,7 @@ export default class NotificationService {
       logger.info({ count: archived, daysOld }, 'Anciennes notifications archivées')
       return { success: true, count: archived }
     } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de l\'archivage des notifications')
+      logger.error({ err: error }, "Erreur lors de l'archivage des notifications")
       throw error
     }
   }
@@ -1750,7 +1866,7 @@ export default class NotificationService {
   static async deleteExpiredNotifications() {
     try {
       const now = DateTime.now()
-      
+
       const deleted = await Notification.query()
         .whereNotNull('metadata')
         .whereRaw("metadata->>'expiresAt' IS NOT NULL")
@@ -1777,13 +1893,13 @@ export default class NotificationService {
   ) {
     // Utiliser un groupKey unique pour cette facture (utilisé aussi dans createNotification)
     const groupKey = `invoice_paid_${factureId}`
-    
+
     try {
       // PROTECTION CONTRE LES DOUBLONS : Vérifier si des notifications existent déjà pour cette facture
       // Vérifier TOUTES les notifications (lues ou non) créées dans les 30 dernières minutes pour éviter les race conditions
       // Vérifier par targetId ET par groupKey pour une protection maximale
       const cutoffTime = DateTime.now().minus({ minutes: 30 }).toSQL()
-      
+
       // Vérification 1 : Par targetId et category
       const existingByTarget = await Notification.query()
         .where('category', 'billing')
@@ -1792,42 +1908,50 @@ export default class NotificationService {
         .where('isArchived', false)
         .where('createdAt', '>=', cutoffTime)
         .exec()
-      
+
       // Vérification 2 : Par groupKey dans les métadonnées
       const existingByGroupKey = await Notification.query()
         .where('category', 'billing')
         .where('isArchived', false)
-        .whereRaw("(metadata->>'groupKey' = ? OR metadata->>'groupKey' LIKE ?)", [`${groupKey}_patient`, `${groupKey}_admins`])
+        .whereRaw("(metadata->>'groupKey' = ? OR metadata->>'groupKey' LIKE ?)", [
+          `${groupKey}_patient`,
+          `${groupKey}_admins`,
+        ])
         .where('createdAt', '>=', cutoffTime)
         .exec()
-      
+
       // Combiner les résultats et éliminer les doublons
       const allExisting = [...existingByTarget, ...existingByGroupKey]
-      const uniqueExisting = Array.from(new Map(allExisting.map(n => [n.id, n])).values())
-      
+      const uniqueExisting = Array.from(new Map(allExisting.map((n) => [n.id, n])).values())
+
       if (uniqueExisting.length > 0) {
         logger.warn(
-          { 
-            factureId, 
-            numeroFacture, 
-            existingCount: uniqueExisting.length, 
+          {
+            factureId,
+            numeroFacture,
+            existingCount: uniqueExisting.length,
             groupKey,
-            existingIds: uniqueExisting.map(n => n.id),
+            existingIds: uniqueExisting.map((n) => n.id),
             byTarget: existingByTarget.length,
-            byGroupKey: existingByGroupKey.length
+            byGroupKey: existingByGroupKey.length,
           },
           '🚨 Notifications de facture payée déjà existantes, ignorées pour éviter les doublons'
         )
-        return { success: true, message: 'Notifications déjà existantes', skipped: true, existingCount: uniqueExisting.length }
+        return {
+          success: true,
+          message: 'Notifications déjà existantes',
+          skipped: true,
+          existingCount: uniqueExisting.length,
+        }
       }
-      
-      logger.info({ factureId, numeroFacture, groupKey }, 'Création de nouvelles notifications de facture payée')
+
+      logger.info(
+        { factureId, numeroFacture, groupKey },
+        'Création de nouvelles notifications de facture payée'
+      )
 
       // Récupérer le patient et son userId
-      const patient = await Patient.query()
-        .where('id', patientId)
-        .preload('user')
-        .firstOrFail()
+      const patient = await Patient.query().where('id', patientId).preload('user').firstOrFail()
 
       const recipientIds: string[] = []
       const recipientRoles: string[] = []
@@ -1917,9 +2041,15 @@ export default class NotificationService {
             sharedWith: gestionnaireIds, // Liste des utilisateurs concernés
             timestamp: new Date().toISOString(),
           })
-          logger.info({ factureId, sharedWithCount: gestionnaireIds.length, channel: sharedChannel }, 'Toast partagé diffusé à tous les admins/gestionnaires')
+          logger.info(
+            { factureId, sharedWithCount: gestionnaireIds.length, channel: sharedChannel },
+            'Toast partagé diffusé à tous les admins/gestionnaires'
+          )
         } catch (broadcastError) {
-          logger.error({ err: broadcastError }, 'Erreur lors de la diffusion SSE du toast partagé pour facture payée')
+          logger.error(
+            { err: broadcastError },
+            'Erreur lors de la diffusion SSE du toast partagé pour facture payée'
+          )
         }
       }
 
@@ -1940,9 +2070,15 @@ export default class NotificationService {
         }
       )
 
-      logger.info({ factureId, numeroFacture, recipientCount: recipientIds.length }, 'Notifications de facture payée créées')
+      logger.info(
+        { factureId, numeroFacture, recipientCount: recipientIds.length },
+        'Notifications de facture payée créées'
+      )
     } catch (error) {
-      logger.error({ err: error, factureId, patientId }, 'Erreur lors de la création des notifications de facture payée')
+      logger.error(
+        { err: error, factureId, patientId },
+        'Erreur lors de la création des notifications de facture payée'
+      )
       // Ne pas faire échouer l'opération principale si la notification échoue
     }
   }

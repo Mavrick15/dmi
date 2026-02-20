@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/axios';
 import { useToast } from '../contexts/ToastContext';
+import { formatShortDateTimeInBusinessTimezone } from '../utils/dateTime';
 
 // Utilise les webhooks comme proxy pour les intégrations
 export const useIntegrationsList = () => {
@@ -24,7 +25,7 @@ export const useIntegrationsList = () => {
           status: 'connected',
           description: `Webhook pour l'événement: ${webhook.event}`,
           url: webhook.url,
-          lastSync: webhook.createdAt || new Date().toISOString()
+          lastSync: formatShortDateTimeInBusinessTimezone(webhook.createdAt || new Date())
         }));
       } catch (error) {
         // Si l'endpoint n'existe pas (404), retourner un tableau vide silencieusement

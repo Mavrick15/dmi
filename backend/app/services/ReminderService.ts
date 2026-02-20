@@ -1,7 +1,10 @@
 import RendezVous from '#models/RendezVous'
-import { DateTime } from 'luxon'
 import logger from '@adonisjs/core/services/logger'
 import mail from '@adonisjs/mail/services/main'
+import {
+  formatBusinessDateTime,
+  nowInBusinessTimezone,
+} from '../utils/timezone.js'
 
 /**
  * Service pour gérer les rappels automatiques
@@ -11,7 +14,7 @@ export default class ReminderService {
    * Envoyer des rappels pour les rendez-vous du jour
    */
   static async sendDailyReminders() {
-    const today = DateTime.now().startOf('day')
+    const today = nowInBusinessTimezone().startOf('day')
     const tomorrow = today.plus({ days: 1 })
 
     // Récupérer les rendez-vous de demain
@@ -28,6 +31,7 @@ export default class ReminderService {
         const patientEmail = appointment.patient?.user?.email
         if (!patientEmail) continue
 
+        const businessDateHeure = appointment.dateHeure.setZone(today.zoneName)
         await mail.send((message) => {
           message
             .to(patientEmail)
@@ -37,8 +41,8 @@ export default class ReminderService {
               <h3>Bonjour ${appointment.patient?.user?.nomComplet},</h3>
               <p>Ceci est un rappel pour votre rendez-vous médical :</p>
               <ul>
-                <li><strong>Date:</strong> ${appointment.dateHeure.toFormat('dd/MM/yyyy')}</li>
-                <li><strong>Heure:</strong> ${appointment.dateHeure.toFormat('HH:mm')}</li>
+                <li><strong>Date:</strong> ${businessDateHeure.toFormat('dd/MM/yyyy')}</li>
+                <li><strong>Heure:</strong> ${businessDateHeure.toFormat('HH:mm')}</li>
                 <li><strong>Médecin:</strong> ${appointment.medecin?.user?.nomComplet}</li>
                 <li><strong>Motif:</strong> ${appointment.motif}</li>
               </ul>
@@ -57,7 +61,7 @@ export default class ReminderService {
    * Envoyer des rappels pour les rendez-vous dans X heures
    */
   static async sendHourlyReminders(hoursBefore: number = 24) {
-    const targetTime = DateTime.now().plus({ hours: hoursBefore })
+    const targetTime = nowInBusinessTimezone().plus({ hours: hoursBefore })
     const startTime = targetTime.startOf('hour')
     const endTime = targetTime.endOf('hour')
 
@@ -72,6 +76,7 @@ export default class ReminderService {
         const patientEmail = appointment.patient?.user?.email
         if (!patientEmail) continue
 
+        const businessDateHeure = appointment.dateHeure.setZone(targetTime.zoneName)
         await mail.send((message) => {
           message
             .to(patientEmail)
@@ -81,7 +86,7 @@ export default class ReminderService {
               <h3>Bonjour ${appointment.patient?.user?.nomComplet},</h3>
               <p>Rappel : Votre rendez-vous médical est prévu dans ${hoursBefore} heures.</p>
               <ul>
-                <li><strong>Date:</strong> ${appointment.dateHeure.toFormat('dd/MM/yyyy HH:mm')}</li>
+                <li><strong>Date:</strong> ${formatBusinessDateTime(businessDateHeure)}</li>
                 <li><strong>Médecin:</strong> ${appointment.medecin?.user?.nomComplet}</li>
               </ul>
             `)

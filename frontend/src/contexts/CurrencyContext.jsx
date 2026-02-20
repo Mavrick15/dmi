@@ -81,10 +81,10 @@ export const CurrencyProvider = ({ children }) => {
 
     // Format manuel avec le symbole
     // Utiliser directement currency.locale (format avec tiret, ex: 'en-US', 'fr-FR')
-    const formatted = amountNum.toLocaleString(currency.locale, {
+    const formatted = new Intl.NumberFormat(currency.locale, {
       minimumFractionDigits,
-      maximumFractionDigits: finalMaxDigits
-    });
+      maximumFractionDigits: finalMaxDigits,
+    }).format(amountNum);
 
     if (showSymbol) {
       // Position du symbole selon la devise

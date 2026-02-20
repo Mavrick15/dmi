@@ -7,6 +7,10 @@ import Button from '../../../components/ui/Button';
 import Badge from '../../../components/ui/Badge';
 import api from '../../../lib/axios';
 import { useAuth } from '../../../contexts/AuthContext';
+import {
+  formatDateTimeInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointment }) => {
   const navigate = useNavigate();
@@ -15,9 +19,9 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
-  // Vérifier si l'utilisateur peut lancer une consultation (seulement docteur)
+  // Vérifier si l'utilisateur peut lancer une consultation (docteur_clinique)
   // Les infirmières peuvent voir les informations mais ne peuvent pas créer de consultations
-  const canStartConsultation = user?.role === 'docteur';
+  const canStartConsultation = user?.role === 'docteur_clinique';
 
   useEffect(() => {
     if (isOpen && initialAppointment) {
@@ -59,14 +63,15 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
   const getStatusBadge = (status) => {
     const statusMap = {
-      'programme': { variant: 'warning', label: 'Programmé' },
+      'programme': { variant: 'warning', label: 'En attente' },
       'en_cours': { variant: 'info', label: 'En cours' },
-      'termine': { variant: 'success', label: 'Terminé' },
+      'termine': { variant: 'success', label: 'Terminée' },
       'annule': { variant: 'error', label: 'Annulé' },
       'pending': { variant: 'warning', label: 'En attente' },
-      'confirmed': { variant: 'success', label: 'Confirmé' },
+      'confirmed': { variant: 'info', label: 'En cours' },
       'cancelled': { variant: 'error', label: 'Annulé' },
-      'completed': { variant: 'default', label: 'Terminé' }
+      'completed': { variant: 'success', label: 'Terminée' },
+      'consulted': { variant: 'info', label: 'En cours' }
     };
     const statusInfo = statusMap[status] || { variant: 'default', label: status };
     return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
@@ -75,15 +80,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A';
     try {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('fr-FR', { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long', 
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(dateStr);
     } catch {
       return dateStr;
     }
@@ -92,11 +89,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
   const formatTime = (dateStr) => {
     if (!dateStr) return 'N/A';
     try {
-      const date = new Date(dateStr);
-      return date.toLocaleTimeString('fr-FR', { 
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatTimeInBusinessTimezone(dateStr);
     } catch {
       return dateStr;
     }

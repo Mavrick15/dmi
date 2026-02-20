@@ -39,7 +39,7 @@ export default class DashboardController {
     // Optimisation : Charger le médecin une seule fois et le réutiliser
     let medecinId: string | null = null
     let medecin: Medecin | null = null
-    if (user.role === 'docteur') {
+    if (['docteur_clinique', 'docteur_labo'].includes(user.role)) {
       medecin = await Medecin.findBy('userId', user.id)
       if (medecin) {
         medecinId = medecin.id
@@ -104,7 +104,7 @@ export default class DashboardController {
           .orderBy('date_heure', 'asc');
         
         // Si l'utilisateur n'est pas admin et est un docteur, filtrer par son medecinId
-        if (!isAdmin && user.role === 'docteur') {
+        if (!isAdmin && ['docteur_clinique', 'docteur_labo'].includes(user.role)) {
           if (medecinId) {
             appointmentsQuery.where('medecinId', medecinId);
           } else {
@@ -172,9 +172,16 @@ export default class DashboardController {
         .limit(5),
 
       // 9. Consultations du jour (statistiques)
-      Consultation.query()
-        .whereRaw('DATE(date_consultation) = ?', [today])
-        .count('* as total'),
+      // IMPORTANT: compteur global sur tous les médecins (pas de filtre rôle)
+      // Requête SQL explicite pour éviter tout problème de mapping ORM/colonne.
+      (async () => {
+        const result: any = await db.rawQuery(`
+          SELECT COUNT(*) as total
+          FROM consultations
+          WHERE DATE(COALESCE(date_consultation, created_at)) = CURRENT_DATE
+        `)
+        return [{ $extras: { total: Number.parseInt(result.rows[0]?.total || 0, 10) } }]
+      })(),
 
       // 10. Médicaments en rupture de stock
       Medicament.query()
@@ -291,6 +298,10 @@ export default class DashboardController {
 
     // Extraire les données (sans le champ success qui sera ajouté par ApiResponse)
     const { success, ...dashboardData } = transformedData
+
+    response.header('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.header('Pragma', 'no-cache')
+    response.header('Expires', '0')
 
     return response.json(ApiResponse.success(dashboardData))
   }

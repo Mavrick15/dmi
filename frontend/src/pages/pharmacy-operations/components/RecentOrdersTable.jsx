@@ -2,6 +2,7 @@ import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const RecentOrdersTable = ({ orders, loading, onReceiveOrder, onViewOrderDetails, onViewHistory }) => {
   const { formatCurrency } = useCurrency();
@@ -9,11 +10,7 @@ const RecentOrdersTable = ({ orders, loading, onReceiveOrder, onViewOrderDetails
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+      return formatDateInBusinessTimezone(dateString);
     } catch (error) {
       return 'N/A';
     }

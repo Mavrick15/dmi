@@ -5,7 +5,7 @@ import logger from '@adonisjs/core/services/logger'
 import UserProfile from '#models/UserProfile'
 import Medecin from '#models/Medecin'
 import db from '@adonisjs/lucid/services/db'
-import { randomBytes, randomUUID } from 'crypto'
+import { randomBytes, randomUUID } from 'node:crypto'
 import { PaginationHelper } from '../utils/PaginationHelper.js'
 import AuditService from '#services/AuditService'
 import { UserTransformer } from '../transformers/UserTransformer.js'
@@ -14,9 +14,9 @@ import { AppException } from '../exceptions/AppException.js'
 import drive from '@adonisjs/drive/services/main'
 import { cuid } from '@adonisjs/core/helpers'
 import { FileHelper } from '../utils/FileHelper.js'
+import { DOCTOR_ROLES } from '../constants/roles.js'
 
 export default class UsersController {
-  
   // Nettoie les données : convertit les chaînes vides et "null" en vrai null
   private cleanPayload(data: Record<string, any>) {
     const cleaned: Record<string, any> = {}
@@ -35,7 +35,7 @@ export default class UsersController {
 
   public async index({ request, response }: HttpContext) {
     const { page, limit } = PaginationHelper.fromRequest(request, 10, 100)
-    
+
     const search = request.input('search')
     const role = request.input('role')
     const status = request.input('status')
@@ -52,7 +52,16 @@ export default class UsersController {
     }
 
     // Validation du rôle
-    const validRoles = ['admin', 'docteur', 'infirmiere', 'gestionnaire', 'pharmacien', 'patient', 'all']
+    const validRoles = [
+      'admin',
+      'docteur_clinique',
+      'docteur_labo',
+      'infirmiere',
+      'gestionnaire',
+      'pharmacien',
+      'patient',
+      'all',
+    ]
     if (role && !validRoles.includes(role)) {
       throw AppException.badRequest('Rôle invalide')
     }
@@ -71,29 +80,32 @@ export default class UsersController {
     if (search) {
       const searchTerm = search.trim()
       query.where((q) => {
-        q.where('user_profiles.nom_complet', 'ilike', `%${searchTerm}%`)
-         .orWhere('user_profiles.email', 'ilike', `%${searchTerm}%`)
+        q.where('user_profiles.nom_complet', 'ilike', `%${searchTerm}%`).orWhere(
+          'user_profiles.email',
+          'ilike',
+          `%${searchTerm}%`
+        )
       })
     }
 
     if (role && role !== 'all') {
-        query.where('user_profiles.role', role)
+      query.where('user_profiles.role', role)
     }
 
     if (status && status !== 'all') {
-        const isActive = status === 'Active'
-        query.where('user_profiles.actif', isActive)
+      const isActive = status === 'Active'
+      query.where('user_profiles.actif', isActive)
     }
 
     const users = await query.paginate(page, limit)
 
     const transformedUsers = UserTransformer.transformMany(users.all(), true)
-    
+
     // Ajouter les informations supplémentaires (department, etc.)
     const enrichedData = transformedUsers.map((user, index) => {
       const originalUser = users.all()[index]
       let departmentDisplay = 'Général'
-      
+
       if ((originalUser as any).$extras?.nom_etablissement) {
         departmentDisplay = (originalUser as any).$extras.nom_etablissement
       } else {
@@ -105,17 +117,14 @@ export default class UsersController {
       return {
         ...user,
         department: departmentDisplay,
-        lastLogin: originalUser.derniereConnexion ? originalUser.derniereConnexion.toRelative() : 'Jamais',
+        lastLogin: originalUser.derniereConnexion
+          ? originalUser.derniereConnexion.toRelative()
+          : 'Jamais',
       }
     })
 
     return response.json(
-      ApiResponse.paginated(
-        enrichedData,
-        users.currentPage,
-        users.perPage,
-        users.total
-      )
+      ApiResponse.paginated(enrichedData, users.currentPage, users.perPage, users.total)
     )
   }
 
@@ -125,7 +134,7 @@ export default class UsersController {
    */
   public async doctorsForShare({ response }: HttpContext) {
     const doctors = await UserProfile.query()
-      .where('role', 'docteur')
+      .whereIn('role', [...DOCTOR_ROLES])
       .where('actif', true)
       .select('id', 'nom_complet', 'email')
       .orderBy('nom_complet', 'asc')
@@ -135,7 +144,7 @@ export default class UsersController {
       nomComplet: u.nomComplet || null,
       name: u.nomComplet || null,
       email: u.email || null,
-      role: 'docteur',
+      role: 'docteur_clinique',
     }))
 
     return response.json(ApiResponse.success(data))
@@ -163,48 +172,56 @@ export default class UsersController {
       actif: request.input('actif'),
       numeroOrdre: request.input('numeroOrdre'),
       etablissementId: request.input('etablissementId'),
-      departmentId: request.input('departmentId')
+      departmentId: request.input('departmentId'),
     }
 
     const data = this.cleanPayload(rawData)
 
     if (!data.email || !data.nomComplet || !data.role) {
-        throw AppException.badRequest("Le Nom, l'Email et le Rôle sont obligatoires.")
+      throw AppException.badRequest("Le Nom, l'Email et le Rôle sont obligatoires.")
     }
 
     const finalPassword = data.password || randomBytes(8).toString('hex')
 
     try {
       const result = await db.transaction(async (trx) => {
-        
         // Vérification de l'email AVANT la création
-        const existingUser = await UserProfile.query({ client: trx }).where('email', data.email).first()
+        const existingUser = await UserProfile.query({ client: trx })
+          .where('email', data.email)
+          .first()
         if (existingUser) {
-            throw AppException.duplicate('Cette adresse email')
+          throw AppException.duplicate('Cette adresse email')
         }
 
-        const user = await UserProfile.create({
-          email: data.email, 
-          password: finalPassword, 
-          nomComplet: data.nomComplet, 
-          role: data.role || 'patient', 
-          telephone: data.telephone, 
-          adresse: data.adresse,
-          actif: data.actif !== false,
-          photoProfil: avatarPath,
-        }, { client: trx })
+        const user = await UserProfile.create(
+          {
+            email: data.email,
+            password: finalPassword,
+            nomComplet: data.nomComplet,
+            role: data.role || 'patient',
+            telephone: data.telephone,
+            adresse: data.adresse,
+            actif: data.actif !== false,
+            photoProfil: avatarPath,
+          },
+          { client: trx }
+        )
 
-        if (data.role === 'docteur') {
-          const uniqueOrdre = data.numeroOrdre || `TEMP-${randomUUID().substring(0, 8).toUpperCase()}`
-          
-          await Medecin.create({
+        if (DOCTOR_ROLES.includes(data.role as any)) {
+          const uniqueOrdre =
+            data.numeroOrdre || `TEMP-${randomUUID().substring(0, 8).toUpperCase()}`
+
+          await Medecin.create(
+            {
               userId: user.id,
               numeroOrdre: uniqueOrdre,
               specialite: data.specialite?.trim() || 'Non spécifiée', // requis NOT NULL en base
               etablissementId: data.etablissementId,
               departmentId: data.departmentId || null,
-              disponible: true
-          }, { client: trx }) 
+              disponible: true,
+            },
+            { client: trx }
+          )
         }
 
         return user
@@ -221,77 +238,78 @@ export default class UsersController {
         creatorName
       )
 
-      return response.created({ 
-          success: true, 
-          message: 'Utilisateur créé avec succès.', 
-          data: result 
+      return response.created({
+        success: true,
+        message: 'Utilisateur créé avec succès.',
+        data: result,
       })
-
     } catch (error: any) {
-      logger.error({ err: error }, 'Erreur lors de la création de l\'utilisateur')
+      logger.error({ err: error }, "Erreur lors de la création de l'utilisateur")
       if (error.code === '23505') {
-          throw error
+        throw error
       }
-      
-      throw error 
+
+      throw error
     }
   }
 
   public async show({ params, response }: HttpContext) {
-      try { 
-          const user = await UserProfile.findOrFail(params.id);
-          
-          // Charger les données du médecin si l'utilisateur est un docteur
-          let medecinData: any = null;
-          if (user.role === 'docteur') {
-            const medecin = await Medecin.query()
-              .where('userId', user.id)
-              .preload('department')
-              .first();
-            
-            if (medecin) {
-              medecinData = {
-                numeroOrdre: medecin.numeroOrdre,
-                departmentId: medecin.departmentId,
-                etablissementId: medecin.etablissementId,
-                department: medecin.department ? {
+    try {
+      const user = await UserProfile.findOrFail(params.id)
+
+      // Charger les données du médecin si l'utilisateur est un docteur
+      let medecinData: any = null
+      if (DOCTOR_ROLES.includes(user.role as any)) {
+        const medecin = await Medecin.query().where('userId', user.id).preload('department').first()
+
+        if (medecin) {
+          medecinData = {
+            numeroOrdre: medecin.numeroOrdre,
+            departmentId: medecin.departmentId,
+            etablissementId: medecin.etablissementId,
+            department: medecin.department
+              ? {
                   id: medecin.department.id,
-                  nom: medecin.department.nom
-                } : null
-              };
-            }
+                  nom: medecin.department.nom,
+                }
+              : null,
           }
-          
-          // Utiliser le transformer pour avoir une structure cohérente
-          const userData = UserTransformer.transform(user, true);
-          
-          // Ajouter les données du médecin si disponible
-          if (medecinData) {
-            userData.numeroOrdre = medecinData.numeroOrdre;
-            userData.departmentId = medecinData.departmentId;
-            userData.etablissementId = medecinData.etablissementId;
-            if (medecinData.department) {
-              userData.department = medecinData.department;
-            }
-          }
-          
-          // Construire l'URL complète de l'avatar si disponible
-          if (user.photoProfil) {
-            try {
-              const avatarUrl = await FileHelper.getFileUrl(user.photoProfil);
-              if (avatarUrl) {
-                userData.avatar = avatarUrl;
-                userData.photoProfil = avatarUrl;
-              }
-            } catch (error) {
-              logger.warn({ err: error, photoProfil: user.photoProfil }, 'Erreur lors de la récupération de l\'URL de l\'avatar');
-            }
-          }
-          
-          return response.json({ success: true, data: userData }) 
-      } catch (error) { 
-          throw error 
+        }
       }
+
+      // Utiliser le transformer pour avoir une structure cohérente
+      const userData = UserTransformer.transform(user, true)
+
+      // Ajouter les données du médecin si disponible
+      if (medecinData) {
+        userData.numeroOrdre = medecinData.numeroOrdre
+        userData.departmentId = medecinData.departmentId
+        userData.etablissementId = medecinData.etablissementId
+        if (medecinData.department) {
+          userData.department = medecinData.department
+        }
+      }
+
+      // Construire l'URL complète de l'avatar si disponible
+      if (user.photoProfil) {
+        try {
+          const avatarUrl = await FileHelper.getFileUrl(user.photoProfil)
+          if (avatarUrl) {
+            userData.avatar = avatarUrl
+            userData.photoProfil = avatarUrl
+          }
+        } catch (error) {
+          logger.warn(
+            { err: error, photoProfil: user.photoProfil },
+            "Erreur lors de la récupération de l'URL de l'avatar"
+          )
+        }
+      }
+
+      return response.json({ success: true, data: userData })
+    } catch (error) {
+      throw error
+    }
   }
 
   public async update({ params, request, response, auth }: HttpContext) {
@@ -299,7 +317,7 @@ export default class UsersController {
       // Validation UUID
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
       if (!uuidRegex.test(params.id)) {
-        throw AppException.badRequest('Format UUID invalide pour l\'ID de l\'utilisateur')
+        throw AppException.badRequest("Format UUID invalide pour l'ID de l'utilisateur")
       }
 
       // Récupérer les données (fonctionne avec JSON et FormData)
@@ -309,24 +327,24 @@ export default class UsersController {
         password: request.input('password'),
         telephone: request.input('telephone'),
         adresse: request.input('adresse'),
-      role: request.input('role'),
-      actif: request.input('actif'),
-      numeroOrdre: request.input('numeroOrdre'),
-      etablissementId: request.input('etablissementId'),
-      departmentId: request.input('departmentId')
-    }
+        role: request.input('role'),
+        actif: request.input('actif'),
+        numeroOrdre: request.input('numeroOrdre'),
+        etablissementId: request.input('etablissementId'),
+        departmentId: request.input('departmentId'),
+      }
       const data = this.cleanPayload(rawData)
-      
+
       // Pour une mise à jour partielle (ex: juste actif), on ne valide que si les champs sont présents
       // Si un champ est fourni, il doit être valide
       if (data.email !== undefined && data.email !== null && !data.email.trim()) {
-          throw AppException.badRequest("L'Email ne peut pas être vide si fourni.")
+        throw AppException.badRequest("L'Email ne peut pas être vide si fourni.")
       }
       if (data.nomComplet !== undefined && data.nomComplet !== null && !data.nomComplet.trim()) {
-          throw AppException.badRequest("Le Nom ne peut pas être vide si fourni.")
+        throw AppException.badRequest('Le Nom ne peut pas être vide si fourni.')
       }
       if (data.role !== undefined && data.role !== null && !data.role.trim()) {
-          throw AppException.badRequest("Le Rôle ne peut pas être vide si fourni.")
+        throw AppException.badRequest('Le Rôle ne peut pas être vide si fourni.')
       }
 
       // Récupérer l'utilisateur avant modification pour capturer les anciennes valeurs
@@ -337,14 +355,14 @@ export default class UsersController {
         role: userBefore.role,
         telephone: userBefore.telephone,
         adresse: userBefore.adresse,
-        actif: userBefore.actif
+        actif: userBefore.actif,
       }
 
       // Gestion de l'upload d'avatar
       const avatarFile = request.file('file') || request.file('avatar')
       const avatarInput = request.input('avatar')
       const clearAvatar = avatarInput === null || avatarInput === 'null' || avatarInput === ''
-      let avatarPath: string | null = undefined
+      let avatarPath: string | null
       let oldAvatarPath: string | null = null
 
       if (avatarFile && avatarFile.isValid) {
@@ -364,38 +382,38 @@ export default class UsersController {
 
         // 1. Vérification Doublon Email
         if (data.email && data.email !== user.email) {
-            const exists = await UserProfile.query({ client: trx })
-                .where('email', data.email)
-                .where('id', '!=', params.id)
-                .first()
-            if (exists) {
-                const error: any = new Error("Cette adresse email est déjà utilisée.")
-                error.code = '23505'
-                error.status = 409
-                throw error
-            }
+          const exists = await UserProfile.query({ client: trx })
+            .where('email', data.email)
+            .where('id', '!=', params.id)
+            .first()
+          if (exists) {
+            const error: any = new Error('Cette adresse email est déjà utilisée.')
+            error.code = '23505'
+            error.status = 409
+            throw error
+          }
         }
 
         const mergeData: any = {
-            nomComplet: data.nomComplet ?? user.nomComplet,
-            email: data.email ?? user.email,
-            role: data.role ?? user.role,
-            telephone: data.telephone ?? user.telephone,
-            adresse: data.adresse ?? user.adresse,
-            actif: data.actif ?? user.actif,
+          nomComplet: data.nomComplet ?? user.nomComplet,
+          email: data.email ?? user.email,
+          role: data.role ?? user.role,
+          telephone: data.telephone ?? user.telephone,
+          adresse: data.adresse ?? user.adresse,
+          actif: data.actif ?? user.actif,
         }
-        
+
         // Mettre à jour photoProfil seulement si on a un nouveau fichier ou si on veut le supprimer
         if (avatarPath !== undefined) {
           mergeData.photoProfil = avatarPath
         }
-        
+
         user.merge(mergeData)
 
         if (data.password) {
           user.password = data.password
         }
-        
+
         await user.save()
 
         // Supprimer l'ancien avatar après la mise à jour réussie
@@ -403,40 +421,41 @@ export default class UsersController {
           try {
             await drive.use().delete(oldAvatarPath)
           } catch (err) {
-            logger.warn({ err, path: oldAvatarPath }, 'Erreur lors de la suppression de l\'ancien avatar')
+            logger.warn(
+              { err, path: oldAvatarPath },
+              "Erreur lors de la suppression de l'ancien avatar"
+            )
           }
         }
 
-        // 2. Gestion de l'entité Médecin (CORRECTION APPLIQUÉE ICI)
-        if (user.role === 'docteur') {
-            const medecinUpdateData: any = {
-                disponible: true,
-                specialite: data.specialite?.trim() || 'Non spécifiée', // requis NOT NULL en base
-            };
+        // 2. Gestion de l'entité Médecin
+        if (DOCTOR_ROLES.includes(user.role as any)) {
+          const medecinUpdateData: any = {
+            disponible: true,
+            specialite: data.specialite?.trim() || 'Non spécifiée', // requis NOT NULL en base
+          }
 
-            if (data.numeroOrdre !== undefined && data.numeroOrdre !== null) {
-                medecinUpdateData.numeroOrdre = data.numeroOrdre || null;
-            }
-            if (data.etablissementId !== undefined && data.etablissementId !== null) {
-                medecinUpdateData.etablissementId = data.etablissementId;
-            }
-            if (data.departmentId !== undefined && data.departmentId !== null) {
-                medecinUpdateData.departmentId = data.departmentId || null;
-            }
+          if (data.numeroOrdre !== undefined && data.numeroOrdre !== null) {
+            medecinUpdateData.numeroOrdre = data.numeroOrdre || null
+          }
+          if (data.etablissementId !== undefined && data.etablissementId !== null) {
+            medecinUpdateData.etablissementId = data.etablissementId
+          }
+          if (data.departmentId !== undefined && data.departmentId !== null) {
+            medecinUpdateData.departmentId = data.departmentId || null
+          }
 
-            // Vérification : ne faire l'update que s'il y a quelque chose à mettre à jour
-            if (Object.keys(medecinUpdateData).length > 0) {
-                await Medecin.updateOrCreate(
-                    { userId: user.id },
-                    medecinUpdateData,
-                    { client: trx }
-                )
-            }
+          // Vérification : ne faire l'update que s'il y a quelque chose à mettre à jour
+          if (Object.keys(medecinUpdateData).length > 0) {
+            await Medecin.updateOrCreate({ userId: user.id }, medecinUpdateData, { client: trx })
+          }
         } else {
-          const existingMedecin = await Medecin.query({ client: trx }).where('userId', user.id).first()
+          const existingMedecin = await Medecin.query({ client: trx })
+            .where('userId', user.id)
+            .first()
           if (existingMedecin) {
-             // Si le rôle n'est plus docteur, on supprime l'enregistrement médecin
-             await Medecin.query({ client: trx }).where('userId', user.id).delete()
+            // Si le rôle n'est plus docteur, on supprime l'enregistrement médecin
+            await Medecin.query({ client: trx }).where('userId', user.id).delete()
           }
         }
       })
@@ -446,7 +465,7 @@ export default class UsersController {
 
       // Construire l'objet des changements pour le log d'audit
       const changes: Record<string, any> = {}
-      
+
       if (oldValues.nomComplet !== userAfter.nomComplet) {
         changes.nomComplet = { ancien: oldValues.nomComplet, nouveau: userAfter.nomComplet }
       }
@@ -468,21 +487,26 @@ export default class UsersController {
       if (data.password) {
         changes.password = { modifie: true } // Ne pas logger le mot de passe
       }
-      
+
       // Ajouter les changements liés au médecin si applicable
-      if (data.numeroOrdre !== undefined || data.etablissementId !== undefined || data.departmentId !== undefined) {
+      if (
+        data.numeroOrdre !== undefined ||
+        data.etablissementId !== undefined ||
+        data.departmentId !== undefined
+      ) {
         changes.medecin = {}
         // specialite est déprécié - utiliser departmentId à la place
         // if (data.specialite !== undefined) changes.medecin.specialite = data.specialite
         if (data.numeroOrdre !== undefined) changes.medecin.numeroOrdre = data.numeroOrdre
-        if (data.etablissementId !== undefined) changes.medecin.etablissementId = data.etablissementId
+        if (data.etablissementId !== undefined)
+          changes.medecin.etablissementId = data.etablissementId
         if (data.departmentId !== undefined) changes.medecin.departmentId = data.departmentId
       }
 
       // Log d'audit avec détails des changements
       const updater = auth.user as UserProfile
       const updaterName = updater?.nomComplet || updater?.email || 'Système'
-      
+
       // Log principal de modification
       await AuditService.logUserUpdated(
         { auth, request, response } as HttpContext,
@@ -491,7 +515,7 @@ export default class UsersController {
         changes,
         updaterName
       )
-      
+
       // Log spécifique si changement de rôle
       if (oldValues.role !== userAfter.role) {
         await AuditService.logRoleChanged(
@@ -503,7 +527,7 @@ export default class UsersController {
           updaterName
         )
       }
-      
+
       // Log spécifique si activation/désactivation
       if (oldValues.actif !== userAfter.actif) {
         if (userAfter.actif) {
@@ -523,7 +547,7 @@ export default class UsersController {
           )
         }
       }
-      
+
       // Log spécifique si changement de mot de passe
       if (data.password) {
         await AuditService.logPasswordChanged(
@@ -536,9 +560,8 @@ export default class UsersController {
       }
 
       return response.json({ success: true, message: 'Utilisateur mis à jour' })
-
     } catch (error: any) {
-        throw error
+      throw error
     }
   }
 
@@ -551,7 +574,7 @@ export default class UsersController {
         userName = user.nomComplet
         userRole = user.role
         // Suppression en cascade appliquée par la DB (ou Lucid si configuré)
-        await user.delete() 
+        await user.delete()
       })
 
       // Log d'audit - Suppression d'utilisateur
@@ -568,7 +591,7 @@ export default class UsersController {
 
       return response.json({ success: true, message: 'Utilisateur supprimé' })
     } catch (error) {
-      throw error 
+      throw error
     }
   }
 
@@ -576,18 +599,18 @@ export default class UsersController {
   public async grantPermission({ params, request, response, auth }: HttpContext) {
     try {
       const { permission } = request.only(['permission'])
-      
+
       if (!permission) {
         throw AppException.badRequest('La permission est requise.')
       }
 
       const user = await UserProfile.findOrFail(params.id)
       const userName = user.nomComplet
-      
+
       // Log d'audit - Permission accordée
       const grantor = auth.user as UserProfile
       const grantorName = grantor?.nomComplet || grantor?.email || 'Système'
-      
+
       await AuditService.logPermissionGranted(
         { auth, request, response } as HttpContext,
         params.id,
@@ -606,18 +629,18 @@ export default class UsersController {
   public async revokePermission({ params, request, response, auth }: HttpContext) {
     try {
       const { permission } = request.only(['permission'])
-      
+
       if (!permission) {
         throw AppException.badRequest('La permission est requise.')
       }
 
       const user = await UserProfile.findOrFail(params.id)
       const userName = user.nomComplet
-      
+
       // Log d'audit - Permission révoquée
       const revoker = auth.user as UserProfile
       const revokerName = revoker?.nomComplet || revoker?.email || 'Système'
-      
+
       await AuditService.logPermissionRevoked(
         { auth, request, response } as HttpContext,
         params.id,
@@ -636,10 +659,10 @@ export default class UsersController {
   public async expireSession({ params, request, response, auth }: HttpContext) {
     try {
       const { reason } = request.only(['reason'])
-      
+
       const user = await UserProfile.findOrFail(params.id)
       const userName = user.nomComplet
-      
+
       // Log d'audit - Session expirée
       await AuditService.logSessionExpired(
         { auth, request, response } as HttpContext,
@@ -658,9 +681,9 @@ export default class UsersController {
   public async updateIpWhitelist({ request, response, auth }: HttpContext) {
     try {
       const { ipAddress, action } = request.only(['ipAddress', 'action'])
-      
+
       if (!ipAddress || !action) {
-        throw AppException.badRequest('L\'adresse IP et l\'action sont requises.')
+        throw AppException.badRequest("L'adresse IP et l'action sont requises.")
       }
 
       if (action !== 'add' && action !== 'remove') {
@@ -669,7 +692,7 @@ export default class UsersController {
 
       const user = auth.user as UserProfile
       const userName = user?.nomComplet || user?.email || 'Système'
-      
+
       // Log d'audit - Liste blanche IP mise à jour
       await AuditService.logIpWhitelistUpdated(
         { auth, request, response } as HttpContext,
@@ -678,9 +701,9 @@ export default class UsersController {
         userName
       )
 
-      return response.json({ 
-        success: true, 
-        message: `Adresse IP ${action === 'add' ? 'ajoutée à' : 'retirée de'} la liste blanche` 
+      return response.json({
+        success: true,
+        message: `Adresse IP ${action === 'add' ? 'ajoutée à' : 'retirée de'} la liste blanche`,
       })
     } catch (error) {
       throw error

@@ -9,6 +9,7 @@ import ResultatsChart from '../../laboratory-analyses/components/ResultatsChart'
 import { useAnalysesByPatient } from '../../../hooks/useAnalyses';
 import api from '../../../lib/axios';
 import { Loader2 } from 'lucide-react';
+import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const EmptyBlock = ({ icon, title, description, action, className = '' }) => (
   <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
@@ -80,13 +81,7 @@ const PatientAnalysesHistory = ({ patient }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(dateString);
     } catch {
       return dateString;
     }

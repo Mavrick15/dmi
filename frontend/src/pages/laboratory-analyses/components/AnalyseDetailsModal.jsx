@@ -15,6 +15,11 @@ import ValidateResultatModal from './ValidateResultatModal';
 import AnalyseQRCode from './AnalyseQRCode';
 import { generateAnalyseResultsPDF } from '../../../utils/analysePdfGenerator';
 import { useNavigate } from 'react-router-dom';
+import {
+  formatDateTimeInBusinessTimezone,
+  formatLongDateInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
   const { hasPermission } = usePermissions();
@@ -75,9 +80,9 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
     try {
       const d = new Date(dateString);
       const day = d.getDate();
-      const month = d.toLocaleDateString('fr-FR', { month: 'long' }).toLowerCase();
+      const month = formatLongDateInBusinessTimezone(d).split(' ')[1]?.toLowerCase() || '';
       const year = d.getFullYear();
-      const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', hour12: false });
+      const time = formatTimeInBusinessTimezone(d);
       const mois = moisAbrev[month] || month;
       return `${day} ${mois} ${year} à ${time}`;
     } catch {
@@ -88,13 +93,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(dateString);
     } catch {
       return dateString;
     }

@@ -44,7 +44,7 @@ export default class AuthController {
         { client: trx }
       )
 
-      if (payload.role === 'docteur') {
+      if (['docteur_clinique', 'docteur_labo'].includes(payload.role)) {
         const uniqueOrdre =
           payload.numeroOrdre || `TEMP-${randomUUID().substring(0, 8).toUpperCase()}`
         await Medecin.create(
@@ -405,19 +405,17 @@ export default class AuthController {
     let userEmail: string | null = null
 
     if (token) {
-      // Utiliser TokenService pour révoquer le token
-      await TokenService.revokeToken(token)
-
-      // Récupérer l'utilisateur pour le log
+      // Récupérer l'utilisateur pour l'audit avant de révoquer le token
       const apiToken = await ApiToken.findBy('token', token)
       if (apiToken) {
         userId = apiToken.userId
         const user = await UserProfile.find(userId)
-        userEmail = user?.email || null
+        userEmail = user?.email ?? null
       }
+      // Révoquer le token (après avoir récupéré les infos pour l'audit)
+      await TokenService.revokeToken(token)
     }
 
-    // Log d'audit pour déconnexion
     if (userId && userEmail) {
       await AuditService.logLogout(
         { auth, request, response: {} as any } as HttpContext,

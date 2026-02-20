@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getDefaultRoute } from '../../utils/getDefaultRoute';
 import Icon from '../../components/AppIcon';
+import { LOGOUT_REDIRECT_FLAG } from '../../contexts/AuthContext';
 
 // Import des sous-composants
 import WelcomeHeader from './components/WelcomeHeader';
@@ -15,11 +16,21 @@ import TermsInfo from './components/TermsInfo';
 
 const LoginPortal = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [authMethod, setAuthMethod] = useState('email'); // 'email' ou 'biometric'
+  const [authMethod, setAuthMethod] = useState('email');
   const [sessionRevokedMessage, setSessionRevokedMessage] = useState(false);
   const [tokenExpiredMessage, setTokenExpiredMessage] = useState(false);
+  const [showLogoutScreen, setShowLogoutScreen] = useState(() =>
+    typeof window !== 'undefined' && sessionStorage.getItem(LOGOUT_REDIRECT_FLAG) === '1'
+  );
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (!showLogoutScreen) return;
+    sessionStorage.removeItem(LOGOUT_REDIRECT_FLAG);
+    const t = setTimeout(() => setShowLogoutScreen(false), 800);
+    return () => clearTimeout(t);
+  }, [showLogoutScreen]);
 
   // Message selon la raison de la redirection (session révoquée ou token expiré)
   useEffect(() => {
@@ -40,16 +51,44 @@ const LoginPortal = () => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-slate-50 dark:bg-slate-950 font-sans overflow-hidden selection:bg-primary/30">
-      
+    <>
+      <AnimatePresence mode="wait">
+        {showLogoutScreen ? (
+          <motion.div
+            key="logout-screen"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35 }}
+            className="min-h-screen flex w-full bg-slate-950 font-sans items-center justify-center absolute inset-0 z-10"
+            role="status"
+            aria-live="polite"
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center gap-4 text-white"
+            >
+              <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <p className="text-lg font-medium">Déconnexion du système en cours...</p>
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="login-form"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="min-h-screen flex w-full bg-slate-50 dark:bg-slate-950 font-sans overflow-hidden selection:bg-primary/30"
+          >
+
       {/* --- COLONNE GAUCHE : Branding & Visuel (45% largeur) --- */}
       <div className="hidden lg:flex lg:w-[45%] relative flex-col justify-between p-12 text-white overflow-hidden">
-        
+
         {/* Image de fond avec Overlay */}
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" 
-            alt="Medical Background" 
+          <img
+            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+            alt="Medical Background"
             className="w-full h-full object-cover opacity-40 mix-blend-overlay"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-900 via-blue-900 to-slate-900 opacity-90" />
@@ -75,7 +114,7 @@ const LoginPortal = () => {
           {/* Message Central */}
           <div className="space-y-6 max-w-lg">
             <h1 className="text-5xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-blue-200 drop-shadow-sm">
-              L'avenir des soins,<br/>
+              L'avenir des soins,<br />
               <span className="font-light italic text-white/90">simplifié.</span>
             </h1>
             <p className="text-blue-100/90 text-lg leading-relaxed font-light border-l-4 border-blue-400/50 pl-6">
@@ -85,57 +124,57 @@ const LoginPortal = () => {
 
           {/* Footer Gauche */}
           <div className="space-y-8">
-             <SecurityBadges />
-             <div className="flex justify-between items-end text-[10px] text-white/40 border-t border-white/10 pt-6">
-                <p>© 2025 OpenClinic Inc.</p>
-                <div className="flex gap-4">
-                    <PrivacyInfo />
-                    <TermsInfo />
-                </div>
-             </div>
+            <SecurityBadges />
+            <div className="flex justify-between items-end text-[10px] text-white/40 border-t border-white/10 pt-6">
+              <p>© 2025 OpenClinic Inc.</p>
+              <div className="flex gap-4">
+                <PrivacyInfo />
+                <TermsInfo />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* --- COLONNE DROITE : Formulaire (55% largeur) --- */}
       <div className="flex-1 flex flex-col justify-center items-center p-6 relative">
-        
+
         {/* Motif de fond subtil (Grid) */}
-        <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05]" 
-             style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
+        <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05]"
+          style={{ backgroundImage: 'radial-gradient(#6366f1 1px, transparent 1px)', backgroundSize: '32px 32px' }}>
         </div>
 
         <div className="w-full max-w-[440px] relative z-10">
-          
+
           {/* Header Mobile */}
           <div className="text-center mb-10">
             <div className="inline-flex lg:hidden items-center gap-2 mb-6 text-primary p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
-               <Icon name="Activity" size={28} />
-               <span className="font-bold text-xl text-slate-900 dark:text-white">MediCore</span>
+              <Icon name="Activity" size={28} />
+              <span className="font-bold text-xl text-slate-900 dark:text-white">MediCore</span>
             </div>
             <WelcomeHeader />
           </div>
 
           {/* Onglets Switcher (Style iOS/Segmented Control) */}
           <div className="bg-slate-100 dark:bg-slate-900/50 p-1.5 rounded-2xl flex mb-8 relative border border-slate-200 dark:border-slate-800 mx-auto w-fit">
-            <motion.div 
+            <motion.div
               className="absolute top-1.5 bottom-1.5 rounded-xl shadow-sm bg-white dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700"
               initial={false}
-              animate={{ 
-                x: authMethod === 'email' ? 0 : '100%', 
+              animate={{
+                x: authMethod === 'email' ? 0 : '100%',
                 width: 'calc(50% - 6px)' // Ajustement précis
               }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
             />
-            <button 
-                onClick={() => setAuthMethod('email')} 
-                className={`relative z-10 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-200 w-36 ${authMethod === 'email' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
+            <button
+              onClick={() => setAuthMethod('email')}
+              className={`relative z-10 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-200 w-36 ${authMethod === 'email' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
             >
               <Icon name="Mail" size={16} /> Email
             </button>
-            <button 
-                onClick={() => setAuthMethod('biometric')} 
-                className={`relative z-10 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-200 w-36 ${authMethod === 'biometric' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
+            <button
+              onClick={() => setAuthMethod('biometric')}
+              className={`relative z-10 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-semibold rounded-xl transition-colors duration-200 w-36 ${authMethod === 'biometric' ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'}`}
             >
               <Icon name="Fingerprint" size={16} /> Passkey
             </button>
@@ -204,19 +243,19 @@ const LoginPortal = () => {
                         </motion.div>
                       )}
                     </AnimatePresence>
-                     <LoginForm 
-                        onLoginSuccess={handleLoginSuccess} 
-                        isLoading={isLoading} 
-                        setIsLoading={setIsLoading} 
-                     />
+                    <LoginForm
+                      onLoginSuccess={handleLoginSuccess}
+                      isLoading={isLoading}
+                      setIsLoading={setIsLoading}
+                    />
                   </div>
                 ) : (
-                   <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-800">
-                      <BiometricLogin 
-                        onBiometricLogin={handleLoginSuccess} 
-                        isLoading={isLoading} 
-                      />
-                   </div>
+                  <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-800">
+                    <BiometricLogin
+                      onBiometricLogin={handleLoginSuccess}
+                      isLoading={isLoading}
+                    />
+                  </div>
                 )}
               </motion.div>
             </AnimatePresence>
@@ -226,7 +265,10 @@ const LoginPortal = () => {
           <QuickAccessCards />
         </div>
       </div>
-    </div>
+    </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

@@ -8,6 +8,12 @@ import EmptyState from '../../../components/ui/EmptyState';
 import Modal from '../../../components/ui/Modal';
 import { useAppointments, useAppointmentMutations } from '../../../hooks/useAppointments';
 import { useAuth } from '../../../contexts/AuthContext';
+import {
+  formatLongDateInBusinessTimezone,
+  formatMonthYearInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+  toBusinessDateKey,
+} from '../../../utils/dateTime';
 
 const DoctorCalendar = ({ onSelectAppointment }) => {
   const { user } = useAuth();
@@ -28,8 +34,8 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
   // Récupérer les rendez-vous du médecin connecté
   // Le backend filtre automatiquement par le médecin connecté
   const { data: appointmentsData, isLoading } = useAppointments({
-    startDate: dateRange.start.toISOString().split('T')[0],
-    endDate: dateRange.end.toISOString().split('T')[0],
+    startDate: toBusinessDateKey(dateRange.start),
+    endDate: toBusinessDateKey(dateRange.end),
   }, {
     refetchInterval: 30000, // Rafraîchir toutes les 30 secondes
   });
@@ -39,7 +45,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
   // Filtrer les rendez-vous pour n'afficher que ceux du médecin connecté
   // (comme pour les notifications)
   const appointments = useMemo(() => {
-    const isDoctor = user?.role === 'docteur';
+    const isDoctor = user?.role === 'docteur_clinique';
     
     if (!isDoctor) {
       // Si ce n'est pas un médecin, retourner un tableau vide
@@ -72,14 +78,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
     appointments.forEach(appointment => {
       let dateKey;
       if (appointment.dateHeure) {
-        // Utiliser les méthodes locales pour éviter les problèmes de fuseau horaire
-        // new Date() convertit automatiquement la chaîne ISO en heure locale
-        const date = new Date(appointment.dateHeure);
-        // Utiliser getFullYear(), getMonth(), getDate() qui retournent les valeurs locales
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        dateKey = `${year}-${month}-${day}`;
+        dateKey = toBusinessDateKey(appointment.dateHeure);
       } else if (appointment.date) {
         dateKey = appointment.date;
       } else {
@@ -159,21 +158,12 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
 
   // Formater la date
   const formatDate = (date) => {
-    return date.toLocaleDateString('fr-FR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+    return formatLongDateInBusinessTimezone(date);
   };
 
   // Formater l'heure
   const formatTime = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatTimeInBusinessTimezone(dateString);
   };
 
   // Obtenir les styles de couleur selon le statut
@@ -248,11 +238,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
 
   // Obtenir les rendez-vous d'une date
   const getAppointmentsForDate = (date) => {
-    // Utiliser les méthodes locales pour éviter les problèmes de fuseau horaire
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateKey = `${year}-${month}-${day}`;
+    const dateKey = toBusinessDateKey(date);
     return appointmentsByDate[dateKey] || [];
   };
 
@@ -349,7 +335,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
     }
   };
 
-  const monthName = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  const monthName = formatMonthYearInBusinessTimezone(currentDate);
   const weekDays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
   if (isLoading && !appointments.length) {

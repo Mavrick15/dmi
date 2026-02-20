@@ -9,11 +9,15 @@ import { PaginationHelper } from '../utils/PaginationHelper.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
 import { DateTime } from 'luxon'
-import { createAnalyseValidator, updateAnalyseValidator, searchAnalysesValidator } from '#validators/analyse'
+import {
+  createAnalyseValidator,
+  updateAnalyseValidator,
+  searchAnalysesValidator,
+} from '#validators/analyse'
 import CacheService from '#services/CacheService'
+import NotificationService from '#services/NotificationService'
 
 export default class AnalysesController {
-  
   /**
    * Génère un numéro d'analyse au format "ANL-yymjXXX"
    * yy: année (2 chiffres)
@@ -26,16 +30,18 @@ export default class AnalysesController {
     const year = now.year.toString().slice(-2) // 2 derniers chiffres de l'année
     const month = now.month
     const day = now.day
-    
+
     // Conversion du mois : 1-9 pour janvier-septembre, A-C pour octobre-décembre
     const monthChar = month <= 9 ? month.toString() : String.fromCharCode(64 + month - 9) // A=10, B=11, C=12
-    
+
     // Conversion du jour : 1-9 pour 1-9, A-V pour 10-31
     const dayChar = day <= 9 ? day.toString() : String.fromCharCode(64 + day - 9) // A=10, B=11, ..., V=31
-    
+
     // Nombre aléatoire sur 3 chiffres
-    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-    
+    const randomNum = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0')
+
     return `ANL-${year}${monthChar}${dayChar}${randomNum}`
   }
 
@@ -85,17 +91,18 @@ export default class AnalysesController {
           q.whereRaw('LOWER(numero_analyse) LIKE ?', [searchTerm])
             .orWhereRaw('LOWER(type_analyse::text) LIKE ?', [searchTerm])
             .orWhereHas('patient', (patientQuery) => {
-              patientQuery.whereHas('user', (userQuery) => {
-                userQuery.whereRaw('LOWER(nom_complet) LIKE ?', [searchTerm])
-              })
-              .orWhereRaw('LOWER(numero_patient) LIKE ?', [searchTerm])
+              patientQuery
+                .whereHas('user', (userQuery) => {
+                  userQuery.whereRaw('LOWER(nom_complet) LIKE ?', [searchTerm])
+                })
+                .orWhereRaw('LOWER(numero_patient) LIKE ?', [searchTerm])
             })
         })
       }
 
       // Si c'est un médecin, filtrer par ses analyses (optionnel, basé sur les permissions)
       // L'administrateur peut voir toutes les analyses grâce à ses permissions
-      if (user.role === 'docteur' && !patientId) {
+      if (['docteur_clinique', 'docteur_labo'].includes(user.role) && !patientId) {
         const medecin = await Medecin.findBy('userId', user.id)
         if (medecin) {
           query.where('medecinId', medecin.id)
@@ -106,22 +113,28 @@ export default class AnalysesController {
 
       return response.json(
         ApiResponse.paginated(
-          analyses.all().map(a => ({
+          analyses.all().map((a) => ({
             id: a.id,
             numeroAnalyse: a.numeroAnalyse,
-            patient: a.patient ? {
-              id: a.patient.id,
-              name: a.patient.user?.nomComplet || 'Patient inconnu',
-              numeroPatient: a.patient.numeroPatient
-            } : null,
-            medecin: a.medecin ? {
-              id: a.medecin.id,
-              name: a.medecin.user?.nomComplet || 'Médecin inconnu'
-            } : null,
-            consultation: a.consultation ? {
-              id: a.consultation.id,
-              dateConsultation: a.consultation.dateConsultation
-            } : null,
+            patient: a.patient
+              ? {
+                  id: a.patient.id,
+                  name: a.patient.user?.nomComplet || 'Patient inconnu',
+                  numeroPatient: a.patient.numeroPatient,
+                }
+              : null,
+            medecin: a.medecin
+              ? {
+                  id: a.medecin.id,
+                  name: a.medecin.user?.nomComplet || 'Médecin inconnu',
+                }
+              : null,
+            consultation: a.consultation
+              ? {
+                  id: a.consultation.id,
+                  dateConsultation: a.consultation.dateConsultation,
+                }
+              : null,
             typeAnalyse: a.typeAnalyse,
             statut: a.statut,
             datePrescription: a.datePrescription,
@@ -133,7 +146,7 @@ export default class AnalysesController {
             priorite: a.priorite,
             resultats: a.resultats || [],
             createdAt: a.createdAt,
-            updatedAt: a.updatedAt
+            updatedAt: a.updatedAt,
           })),
           analyses.currentPage,
           analyses.perPage,
@@ -177,19 +190,25 @@ export default class AnalysesController {
         ApiResponse.success({
           id: analyse.id,
           numeroAnalyse: analyse.numeroAnalyse,
-          patient: analyse.patient ? {
-            id: analyse.patient.id,
-            name: analyse.patient.user?.nomComplet || 'Patient inconnu',
-            numeroPatient: analyse.patient.numeroPatient
-          } : null,
-          medecin: analyse.medecin ? {
-            id: analyse.medecin.id,
-            name: analyse.medecin.user?.nomComplet || 'Médecin inconnu'
-          } : null,
-          consultation: analyse.consultation ? {
-            id: analyse.consultation.id,
-            dateConsultation: analyse.consultation.dateConsultation
-          } : null,
+          patient: analyse.patient
+            ? {
+                id: analyse.patient.id,
+                name: analyse.patient.user?.nomComplet || 'Patient inconnu',
+                numeroPatient: analyse.patient.numeroPatient,
+              }
+            : null,
+          medecin: analyse.medecin
+            ? {
+                id: analyse.medecin.id,
+                name: analyse.medecin.user?.nomComplet || 'Médecin inconnu',
+              }
+            : null,
+          consultation: analyse.consultation
+            ? {
+                id: analyse.consultation.id,
+                dateConsultation: analyse.consultation.dateConsultation,
+              }
+            : null,
           typeAnalyse: analyse.typeAnalyse,
           statut: analyse.statut,
           datePrescription: analyse.datePrescription,
@@ -199,7 +218,7 @@ export default class AnalysesController {
           laboratoire: analyse.laboratoire,
           notesPrescription: analyse.notesPrescription,
           priorite: analyse.priorite,
-          resultats: analyse.resultats.map(r => ({
+          resultats: analyse.resultats.map((r) => ({
             id: r.id,
             parametre: r.parametre,
             valeur: r.valeur,
@@ -210,30 +229,35 @@ export default class AnalysesController {
             commentaire: r.commentaire,
             annotation: r.annotation || null,
             signature: r.signature ? 'signée' : null,
-            validePar: r.validePar ? {
-              id: r.valideur?.id,
-              name: r.valideur?.nomComplet
-            } : null,
+            validePar: r.validePar
+              ? {
+                  id: r.valideur?.id,
+                  name: r.valideur?.nomComplet,
+                }
+              : null,
             dateValidation: r.dateValidation,
             createdAt: r.createdAt,
-            updatedAt: r.updatedAt
+            updatedAt: r.updatedAt,
           })),
-          facture: analyse.factures && analyse.factures.length > 0 ? {
-            id: analyse.factures[0].id,
-            numeroFacture: analyse.factures[0].numeroFacture,
-            montantTotal: analyse.factures[0].montantTotal,
-            statut: analyse.factures[0].statut
-          } : null,
+          facture:
+            analyse.factures && analyse.factures.length > 0
+              ? {
+                  id: analyse.factures[0].id,
+                  numeroFacture: analyse.factures[0].numeroFacture,
+                  montantTotal: analyse.factures[0].montantTotal,
+                  statut: analyse.factures[0].statut,
+                }
+              : null,
           createdAt: analyse.createdAt,
-          updatedAt: analyse.updatedAt
+          updatedAt: analyse.updatedAt,
         })
       )
     } catch (error) {
       if (error instanceof AppException) {
         throw error
       }
-      logger.error({ err: error }, 'Erreur lors de la récupération de l\'analyse')
-      throw AppException.internal('Erreur lors du chargement de l\'analyse.')
+      logger.error({ err: error }, "Erreur lors de la récupération de l'analyse")
+      throw AppException.internal("Erreur lors du chargement de l'analyse.")
     }
   }
 
@@ -250,7 +274,9 @@ export default class AnalysesController {
 
       // La vérification de permission est gérée par le middleware
       // Récupérer le médecin si l'utilisateur est médecin, sinon null
-      const medecin = user.role === 'docteur' ? await Medecin.findBy('userId', user.id) : null
+      const medecin = ['docteur_clinique', 'docteur_labo'].includes(user.role)
+      ? await Medecin.findBy('userId', user.id)
+      : null
 
       // Validation avec VineJS
       const payload = await request.validateUsing(createAnalyseValidator)
@@ -271,7 +297,7 @@ export default class AnalysesController {
 
       // Générer le numéro d'analyse
       let numeroAnalyse = this.generateNumeroAnalyse()
-      
+
       // Vérifier l'unicité et régénérer si nécessaire (max 10 tentatives)
       let attempts = 0
       while (attempts < 10) {
@@ -280,11 +306,11 @@ export default class AnalysesController {
           break
         }
         // Attendre une seconde et régénérer
-        await new Promise(resolve => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         numeroAnalyse = this.generateNumeroAnalyse()
         attempts++
       }
-      
+
       // En cas d'échec, ajouter un suffixe aléatoire tout en gardant le format ANL-
       if (attempts >= 10) {
         const baseNumber = this.generateNumeroAnalyse()
@@ -301,7 +327,7 @@ export default class AnalysesController {
         statut: 'prescrite',
         laboratoire: payload.laboratoire || null,
         notesPrescription: payload.notesPrescription || null,
-        priorite: (payload.priorite || 'normale') as any
+        priorite: (payload.priorite || 'normale') as any,
       })
       await CacheService.deleteByPrefixAsync('dashboard:data:')
 
@@ -310,26 +336,46 @@ export default class AnalysesController {
         await analyse.load('medecin', (q) => q.preload('user'))
       }
 
+      try {
+        await NotificationService.notifyNewAnalysisRequest(
+          analyse.id,
+          analyse.numeroAnalyse,
+          analyse.patient?.user?.nomComplet || 'Patient',
+          analyse.typeAnalyse || 'Analyse',
+          (analyse.priorite as 'normale' | 'urgente') || 'normale'
+        )
+      } catch (notificationError) {
+        logger.warn(
+          { err: notificationError },
+          "Erreur lors de la notification de nouvelle demande d'analyse"
+        )
+      }
+
       return response.status(201).json(
-        ApiResponse.created({
-          id: analyse.id,
-          numeroAnalyse: analyse.numeroAnalyse,
-          patient: analyse.patient ? {
-            id: analyse.patient.id,
-            name: analyse.patient.user?.nomComplet || 'Patient inconnu'
-          } : null,
-          typeAnalyse: analyse.typeAnalyse,
-          statut: analyse.statut,
-          datePrescription: analyse.datePrescription,
-          priorite: analyse.priorite
-        }, 'Analyse prescrite avec succès')
+        ApiResponse.created(
+          {
+            id: analyse.id,
+            numeroAnalyse: analyse.numeroAnalyse,
+            patient: analyse.patient
+              ? {
+                  id: analyse.patient.id,
+                  name: analyse.patient.user?.nomComplet || 'Patient inconnu',
+                }
+              : null,
+            typeAnalyse: analyse.typeAnalyse,
+            statut: analyse.statut,
+            datePrescription: analyse.datePrescription,
+            priorite: analyse.priorite,
+          },
+          'Analyse prescrite avec succès'
+        )
       )
     } catch (error) {
       if (error instanceof AppException) {
         throw error
       }
-      logger.error({ err: error }, 'Erreur lors de la création de l\'analyse')
-      throw AppException.internal('Erreur lors de la création de l\'analyse.')
+      logger.error({ err: error }, "Erreur lors de la création de l'analyse")
+      throw AppException.internal("Erreur lors de la création de l'analyse.")
     }
   }
 
@@ -355,7 +401,8 @@ export default class AnalysesController {
       // Mettre à jour les champs fournis
       if (payload.typeAnalyse) analyse.typeAnalyse = payload.typeAnalyse
       if (payload.statut) analyse.statut = payload.statut as any
-      if (payload.datePrescription) analyse.datePrescription = DateTime.fromJSDate(payload.datePrescription)
+      if (payload.datePrescription)
+        analyse.datePrescription = DateTime.fromJSDate(payload.datePrescription)
       if (payload.dateResultat) analyse.dateResultat = DateTime.fromJSDate(payload.dateResultat)
       if (payload.notes) analyse.notesPrescription = payload.notes
       if (payload.laboratoire !== undefined) analyse.laboratoire = payload.laboratoire
@@ -371,21 +418,24 @@ export default class AnalysesController {
       await analyse.load('resultats')
 
       return response.json(
-        ApiResponse.updated({
-          id: analyse.id,
-          numeroAnalyse: analyse.numeroAnalyse,
-          statut: analyse.statut,
-          datePrelevement: analyse.datePrelevement,
-          dateReception: analyse.dateReception,
-          dateResultat: analyse.dateResultat
-        }, 'Analyse mise à jour avec succès')
+        ApiResponse.updated(
+          {
+            id: analyse.id,
+            numeroAnalyse: analyse.numeroAnalyse,
+            statut: analyse.statut,
+            datePrelevement: analyse.datePrelevement,
+            dateReception: analyse.dateReception,
+            dateResultat: analyse.dateResultat,
+          },
+          'Analyse mise à jour avec succès'
+        )
       )
     } catch (error) {
       if (error instanceof AppException) {
         throw error
       }
-      logger.error({ err: error }, 'Erreur lors de la mise à jour de l\'analyse')
-      throw AppException.internal('Erreur lors de la mise à jour de l\'analyse.')
+      logger.error({ err: error }, "Erreur lors de la mise à jour de l'analyse")
+      throw AppException.internal("Erreur lors de la mise à jour de l'analyse.")
     }
   }
 
@@ -410,7 +460,7 @@ export default class AnalysesController {
       }
 
       if (analyse.statut === 'terminee') {
-        throw AppException.badRequest('Impossible d\'annuler une analyse terminée')
+        throw AppException.badRequest("Impossible d'annuler une analyse terminée")
       }
 
       analyse.statut = 'annulee'
@@ -418,17 +468,20 @@ export default class AnalysesController {
       await CacheService.deleteByPrefixAsync('dashboard:data:')
 
       return response.json(
-        ApiResponse.success({
-          id: analyse.id,
-          statut: analyse.statut
-        }, 'Analyse annulée avec succès')
+        ApiResponse.success(
+          {
+            id: analyse.id,
+            statut: analyse.statut,
+          },
+          'Analyse annulée avec succès'
+        )
       )
     } catch (error) {
       if (error instanceof AppException) {
         throw error
       }
-      logger.error({ err: error }, 'Erreur lors de l\'annulation de l\'analyse')
-      throw AppException.internal('Erreur lors de l\'annulation de l\'analyse.')
+      logger.error({ err: error }, "Erreur lors de l'annulation de l'analyse")
+      throw AppException.internal("Erreur lors de l'annulation de l'analyse.")
     }
   }
 
@@ -454,15 +507,13 @@ export default class AnalysesController {
       await analyse.delete()
       await CacheService.deleteByPrefixAsync('dashboard:data:')
 
-      return response.json(
-        ApiResponse.success(null, 'Analyse supprimée avec succès')
-      )
+      return response.json(ApiResponse.success(null, 'Analyse supprimée avec succès'))
     } catch (error) {
       if (error instanceof AppException) {
         throw error
       }
-      logger.error({ err: error }, 'Erreur lors de la suppression de l\'analyse')
-      throw AppException.internal('Erreur lors de la suppression de l\'analyse.')
+      logger.error({ err: error }, "Erreur lors de la suppression de l'analyse")
+      throw AppException.internal("Erreur lors de la suppression de l'analyse.")
     }
   }
 
@@ -478,11 +529,8 @@ export default class AnalysesController {
       }
 
       const total = await Analyse.query().count('* as total').first()
-      const parStatut = await Analyse.query()
-        .select('statut')
-        .count('* as count')
-        .groupBy('statut')
-      
+      const parStatut = await Analyse.query().select('statut').count('* as count').groupBy('statut')
+
       const parType = await Analyse.query()
         .select('type_analyse')
         .count('* as count')
@@ -490,14 +538,14 @@ export default class AnalysesController {
 
       const data = {
         total: Number(total?.$extras.total || 0),
-        parStatut: parStatut.map(s => ({
+        parStatut: parStatut.map((s) => ({
           statut: s.statut,
-          count: Number(s.$extras.count || 0)
+          count: Number(s.$extras.count || 0),
         })),
-        parType: parType.map(t => ({
+        parType: parType.map((t) => ({
           type: t.typeAnalyse,
-          count: Number(t.$extras.count || 0)
-        }))
+          count: Number(t.$extras.count || 0),
+        })),
       }
       return response.json(ApiResponse.success(data))
     } catch (error) {
@@ -506,4 +554,3 @@ export default class AnalysesController {
     }
   }
 }
-

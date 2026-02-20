@@ -6,6 +6,7 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import EmptyState from '../../../components/ui/EmptyState';
 import api from '../../../lib/axios';
+import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const ConsultationAnalyses = ({ consultationId, patientId }) => {
   const navigate = useNavigate();
@@ -46,13 +47,7 @@ const ConsultationAnalyses = ({ consultationId, patientId }) => {
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return formatDateTimeInBusinessTimezone(dateString);
     } catch {
       return dateString;
     }

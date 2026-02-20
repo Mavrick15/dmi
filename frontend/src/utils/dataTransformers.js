@@ -2,6 +2,7 @@
  * Transformateurs de données côté frontend
  * Normalisent et structurent les données reçues du backend
  */
+import { formatTimeInBusinessTimezone, toBusinessDateKey } from './dateTime'
 
 /**
  * Transforme les données du dashboard en structure cohérente
@@ -109,8 +110,8 @@ const normalizeAppointments = (appointments) => {
     medecinId: apt.medecinId || apt.medecin?.id,
     medecinName: apt.medecinName || apt.medecin?.name || 'Médecin inconnu',
     dateHeure: apt.dateHeure || apt.date_heure,
-    date: apt.date || (apt.dateHeure ? new Date(apt.dateHeure).toISOString().split('T')[0] : null),
-    time: apt.time || (apt.dateHeure ? new Date(apt.dateHeure).toTimeString().slice(0, 5) : null),
+    date: apt.date || (apt.dateHeure ? toBusinessDateKey(apt.dateHeure) : null),
+    time: apt.time || (apt.dateHeure ? formatTimeInBusinessTimezone(apt.dateHeure) : null),
     motif: apt.motif || apt.type || 'Consultation',
     statut: apt.statut || apt.status,
     priorite: apt.priorite || apt.priority || 'normale',

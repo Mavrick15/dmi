@@ -4,6 +4,7 @@ import Icon from '../../../components/AppIcon';
 import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import { useAnalysesMutations } from '../../../hooks/useAnalyses';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
   const { updateAnalyse } = useAnalysesMutations();
@@ -72,7 +73,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
       if (diffTime < 0 && diffDays === 1) return "Demain";
       if (diffTime < 0 && diffDays < 7) return `Dans ${diffDays}j`;
       
-      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      return formatDateInBusinessTimezone(date);
     } catch {
       return 'Date invalide';
     }

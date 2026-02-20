@@ -8,84 +8,20 @@ import { DateTime } from 'luxon'
 import { createRendezVousValidator, updateRendezVousStatusValidator } from '#validators/rendez_vous'
 import NotificationService from '#services/NotificationService'
 import AuditService from '#services/AuditService'
+import AppointmentExpirationService from '#services/AppointmentExpirationService'
+import UserProfile from '#models/UserProfile'
+import { BUSINESS_TIMEZONE, formatBusinessDateTime, nowInBusinessTimezone } from '../utils/timezone.js'
 import { RendezVousTransformer } from '../transformers/RendezVousTransformer.js'
 import { ApiResponse } from '../utils/ApiResponse.js'
 import { AppException } from '../exceptions/AppException.js'
 
 export default class RendezVousController {
-
   /**
    * Annule automatiquement les rendez-vous en attente dont l'heure est passée
    * @private
    */
   private async cancelExpiredAppointments(): Promise<number> {
-    const now = DateTime.now()
-    
-    try {
-      // Trouver tous les rendez-vous programmés dont l'heure de fin est passée
-      const expiredAppointments = await RendezVous.query()
-        .where('statut', 'programme')
-        .whereRaw(
-          `(date_heure + (duree_minutes || ' minutes')::interval) < ?`,
-          [now.toSQL()]
-        )
-        .exec()
-      
-      // Annuler tous les rendez-vous expirés
-      let cancelledCount = 0
-      for (const appointment of expiredAppointments) {
-        // Charger les relations avant l'annulation pour les notifications
-        await appointment.load('patient', (q) => q.preload('user'))
-        await appointment.load('medecin', (q) => q.preload('user'))
-        
-        appointment.statut = 'annule'
-        // Ajouter une note indiquant l'annulation automatique
-        const autoCancelNote = 'Annulé automatiquement : heure de rendez-vous dépassée'
-        appointment.notes = appointment.notes 
-          ? `${appointment.notes}\n[${now.toFormat('dd/MM/yyyy HH:mm')}] ${autoCancelNote}`
-          : `[${now.toFormat('dd/MM/yyyy HH:mm')}] ${autoCancelNote}`
-        await appointment.save()
-        
-        // Préparer les données pour audit et notification
-        const auditPatientName = appointment.patient?.user?.nomComplet || 'Patient'
-        const auditDoctorName = appointment.medecin?.user?.nomComplet || 'Médecin'
-        const auditAppointmentDate = appointment.dateHeure.toFormat("dd/MM/yyyy 'à' HH:mm")
-        
-        // Log d'audit - Rendez-vous manqué (absence)
-        await AuditService.logAppointmentMissed(
-          null, // Pas de contexte HTTP pour un processus automatique
-          appointment.id,
-          auditPatientName,
-          auditDoctorName,
-          auditAppointmentDate,
-          'Système (auto-annulation)'
-        )
-        
-        // Notifier le patient et le médecin concerné
-        if (appointment.medecin?.userId && appointment.patient?.userId) {
-          await NotificationService.notifyAppointmentCancelled(
-            appointment.patient.userId,
-            appointment.id,
-            auditAppointmentDate,
-            auditDoctorName,
-            appointment.medecin.userId,
-            autoCancelNote,
-            true // Annulation automatique
-          )
-        }
-        
-        cancelledCount++
-      }
-      
-      if (cancelledCount > 0) {
-        logger.info(`✅ ${cancelledCount} rendez-vous expirés annulés automatiquement`)
-      }
-      
-      return cancelledCount
-    } catch (error) {
-      logger.error({ err: error }, 'Erreur lors de l\'annulation automatique des rendez-vous expirés')
-      return 0
-    }
+    return AppointmentExpirationService.runCycle()
   }
 
   /**
@@ -98,7 +34,7 @@ export default class RendezVousController {
       // Annuler automatiquement les rendez-vous expirés avant de retourner la liste
       await this.cancelExpiredAppointments()
       
-      const { patientId, medecinId, date, startDate, endDate, status, establishmentId } = request.qs()
+      const { patientId, medecinId, date, startDate, endDate, status, establishmentId, includeAutoCancelled } = request.qs()
 
       // Validation des statuts autorisés
       const validStatuses = ['programme', 'en_cours', 'termine', 'annule']
@@ -111,7 +47,8 @@ export default class RendezVousController {
       // Exclure les rendez-vous annulés automatiquement de la liste par défaut
       // (ceux qui ont été annulés automatiquement ont une note contenant "Annulé automatiquement")
       // Sauf si on filtre explicitement par statut 'annule'
-      if (!status || status !== 'annule') {
+      const shouldIncludeAutoCancelled = includeAutoCancelled === '1' || includeAutoCancelled === 'true'
+      if ((!status || status !== 'annule') && !shouldIncludeAutoCancelled) {
         query.where((q) => {
           q.where('statut', '!=', 'annule')
             .orWhere((q2) => {
@@ -225,7 +162,7 @@ export default class RendezVousController {
     // Restriction : un médecin ne peut créer un rendez-vous que pour lui-même.
     // Seuls les infirmiers (et admin/gestionnaire) peuvent créer des RDV pour n'importe quel médecin.
     const user = auth.user as any
-    if (user?.role === 'docteur') {
+    if (user?.role && ['docteur_clinique', 'docteur_labo'].includes(user.role)) {
       const medecinConnected = await Medecin.query().where('userId', user.id).first()
       if (!medecinConnected) {
         throw AppException.forbiddenWithMessage('Aucun profil médecin associé à votre compte. Vous ne pouvez pas créer de rendez-vous.')
@@ -239,11 +176,12 @@ export default class RendezVousController {
     const dateStr = payload.date // Format: YYYY-MM-DD
     const timeStr = payload.time // Format: HH:mm
     const dateTimeStr = `${dateStr}T${timeStr}:00` // Format: YYYY-MM-DDTHH:mm:ss
-    // Interpréter la date comme locale (pas UTC) pour éviter les décalages
-    const startDateTime = DateTime.fromISO(dateTimeStr, { zone: 'local' })
+    // Interpréter l'heure choisie dans le fuseau métier (pas celui du serveur).
+    // Puis convertir en UTC pour stockage cohérent et affichage stable côté clients.
+    const startDateTime = DateTime.fromISO(dateTimeStr, { zone: BUSINESS_TIMEZONE }).toUTC()
 
     // Ne pas autoriser un rendez-vous dans le passé
-    const now = DateTime.now().setZone('local')
+    const now = nowInBusinessTimezone()
     if (startDateTime <= now) {
       throw AppException.badRequest('Impossible de programmer un rendez-vous dans le passé. Veuillez choisir une date et une heure à venir.')
     }
@@ -266,6 +204,20 @@ export default class RendezVousController {
     const endDateTime = startDateTime.plus({ minutes: duration })
 
     try {
+      // Restriction métier: un patient ne peut avoir qu'un seul rendez-vous actif
+      // (programmé ou en cours) avec le même médecin.
+      const existingActiveAppointment = await RendezVous.query()
+        .where('patientId', payload.patientId)
+        .where('medecinId', payload.medecinId)
+        .whereIn('statut', ['programme', 'en_cours'])
+        .first()
+
+      if (existingActiveAppointment) {
+        throw AppException.badRequest(
+          'Ce patient a déjà un rendez-vous actif avec ce médecin. Terminez ou annulez le rendez-vous existant avant d’en créer un nouveau.'
+        )
+      }
+
       // --- LOGIQUE DE CONFLIT AVANCÉE ---
       // On cherche si un RDV existe DÉJÀ pour ce médecin qui chevauche la période demandée.
       // Un conflit existe si : (NouveauDebut < AncienFin) ET (NouveauFin > AncienDebut)
@@ -334,7 +286,7 @@ export default class RendezVousController {
         // Log d'audit - Création de rendez-vous
         const patientName = rdv.patient?.user?.nomComplet || 'Patient'
         const doctorName = rdv.medecin?.user?.nomComplet || 'Médecin'
-        const appointmentDate = startDateTime.toFormat("dd/MM/yyyy 'à' HH:mm")
+      const appointmentDate = formatBusinessDateTime(startDateTime)
         const creator = auth.user as any
         const creatorName = creator?.nomComplet || creator?.email || 'Système'
         
@@ -354,7 +306,7 @@ export default class RendezVousController {
             rdv.id,
             rdv.patient?.user?.nomComplet || 'Patient',
             rdv.medecin?.userId || payload.medecinId, // Utiliser userId du médecin (UserProfile)
-            startDateTime.toFormat('dd/MM/yyyy HH:mm')
+            formatBusinessDateTime(startDateTime)
           )
         } else {
           // Notification normale pour le patient ET le médecin concerné uniquement
@@ -369,7 +321,7 @@ export default class RendezVousController {
           await NotificationService.notifyAppointment(
             patientUser?.userId || null,
             rdv.id,
-            startDateTime.toFormat('dd/MM/yyyy HH:mm'),
+            formatBusinessDateTime(startDateTime),
             rdv.medecin?.user?.nomComplet || 'Médecin',
             doctorUserId || '', // Utiliser userId du médecin (UserProfile), pas l'ID du modèle Medecin
             patientUser?.user?.nomComplet || null, // Nom du patient pour personnaliser le message
@@ -447,11 +399,37 @@ export default class RendezVousController {
       if (!validStatuses.includes(newStatut)) {
         throw AppException.badRequest(`Statut invalide. Valeurs acceptées : ${validStatuses.join(', ')}`)
       }
+
+      // Règle métier : un médecin ne peut pas avoir 2 consultations "en_cours" en même temps.
+      if (newStatut === 'en_cours' && rdv.statut !== 'en_cours') {
+        const activeConsultation = await RendezVous.query()
+          .where('medecinId', rdv.medecinId)
+          .where('statut', 'en_cours')
+          .whereNot('id', rdv.id)
+          .first()
+
+        if (activeConsultation) {
+          throw AppException.badRequest(
+            'Ce médecin a déjà une consultation en cours. Terminez-la avant de démarrer un autre rendez-vous.'
+          )
+        }
+      }
       
       const oldStatut = rdv.statut
       rdv.statut = newStatut as 'programme' | 'en_cours' | 'termine' | 'annule'
       if (payload.notes) {
         rdv.notes = payload.notes
+      }
+
+      // Maintenir les champs d'annulation cohérents en base.
+      if (newStatut === 'annule' && oldStatut !== 'annule') {
+        rdv.motifAnnulation = payload.notes || 'Rendez-vous annulé'
+        rdv.annulePar = (auth.user as any)?.id || 'system'
+        rdv.dateAnnulation = nowInBusinessTimezone()
+      } else if (newStatut !== 'annule' && oldStatut === 'annule') {
+        rdv.motifAnnulation = null
+        rdv.annulePar = null
+        rdv.dateAnnulation = null
       }
       
       // Charger les relations avant la sauvegarde pour les notifications
@@ -462,19 +440,53 @@ export default class RendezVousController {
 
       // Notification si le rendez-vous est annulé
       if (newStatut === 'annule' && oldStatut !== 'annule') {
-        if (rdv.medecin?.userId && rdv.patient?.userId) {
+        if (rdv.medecin?.userId) {
           const notifDate = rdv.dateHeure.toFormat("dd/MM/yyyy 'à' HH:mm")
           const notifDoctor = rdv.medecin.user?.nomComplet || 'Médecin'
           const reason = payload.notes || 'Rendez-vous annulé'
           
           await NotificationService.notifyAppointmentCancelled(
-            rdv.patient.userId,
+            rdv.patient?.userId || null,
             rdv.id,
             notifDate,
             notifDoctor,
             rdv.medecin.userId,
             reason,
             false // Annulation manuelle
+          )
+        }
+      }
+
+      // Notification aux infirmières quand la consultation démarre
+      if (newStatut === 'en_cours' && oldStatut === 'programme') {
+        const nurseUsers = await UserProfile.query().where('role', 'infirmiere').where('actif', true)
+        const nurseIds = nurseUsers.map((u) => u.id)
+
+        if (nurseIds.length > 0) {
+          const doctorName = rdv.medecin?.user?.nomComplet || 'Médecin'
+          const patientName = rdv.patient?.user?.nomComplet || 'Patient'
+
+          await NotificationService.createNotification(
+            nurseIds,
+            'Consultation démarrée',
+            `${doctorName} a démarré la consultation avec ${patientName}.`,
+            {
+              type: 'info',
+              category: 'clinical',
+              targetId: rdv.id,
+              targetType: 'appointment',
+              actionUrl: `/console-clinique?patientId=${rdv.patientId}&appointmentId=${rdv.id}&startConsultation=true`,
+              priority: 'normal',
+              groupKey: `consultation_started_${rdv.id}`,
+              metadata: {
+                appointmentId: rdv.id,
+                patientId: rdv.patientId,
+                patientName,
+                doctorId: rdv.medecinId,
+                doctorName,
+                status: 'en_cours',
+              },
+            }
           )
         }
       }
@@ -555,12 +567,12 @@ export default class RendezVousController {
       
       // Mettre à jour la date/heure si fournie
       if (request.input('dateHeure')) {
-        // Interpréter la date comme locale pour éviter les décalages
+        // Interpréter la date comme heure métier (Kinshasa) pour éviter les décalages.
         const dateHeureInput = request.input('dateHeure')
         // Si la chaîne contient un décalage de fuseau horaire, l'utiliser, sinon interpréter comme local
         const newDateHeure = dateHeureInput.includes('+') || dateHeureInput.includes('-') || dateHeureInput.endsWith('Z')
-          ? DateTime.fromISO(dateHeureInput)
-          : DateTime.fromISO(dateHeureInput, { zone: 'local' })
+          ? DateTime.fromISO(dateHeureInput).toUTC()
+          : DateTime.fromISO(dateHeureInput, { zone: BUSINESS_TIMEZONE }).toUTC()
         const duration = request.input('dureeMinutes') || rdv.dureeMinutes || 30
         const endDateTime = newDateHeure.plus({ minutes: duration })
         
@@ -737,7 +749,7 @@ export default class RendezVousController {
 
       // Un médecin ne peut créer un RDV que pour lui-même : ne retourner que son profil
       const user = auth.user as any
-      if (user?.role === 'docteur') {
+      if (user?.role && ['docteur_clinique', 'docteur_labo'].includes(user.role)) {
         query.where('userId', user.id)
       } else if (establishmentId) {
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i

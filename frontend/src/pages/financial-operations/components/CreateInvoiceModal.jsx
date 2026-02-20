@@ -14,6 +14,12 @@ import { useAnalysesByPatient } from '../../../hooks/useAnalyses';
 import { useQuery } from '@tanstack/react-query';
 import { useFinanceMutations } from '../../../hooks/useFinance';
 import api from '../../../lib/axios';
+import {
+  addDaysToBusinessDateKey,
+  formatDateInBusinessTimezone,
+  formatLongDateInBusinessTimezone,
+  getTodayInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const CreateInvoiceModal = ({ isOpen, onClose }) => {
   const { hasPermission } = usePermissions();
@@ -29,7 +35,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
     montantTotal: '',
     montantPaye: '0',
     statut: 'en_attente',
-    dateEmission: new Date().toISOString().split('T')[0],
+    dateEmission: getTodayInBusinessTimezone(),
     dateEcheance: '',
     notes: ''
   });
@@ -127,8 +133,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
   const handleConfirmCreate = () => {
     // Calculer la date d'échéance si non fournie (30 jours par défaut)
     const dateEcheance = formData.dateEcheance || 
-      new Date(new Date(formData.dateEmission).getTime() + 30 * 24 * 60 * 60 * 1000)
-        .toISOString().split('T')[0];
+      addDaysToBusinessDateKey(formData.dateEmission, 30);
 
     // Libellé type pour les notes (affichage liste / PDF)
     const typeLabels = { consultation: 'Consultation', examen: 'Examen(s)', traitement: 'Traitement', autre: 'Autre' };
@@ -162,7 +167,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
           montantTotal: '',
           montantPaye: '0',
           statut: 'en_attente',
-          dateEmission: new Date().toISOString().split('T')[0],
+          dateEmission: getTodayInBusinessTimezone(),
           dateEcheance: '',
           notes: ''
         });
@@ -212,7 +217,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
   const selectedPatient = Array.isArray(patients) ? patients.find(p => p && p.id === formData.patientId) : null;
   const selectedConsultation = Array.isArray(consultations) ? consultations.find(c => c && c.id === formData.consultationId) : null;
   const dateEcheance = formData.dateEcheance || 
-    (formData.dateEmission ? new Date(new Date(formData.dateEmission).getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : '');
+    (formData.dateEmission ? addDaysToBusinessDateKey(formData.dateEmission, 30) : '');
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -305,11 +310,9 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Consultation liée</h4>
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
-                    {selectedConsultation.dateConsultation ? new Date(selectedConsultation.dateConsultation).toLocaleDateString('fr-FR', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric' 
-                    }) : 'Date inconnue'}
+                    {selectedConsultation.dateConsultation
+                      ? formatLongDateInBusinessTimezone(selectedConsultation.dateConsultation)
+                      : 'Date inconnue'}
                   </p>
                   {selectedConsultation.diagnosticPrincipal && (
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -347,11 +350,9 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Date d'émission</h4>
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
-                    {formData.dateEmission ? new Date(formData.dateEmission).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }) : 'Non définie'}
+                    {formData.dateEmission
+                      ? formatLongDateInBusinessTimezone(formData.dateEmission)
+                      : 'Non définie'}
                   </p>
                 </div>
               </div>
@@ -359,11 +360,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Date d'échéance</h4>
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
-                    {dateEcheance ? new Date(dateEcheance).toLocaleDateString('fr-FR', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    }) : 'Non définie'}
+                    {dateEcheance ? formatLongDateInBusinessTimezone(dateEcheance) : 'Non définie'}
                   </p>
                 </div>
               </div>
@@ -479,11 +476,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                     .map(c => {
                       if (!c || typeof c !== 'object') return null;
                       const dateStr = c.dateConsultation 
-                        ? new Date(c.dateConsultation).toLocaleDateString('fr-FR', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                          })
+                        ? formatDateInBusinessTimezone(c.dateConsultation)
                         : 'Date inconnue';
                       
                       const diagnostic = c.diagnosticPrincipal || c.consultationData?.diagnosticPrincipal || 'Consultation';
@@ -569,12 +562,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                         <div className="flex items-center gap-2">
                           <Icon name="Calendar" size={14} />
                           <span>
-                            {new Date(selectedConsultation.dateConsultation).toLocaleDateString('fr-FR', {
-                              weekday: 'long',
-                              day: 'numeric',
-                              month: 'long',
-                              year: 'numeric'
-                            })}
+                            {formatLongDateInBusinessTimezone(selectedConsultation.dateConsultation)}
                           </span>
                         </div>
                       )}

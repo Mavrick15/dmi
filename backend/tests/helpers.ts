@@ -14,7 +14,7 @@ export class TestHelpers {
     email: string
     password?: string
     nomComplet: string
-    role: 'admin' | 'docteur' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
+    role: 'admin' | 'docteur_clinique' | 'docteur_labo' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
     actif?: boolean
   }) {
     return await UserProfile.create({
@@ -47,7 +47,7 @@ export class TestHelpers {
     email: string
     password?: string
     nomComplet: string
-    role: 'admin' | 'docteur' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
+    role: 'admin' | 'docteur_clinique' | 'docteur_labo' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
     actif?: boolean
   }) {
     const user = await this.createUser(data)

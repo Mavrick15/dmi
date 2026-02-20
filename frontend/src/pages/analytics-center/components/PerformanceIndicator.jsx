@@ -1,4 +1,5 @@
 import Icon from '../../../components/AppIcon';
+import { formatNumberInFrenchLocale } from '../../../utils/dateTime';
 
 const PerformanceIndicator = ({ 
   title, 
@@ -61,10 +62,10 @@ const PerformanceIndicator = ({
         <div className="flex items-end justify-between">
           <div>
             <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">
-              {current?.toLocaleString('fr-FR')}<span className="text-lg text-slate-400 ml-0.5 font-medium">{unit}</span>
+              {formatNumberInFrenchLocale(current)}<span className="text-lg text-slate-400 ml-0.5 font-medium">{unit}</span>
             </div>
             <div className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-              Objectif : {target?.toLocaleString('fr-FR')}{unit}
+              Objectif : {formatNumberInFrenchLocale(target)}{unit}
             </div>
           </div>
           <div className="text-right">
@@ -85,7 +86,7 @@ const PerformanceIndicator = ({
         {/* Comparaison Benchmark */}
         {benchmark && (
           <div className="flex items-center justify-between text-xs font-medium pt-1">
-            <span className="text-slate-400 dark:text-slate-500">Secteur : {benchmark?.toLocaleString('fr-FR')}{unit}</span>
+            <span className="text-slate-400 dark:text-slate-500">Secteur : {formatNumberInFrenchLocale(benchmark)}{unit}</span>
             <span className={`flex items-center gap-1 ${current >= benchmark ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
               <Icon name={current >= benchmark ? 'Check' : 'AlertCircle'} size={12} />
               {current >= benchmark ? 'Supérieur' : 'Inférieur'}

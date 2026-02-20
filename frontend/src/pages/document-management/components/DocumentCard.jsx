@@ -3,6 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Badge from '../../../components/ui/Badge';
 import PermissionGuard from '../../../components/PermissionGuard';
 import { usePermissions } from '../../../hooks/usePermissions';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDelete = true, canShare = true }) => {
   const { hasPermission } = usePermissions();
@@ -35,7 +36,7 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
     return 'bg-primary dark:bg-blue-600';
   };
 
-  const created = document.createdAt ? new Date(document.createdAt).toLocaleDateString('fr-FR') : '—';
+  const created = document.createdAt ? formatDateInBusinessTimezone(document.createdAt) : '—';
 
   return (
     <motion.div

@@ -1,6 +1,7 @@
 /**
  * Utilitaires pour la conversion des filtres Analytics en paramètres API
  */
+import { addDaysToBusinessDateKey, getTodayInBusinessTimezone, toBusinessDateKey } from './dateTime';
 
 /**
  * Convertit les filtres de l'interface utilisateur en paramètres API
@@ -12,81 +13,79 @@ export const getApiParamsFromFilters = (filters) => {
   
   // Conversion de la plage de dates
   const now = new Date();
+  const todayKey = getTodayInBusinessTimezone();
   let startDate, endDate;
   
   switch (filters.dateRange) {
     case 'today': {
-      const today = new Date(now);
-      startDate = new Date(today.setHours(0, 0, 0, 0));
-      const todayEnd = new Date(now);
-      endDate = new Date(todayEnd.setHours(23, 59, 59, 999));
+      startDate = todayKey;
+      endDate = todayKey;
       break;
     }
     case 'yesterday': {
-      const yesterday = new Date(now);
-      yesterday.setDate(yesterday.getDate() - 1);
-      startDate = new Date(yesterday);
-      startDate.setHours(0, 0, 0, 0);
-      endDate = new Date(yesterday);
-      endDate.setHours(23, 59, 59, 999);
+      const yesterday = addDaysToBusinessDateKey(todayKey, -1);
+      startDate = yesterday;
+      endDate = yesterday;
       break;
     }
     case 'last7days': {
-      startDate = new Date(now);
-      startDate.setDate(startDate.getDate() - 7);
-      endDate = new Date(now);
+      startDate = addDaysToBusinessDateKey(todayKey, -7);
+      endDate = todayKey;
       break;
     }
     case 'last30days': {
-      startDate = new Date(now);
-      startDate.setDate(startDate.getDate() - 30);
-      endDate = new Date(now);
+      startDate = addDaysToBusinessDateKey(todayKey, -30);
+      endDate = todayKey;
       break;
     }
     case 'last90days': {
-      startDate = new Date(now);
-      startDate.setDate(startDate.getDate() - 90);
-      endDate = new Date(now);
+      startDate = addDaysToBusinessDateKey(todayKey, -90);
+      endDate = todayKey;
       break;
     }
     case 'thisMonth': {
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      endDate = new Date(now);
+      startDate = `${todayKey.slice(0, 8)}01`;
+      endDate = todayKey;
       break;
     }
     case 'lastMonth': {
-      startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+      const [year, month] = todayKey.split('-').map((v) => Number.parseInt(v, 10));
+      const firstCurrentMonth = new Date(Date.UTC(year, month - 1, 1, 12, 0, 0));
+      firstCurrentMonth.setUTCMonth(firstCurrentMonth.getUTCMonth() - 1);
+      const lastMonthYear = firstCurrentMonth.getUTCFullYear();
+      const lastMonth = String(firstCurrentMonth.getUTCMonth() + 1).padStart(2, '0');
+      startDate = `${lastMonthYear}-${lastMonth}-01`;
+      const firstThisMonth = `${todayKey.slice(0, 8)}01`;
+      endDate = addDaysToBusinessDateKey(firstThisMonth, -1);
       break;
     }
     case 'thisYear': {
-      startDate = new Date(now.getFullYear(), 0, 1);
-      endDate = new Date(now);
+      startDate = `${todayKey.slice(0, 4)}-01-01`;
+      endDate = todayKey;
       break;
     }
     case 'custom':
       if (filters.customStartDate) {
-        startDate = new Date(filters.customStartDate);
+        startDate = toBusinessDateKey(filters.customStartDate);
       }
       if (filters.customEndDate) {
-        endDate = new Date(filters.customEndDate);
+        endDate = toBusinessDateKey(filters.customEndDate);
       }
       break;
     default: {
       // last30days par défaut
-      startDate = new Date(now);
-      startDate.setDate(startDate.getDate() - 30);
-      endDate = new Date(now);
+      startDate = addDaysToBusinessDateKey(todayKey, -30);
+      endDate = todayKey;
     }
   }
   
   if (startDate) {
-    params.startDate = startDate.toISOString().split('T')[0];
-    params.start = startDate.toISOString().split('T')[0]; // Pour compatibilité avec /stats/period
+    params.startDate = startDate;
+    params.start = startDate; // Pour compatibilité avec /stats/period
   }
   if (endDate) {
-    params.endDate = endDate.toISOString().split('T')[0];
-    params.end = endDate.toISOString().split('T')[0]; // Pour compatibilité avec /stats/period
+    params.endDate = endDate;
+    params.end = endDate; // Pour compatibilité avec /stats/period
   }
   
   // Ajouter les autres filtres

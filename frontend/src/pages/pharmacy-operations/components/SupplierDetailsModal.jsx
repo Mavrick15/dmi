@@ -5,6 +5,7 @@ import Button from '../../../components/ui/Button';
 import AnimatedModal from '../../../components/ui/AnimatedModal';
 import { useToast } from '../../../contexts/ToastContext';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEdit }) => {
   const [supplier, setSupplier] = useState(null);
@@ -58,11 +59,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('fr-FR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
+      return formatDateInBusinessTimezone(dateString);
     } catch (error) {
       return 'N/A';
     }

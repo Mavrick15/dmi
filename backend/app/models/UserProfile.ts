@@ -22,7 +22,7 @@ export default class UserProfile extends BaseModel {
   declare adresse: string | null
 
   @column()
-  declare role: 'admin' | 'docteur' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
+  declare role: 'admin' | 'docteur_clinique' | 'docteur_labo' | 'infirmiere' | 'pharmacien' | 'gestionnaire' | 'patient'
 
   @column()
   declare specialite: string | null
@@ -44,7 +44,7 @@ export default class UserProfile extends BaseModel {
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, columnName: 'date_modification' })
-  declare updatedAt: DateTime 
+  declare updatedAt: DateTime
 
   @column.dateTime({ columnName: 'derniere_connexion' })
   declare derniereConnexion: DateTime | null

@@ -12,6 +12,7 @@ import { useToast } from '../../../contexts/ToastContext';
 import { usePatientDocuments, useDocumentMutations } from '../../../hooks/useDocuments';
 import api from '../../../lib/axios';
 import { Loader2 } from 'lucide-react';
+import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const DocumentsList = ({ patient }) => {
   const { hasPermission } = usePermissions();
@@ -185,13 +186,7 @@ const DocumentsList = ({ patient }) => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    return formatDateTimeInBusinessTimezone(dateString);
   };
 
   const formatFileSize = (bytes) => {

@@ -3,6 +3,7 @@ import Badge from '../../../components/ui/Badge';
 import Button from '../../../components/ui/Button';
 import Icon from '../../../components/AppIcon';
 import ResultatComments from './ResultatComments';
+import { formatDateInBusinessTimezone } from '../../../utils/dateTime';
 
 const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
   const getInterpretationBadge = (interpretation) => {
@@ -124,7 +125,7 @@ const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
                           <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500 p-2" title="Résultat validé - modification impossible">
                             <Icon name="Lock" size={16} />
                           </div>
-                          <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 p-2" title={`Validé par ${resultat.validePar?.name || 'Validateur'} ${resultat.dateValidation ? 'le ' + new Date(resultat.dateValidation).toLocaleDateString('fr-FR') : ''}`}>
+                          <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 p-2" title={`Validé par ${resultat.validePar?.name || 'Validateur'} ${resultat.dateValidation ? 'le ' + formatDateInBusinessTimezone(resultat.dateValidation) : ''}`}>
                             <Icon name="CheckCircle" size={16} />
                           </div>
                         </>

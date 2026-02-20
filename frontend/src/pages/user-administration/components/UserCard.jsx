@@ -13,55 +13,47 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
   const getRoleTheme = (roleName) => {
     const role = roleName?.toLowerCase() || '';
     if (role.includes('docteur') || role.includes('medecin') || role.includes('physician')) {
-      return { 
-        color: 'text-blue-600 dark:text-blue-400', 
+      return {
+        color: 'text-blue-600 dark:text-blue-400',
         bg: 'bg-blue-50 dark:bg-blue-900/20',
         borderTop: 'border-t-blue-500',
         icon: 'Stethoscope'
       };
     }
     if (role.includes('admin')) {
-      return { 
-        color: 'text-purple-600 dark:text-purple-400', 
+      return {
+        color: 'text-purple-600 dark:text-purple-400',
         bg: 'bg-purple-50 dark:bg-purple-900/20',
         borderTop: 'border-t-purple-500',
         icon: 'ShieldCheck'
       };
     }
     if (role.includes('infirmiere') || role.includes('nurse')) {
-      return { 
-        color: 'text-emerald-600 dark:text-emerald-400', 
+      return {
+        color: 'text-emerald-600 dark:text-emerald-400',
         bg: 'bg-emerald-50 dark:bg-emerald-900/20',
         borderTop: 'border-t-emerald-500',
         icon: 'Activity'
       };
     }
     if (role.includes('pharmacien') || role.includes('pharma')) {
-      return { 
-        color: 'text-teal-600 dark:text-teal-400', 
+      return {
+        color: 'text-teal-600 dark:text-teal-400',
         bg: 'bg-teal-50 dark:bg-teal-900/20',
         borderTop: 'border-t-teal-500',
         icon: 'Pill'
       };
     }
-    if (role.includes('it_specialist')) {
-       return { 
-        color: 'text-indigo-600 dark:text-indigo-400', 
-        bg: 'bg-indigo-50 dark:bg-indigo-900/20',
-        borderTop: 'border-t-indigo-500',
-        icon: 'Code'
-      };
-    }
-    if (role.includes('gestionnaire')) {
-       return { 
-        color: 'text-amber-600 dark:text-amber-400', 
+if (role.includes('gestionnaire')) {
+      return {
+        color: 'text-amber-600 dark:text-amber-400',
         bg: 'bg-amber-50 dark:bg-amber-900/20',
         borderTop: 'border-t-amber-500',
         icon: 'Briefcase'
       };
     }
-    return { 
-      color: 'text-slate-600 dark:text-slate-400', 
+    return {
+      color: 'text-slate-600 dark:text-slate-400',
       bg: 'bg-slate-50 dark:bg-slate-800',
       borderTop: 'border-t-slate-400',
       icon: 'User'
@@ -83,7 +75,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       whileHover={{ y: -2, scale: 1.01 }}
       className={`
         group relative bg-white dark:bg-slate-900 border ${getBorderColor()} rounded-xl
@@ -92,7 +84,7 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
         ${!isActive ? 'opacity-75' : ''}
       `}
     >
-      
+
       {!isActive && (
         <div className="absolute top-3 right-3 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide border border-slate-200 dark:border-slate-700">
           Inactif
@@ -103,10 +95,10 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
         <div className="flex items-start gap-4 mb-5">
           <div className="relative flex-shrink-0">
             {user.avatar ? (
-              <Image 
-                src={user.avatar} 
-                alt={user.name} 
-                className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-700" 
+              <Image
+                src={user.avatar}
+                alt={user.name}
+                className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-700"
               />
             ) : (
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold ${theme.bg} ${theme.color} border border-slate-200 dark:border-slate-700`}>
@@ -123,40 +115,40 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
             </h3>
             <div className={`inline-flex items-center gap-1.5 mt-1 px-2 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wider ${theme.bg} ${theme.color}`}>
               <Icon name={theme.icon} size={12} />
-              <span className="truncate">{user.role}</span>
+              <span className="truncate">{({ docteur_clinique: 'Médecine générale', docteur_labo: 'Médecin biologiste', infirmiere: 'Infirmier(e)', pharmacien: 'Pharmacien', gestionnaire: 'Gestionnaire', admin: 'Admin' })[user.role] || user.role}</span>
             </div>
           </div>
         </div>
 
         <div className="space-y-2.5 relative z-10">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 border border-blue-200/50 dark:border-blue-800/50">
-               <Icon name="Mail" size={14} />
-             </div>
-             <span className="truncate font-medium" title={user.email}>{user.email}</span>
-          </motion.div>
-          
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
-          >
-             <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0 border border-purple-200/50 dark:border-purple-800/50">
-               <Icon name="Building2" size={14} />
-             </div>
-             <span className="truncate font-medium">{user.department || user.nom_etablissement || 'Général'}</span>
+            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0 border border-blue-200/50 dark:border-blue-800/50">
+              <Icon name="Mail" size={14} />
+            </div>
+            <span className="truncate font-medium" title={user.email}>{user.email}</span>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.02 }}
             className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
           >
-             <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0 border border-emerald-200/50 dark:border-emerald-800/50">
-               <Icon name="Phone" size={14} />
-             </div>
-             <span className="truncate font-medium">{user.phone || user.telephone || 'N/A'}</span>
+            <div className="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0 border border-purple-200/50 dark:border-purple-800/50">
+              <Icon name="Building2" size={14} />
+            </div>
+            <span className="truncate font-medium">{user.department || user.nom_etablissement || 'Général'}</span>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400 p-2 rounded-lg bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 flex-shrink-0 border border-emerald-200/50 dark:border-emerald-800/50">
+              <Icon name="Phone" size={14} />
+            </div>
+            <span className="truncate font-medium">{user.phone || user.telephone || 'N/A'}</span>
           </motion.div>
         </div>
       </div>
@@ -171,26 +163,25 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
           {/* Bouton Toggle Status */}
           {onToggleStatus && (
             <PermissionGuard requiredPermission="user_edit">
-              <button 
-                  onClick={(e) => { e.stopPropagation(); onToggleStatus(user); }}
-                  className={`p-2 rounded-lg transition-colors ${
-                  isActive 
-                      ? 'text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20' 
-                      : 'text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'
+              <button
+                onClick={(e) => { e.stopPropagation(); onToggleStatus(user); }}
+                className={`p-2 rounded-lg transition-colors ${isActive
+                    ? 'text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20'
+                    : 'text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20'
                   }`}
-                  title={isActive ? "Désactiver le compte" : "Activer le compte"}
-                  disabled={!hasPermission('user_edit')}
+                title={isActive ? "Désactiver le compte" : "Activer le compte"}
+                disabled={!hasPermission('user_edit')}
               >
-                  <Icon name={isActive ? "UserX" : "UserCheck"} size={16} />
+                <Icon name={isActive ? "UserX" : "UserCheck"} size={16} />
               </button>
             </PermissionGuard>
           )}
 
           <PermissionGuard requiredPermission="user_edit">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8 text-slate-500 hover:text-primary dark:hover:text-blue-400" 
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-slate-500 hover:text-primary dark:hover:text-blue-400"
               onClick={(e) => { e.stopPropagation(); onEdit(user); }}
               title="Éditer"
               disabled={!hasPermission('user_edit')}
@@ -200,10 +191,10 @@ const UserCard = ({ user, onEdit, onDelete, onToggleStatus }) => {
           </PermissionGuard>
 
           <PermissionGuard requiredPermission="user_delete">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={(e) => { e.stopPropagation(); onDelete(user); }} 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => { e.stopPropagation(); onDelete(user); }}
               className="h-8 w-8 text-slate-500 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20"
               title="Supprimer l'utilisateur"
               disabled={!hasPermission('user_delete')}

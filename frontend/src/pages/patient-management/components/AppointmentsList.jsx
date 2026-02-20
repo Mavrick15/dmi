@@ -13,13 +13,17 @@ import api from '../../../lib/axios';
 import { useToast } from '../../../contexts/ToastContext';
 import { useAppointments, useDoctors, useAppointmentMutations } from '../../../hooks/useAppointments';
 import { Loader2 } from 'lucide-react';
+import {
+  formatDateInBusinessTimezone,
+  getTodayInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => {
   const { hasPermission } = usePermissions();
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getTodayInBusinessTimezone());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newAppointment, setNewAppointment] = useState({
-    date: new Date().toISOString().split('T')[0],
+    date: getTodayInBusinessTimezone(),
     time: '09:00',
     duration: '30',
     type: 'Consultation',
@@ -65,7 +69,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
       // Le toast et l'invalidation sont gérés par le hook createAppointment
       setIsCreateModalOpen(false);
       setNewAppointment({
-        date: new Date().toISOString().split('T')[0],
+        date: getTodayInBusinessTimezone(),
         time: '09:00',
         duration: '30',
         type: 'Consultation',
@@ -133,21 +137,11 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric'
-    });
+    return dateString ? formatDateInBusinessTimezone(dateString) : 'N/A';
   };
 
   const formatDateShort = (dateString) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short'
-    });
+    return dateString ? formatDateInBusinessTimezone(dateString) : '';
   };
 
   if (loadingAppointments) {

@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 import { usePatientModal } from '../../../contexts/PatientModalContext';
+import {
+  formatDateInBusinessTimezone,
+  formatTimeInBusinessTimezone,
+} from '../../../utils/dateTime';
 
 const RecentPatientsWidget = ({ patients = [] }) => {
   const { openPatientModal } = usePatientModal();
@@ -10,8 +14,8 @@ const RecentPatientsWidget = ({ patients = [] }) => {
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'N/A';
-      const dateStr = date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-      const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const dateStr = formatDateInBusinessTimezone(date);
+      const timeStr = formatTimeInBusinessTimezone(date);
       return `${dateStr} à ${timeStr}`;
     } catch {
       return 'N/A';

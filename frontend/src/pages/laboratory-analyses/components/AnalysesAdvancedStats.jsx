@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import Icon from '../../../components/AppIcon';
 import Badge from '../../../components/ui/Badge';
+import { formatDateInBusinessTimezone, toBusinessDateKey } from '../../../utils/dateTime';
 
 const AnalysesAdvancedStats = ({ analyses, stats }) => {
   // Calculer les statistiques avancées
@@ -49,13 +50,13 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
     for (let i = 29; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = toBusinessDateKey(date);
       evolution[dateStr] = 0;
     }
 
     analyses.forEach(a => {
       if (a.datePrescription) {
-        const dateStr = new Date(a.datePrescription).toISOString().split('T')[0];
+        const dateStr = toBusinessDateKey(a.datePrescription);
         if (evolution[dateStr] !== undefined) {
           evolution[dateStr]++;
         }
@@ -63,7 +64,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
     });
 
     const evolutionData = Object.entries(evolution).map(([date, count]) => ({
-      date: new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }),
+      date: formatDateInBusinessTimezone(date),
       analyses: count
     }));
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 
+const numberFormatterFr = new Intl.NumberFormat('fr-FR');
+
 const AnalysesStats = ({ stats }) => {
   if (!stats) return null;
 
@@ -33,7 +35,7 @@ const AnalysesStats = ({ stats }) => {
               </div>
             </div>
             <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-              {card.value.toLocaleString('fr-FR')}
+              {numberFormatterFr.format(card.value)}
             </p>
             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
               {card.title}
