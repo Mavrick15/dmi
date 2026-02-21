@@ -22,8 +22,8 @@ const RecentTransactionsTable = ({ transactions = [], onViewAll }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden h-full flex flex-col">
-      <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden h-full flex flex-col">
+      <div className="p-6 border-b border-white/20 dark:border-white/10 flex justify-between items-center">
         <div>
            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Dernières Transactions</h3>
            <p className="text-xs text-slate-500">Entrées et sorties de caisse</p>
@@ -42,7 +42,7 @@ const RecentTransactionsTable = ({ transactions = [], onViewAll }) => {
       
       <div className="overflow-y-auto overflow-x-auto flex-1 custom-scrollbar">
         <table className="w-full">
-          <thead className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+          <thead className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-white/20 dark:border-white/10 sticky top-0 z-10">
             <tr>
               <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Patient</th>
               <th className="text-left py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">N° Facture</th>
@@ -52,7 +52,7 @@ const RecentTransactionsTable = ({ transactions = [], onViewAll }) => {
               <th className="text-center py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Statut</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-white/20 dark:divide-white/10">
             {Array.isArray(transactions) && transactions.map((tx, idx) => {
               if (!tx || typeof tx !== 'object') return null;
               return (
@@ -60,8 +60,8 @@ const RecentTransactionsTable = ({ transactions = [], onViewAll }) => {
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                        <Image src={tx.patientAvatar} alt={tx.patientName} className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700" />
-                        <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-slate-900 rounded-full p-0.5">
+                        <Image src={tx.patientAvatar} alt={tx.patientName} className="w-10 h-10 rounded-full object-cover border border-white/20 dark:border-white/10" />
+                        <div className="absolute -bottom-0.5 -right-0.5 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-full p-0.5">
                             <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900"></div>
                         </div>
                     </div>

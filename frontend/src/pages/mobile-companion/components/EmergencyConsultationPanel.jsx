@@ -43,7 +43,7 @@ const EmergencyConsultationPanel = () => {
       </div>
 
       {/* Quick Patient Search */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Patient</h3>
         
         <Input
@@ -51,7 +51,7 @@ const EmergencyConsultationPanel = () => {
           placeholder="Rechercher (Nom, ID, Tél)..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="mb-4 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+          className="mb-4 bg-slate-50 dark:bg-slate-950 border-white/20 dark:border-white/10"
         />
 
         <div className="space-y-3">
@@ -88,14 +88,14 @@ const EmergencyConsultationPanel = () => {
       </div>
 
       {/* Emergency Contacts */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Contacts Garde</h3>
         
         <div className="space-y-3">
           {Array.isArray(emergencyContacts) && emergencyContacts.map((contact) => {
             if (!contact || typeof contact !== 'object') return null;
             return (
-            <div key={contact.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div key={contact.id} className="flex items-center gap-3 p-3 glass-surface rounded-xl">
               <div className="relative">
                 <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold text-xs">
                   {contact.avatarAlt}
@@ -108,7 +108,7 @@ const EmergencyConsultationPanel = () => {
                 <p className="text-xs text-slate-500 dark:text-slate-400">{contact.role}</p>
               </div>
               
-              <Button variant="outline" size="icon" className="rounded-full w-8 h-8 border-slate-200 dark:border-slate-700">
+              <Button variant="outline" size="icon" className="rounded-full w-8 h-8 border-white/20 dark:border-white/10">
                 <Icon name="Phone" size={14} />
               </Button>
             </div>

@@ -78,9 +78,9 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden mx-auto">
+      <div className="glass-panel rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-white/20 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
               <Icon name="Share2" size={20} className="text-primary" />
@@ -112,7 +112,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Les documents ne peuvent être partagés qu&apos;avec des médecins. Chaque médecin concerné sera notifié.</p>
 
           {/* Permission */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl glass-surface p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Niveau d'accès</p>
             <Select
               options={[
@@ -126,7 +126,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Médecins (sélection individuelle) */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm overflow-hidden">
+          <div className="rounded-xl glass-panel shadow-sm overflow-hidden">
             <p className="text-sm font-bold text-slate-900 dark:text-white px-4 pt-4 pb-2">Médecins</p>
             <div className="max-h-44 overflow-y-auto px-4 pb-4 custom-scrollbar">
               {loadingDoctors ? (
@@ -161,13 +161,13 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Rôles (docteurs uniquement) */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4">
+          <div className="glass-panel rounded-xl/50 shadow-sm p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">Partager avec un rôle</p>
             <div className="flex flex-wrap gap-2">
               {ROLES_DOCTEURS.map((role) => (
                 <label
                   key={role.value}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-surface hover:bg-white/30 dark:hover:bg-white/10 cursor-pointer transition-colors has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10"
                 >
                   <input
                     type="checkbox"
@@ -182,7 +182,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
           </div>
 
           {/* Expiration */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl glass-surface p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Expiration (optionnel)</p>
             <Input
               type="datetime-local"
@@ -195,7 +195,7 @@ const DocumentShareModal = ({ document, isOpen, onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 p-6 border-t border-slate-200 dark:border-slate-700 shrink-0">
+        <div className="flex items-center justify-end gap-2 px-3 py-1.5 border-t border-white/20 dark:border-white/10 shrink-0">
           <Button variant="outline" onClick={onClose}>
             Annuler
           </Button>

@@ -84,8 +84,8 @@ const QuickActionGrid = ({ onActionClick }) => {
         iconText: 'text-emerald-600 dark:text-emerald-400'
       },
       slate: { 
-        bg: 'bg-white dark:bg-slate-800', 
-        border: 'border-slate-200 dark:border-slate-700', 
+        bg: 'glass-surface', 
+        border: 'border-white/20 dark:border-white/10', 
         iconBg: 'bg-slate-100 dark:bg-slate-700',
         iconText: 'text-slate-600 dark:text-slate-400'
       }

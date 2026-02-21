@@ -58,9 +58,9 @@ const QuickActions = ({ onActionSelect }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]">
       {/* Header */}
-      <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+      <div className="p-5 border-b border-white/20 dark:border-white/10 flex-shrink-0">
         <div className="flex items-center gap-2 mb-4">
           <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
             <Icon name="Zap" size={20} className="text-primary dark:text-blue-400" />
@@ -99,7 +99,7 @@ const QuickActions = ({ onActionSelect }) => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               onClick={() => onActionSelect(action)}
-              className="group p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all text-left flex items-start gap-3"
+              className="group p-4 glass-panel rounded-xl/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all text-left flex items-start gap-3"
             >
               <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center border ${getIconBoxClass(action.color)}`}>
                 <Icon name={action.icon} size={20} className={getIconClass(action.color)} />
@@ -123,7 +123,7 @@ const QuickActions = ({ onActionSelect }) => {
       </div>
 
       {/* Urgence */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+      <div className="p-4 border-t border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
         <Button
           variant="outline"
           fullWidth

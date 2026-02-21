@@ -58,25 +58,27 @@ const MetricCard = ({
 
   return (
     <div
-      className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow flex flex-col h-full ${className}`}
+      className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow flex flex-col h-full ${className}`}
     >
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${style.icon}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+            {title}
+            {change != null && change !== '' && (
+              <span className={`ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold ${changeBadgeClass}`}>
+                <Icon name={isPositive ? 'TrendingUp' : 'TrendingDown'} size={9} />
+                {change}
+              </span>
+            )}
+          </p>
+          <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+            {value}
+          </p>
+        </div>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
           <Icon name={icon} size={20} />
         </div>
-        {change != null && change !== '' && (
-          <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${changeBadgeClass}`}>
-            <Icon name={isPositive ? 'TrendingUp' : 'TrendingDown'} size={12} />
-            {change}
-          </span>
-        )}
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-        {value}
-      </p>
-      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-        {title}
-      </p>
       {/* Mini barres de tendance (optionnel, discret) */}
       {Array.isArray(trend) && trend.length > 0 && (
         <div className="flex items-end gap-0.5 h-6 mt-2 pt-2 border-t border-slate-200/50 dark:border-slate-700/50">

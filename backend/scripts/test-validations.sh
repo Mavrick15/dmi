@@ -77,7 +77,7 @@ echo "👥 Tests UsersController.index"
 echo "-----------------------------------"
 test_validation "/users" "a" 400 "Recherche trop courte (< 2 caractères)"
 test_validation "/users" "$(printf 'a%.0s' {1..101})" 400 "Recherche trop longue (> 100 caractères)"
-test_validation "/users" "docteur" 200 "Recherche valide (2-100 caractères)"
+test_validation "/users" "docteur_clinique" 200 "Recherche valide (2-100 caractères)"
 
 # Tests pour SuppliersController
 echo "🚚 Tests SuppliersController.index"

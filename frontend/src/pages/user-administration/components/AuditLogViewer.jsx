@@ -136,7 +136,7 @@ const AuditLogViewer = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-full animate-fade-in">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col h-full animate-fade-in">
       
       {/* Header & Filtres */}
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
@@ -160,7 +160,7 @@ const AuditLogViewer = () => {
                     placeholder="Rechercher (User, Action)..." 
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white"
+                    className="w-full pl-9 pr-3 py-2 glass-surface rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all dark:text-white"
                 />
             </div>
             
@@ -170,14 +170,14 @@ const AuditLogViewer = () => {
                     value={filters.dateRange} 
                     onChange={(val) => handleFilterChange('dateRange', val)}
                     placeholder="Période"
-                    buttonClassName="w-40 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                    buttonClassName="w-40 glass-surface text-slate-900 dark:text-white"
                 />
                 <Select 
                     options={filterOptions} 
                     value={filters.action} 
                     onChange={(val) => handleFilterChange('action', val)}
                     placeholder="Type d'action"
-                    buttonClassName="w-48 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+                    buttonClassName="w-48 glass-surface text-slate-900 dark:text-white"
                 />
                 <Button variant="outline" size="icon" iconName="Download" className="dark:border-slate-700 dark:text-slate-300" title="Exporter CSV" />
             </div>
@@ -187,20 +187,20 @@ const AuditLogViewer = () => {
       {/* Tableau */}
       <div className="overflow-x-auto flex-1 custom-scrollbar">
         {loading ? (
-          <div className="flex flex-col justify-center items-center h-80 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+          <div className="flex flex-col justify-center items-center h-80 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2 border-l-4 border-l-primary">
               <Icon name="Loader2" size={32} className="animate-spin mb-2 text-primary" />
               <p className="text-sm text-slate-500 dark:text-slate-400">Chargement des logs…</p>
           </div>
         ) : auditLogs.length === 0 ? (
            <div className="flex flex-col items-center justify-center h-80 text-slate-400">
-               <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-full mb-3">
+               <div className="p-4 glass-surface rounded-full mb-3">
                    <Icon name="SearchX" size={32} />
                </div>
                <p className="text-sm font-medium">Aucun log trouvé pour ces critères.</p>
            </div>
         ) : (
           <table className="w-full">
-            <thead className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10">
+            <thead className="bg-slate-50 dark:bg-slate-950 border-b border-white/20 dark:border-white/10 sticky top-0 z-10">
               <tr>
                 <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-36">Date & Heure</th>
                 <th className="text-left p-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-48">Utilisateur</th>
@@ -210,29 +210,29 @@ const AuditLogViewer = () => {
                 <th className="text-center p-4 text-xs font-bold text-slate-500 uppercase tracking-wider w-28">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
+            <tbody className="divide-y divide-white/10 dark:divide-white/5 backdrop-blur-xl bg-white/50 dark:bg-white/10">
               {Array.isArray(auditLogs) && auditLogs.map((log) => (
                 <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group">
                   <td className="p-4">
                     <div className="flex flex-col">
-                      <span className="text-xs font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                      <span className="text-sm font-mono text-slate-600 dark:text-slate-300 whitespace-nowrap">
                         {log.date || (log.timestamp ? formatDate(log.timestamp).split(' ')[0] : '-')}
                       </span>
-                      <span className="text-xs font-mono text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                      <span className="text-sm font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {log.time || (log.timestamp ? formatDate(log.timestamp).split(' ')[1] : '-')}
                       </span>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 text-xs font-bold uppercase">
+                      <div className="w-8 h-8 rounded-lg glass-surface flex items-center justify-center text-slate-500 text-xs font-bold uppercase">
                           {log.user && typeof log.user === 'string' ? log.user.charAt(0) : '?'}
                       </div>
                       <div>
                           <div className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px]" title={log.user}>
                               {log.user || 'Système'}
                           </div>
-                          <div className="text-[10px] text-slate-400 uppercase tracking-wide">{log.userRole || 'Automate'}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">{log.userRole || 'Automate'}</div>
                       </div>
                     </div>
                   </td>
@@ -243,19 +243,24 @@ const AuditLogViewer = () => {
                         log.actionCategory === 'Modification' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' :
                         log.actionCategory === 'Suppression' ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400' :
                         log.actionCategory === 'Connexion' ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' :
-                        'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                        'glass-surface text-slate-600 dark:text-slate-400'
                       }`}>
                         <Icon name={log.actionIcon || getActionIcon(log.action)} size={16} />
                       </div>
                       <div>
                         <div className="text-xs font-bold text-slate-900 dark:text-white">{log.actionCategory || 'Action'}</div>
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400">{log.resourceType || 'Ressource'}</div>
+                        <div className="text-xs text-slate-600 dark:text-slate-400">{log.resourceType || 'Ressource'}</div>
                       </div>
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-sm text-slate-700 dark:text-slate-300 max-w-[300px]">
-                      <span className="truncate block" title={log.action}>{log.action}</span>
+                    <div className="group/op text-sm text-slate-700 dark:text-slate-300 max-w-[300px] relative">
+                      <span className="truncate block">{log.action}</span>
+                      {log.action && (
+                        <div className="absolute z-50 left-0 top-full mt-1 px-4 py-3 w-80 max-w-[90vw] text-sm font-medium text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-xl opacity-0 invisible group-hover/op:opacity-100 group-hover/op:visible transition-all duration-200 break-words">
+                          {log.action}
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="p-4">

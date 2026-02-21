@@ -88,7 +88,7 @@ const TermsInfo = () => {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ duration: 0.2 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col"
+              className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 overflow-hidden flex flex-col"
               style={{ zIndex: 100000, position: 'relative' }}
             >
               {/* Header */}
@@ -123,7 +123,7 @@ const TermsInfo = () => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
+                      className="p-4 rounded-xl border border-white/20 dark:border-white/10 glass-surface hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors"
                     >
                       <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center">

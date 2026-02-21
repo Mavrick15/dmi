@@ -55,7 +55,7 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
       className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
         isActive
           ? `${colorClass?.bg || 'bg-primary/15 dark:bg-primary/25'} ${colorClass?.text || 'text-primary'} border-current`
-          : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-300'
+          : 'glass-surface text-slate-600 dark:text-slate-300 hover:bg-white/30 dark:hover:bg-white/10 hover:text-slate-800 dark:hover:text-slate-200'
       }`}
     >
       <Icon name={icon} size={12} className={isActive ? 'text-current' : 'opacity-70'} />
@@ -63,14 +63,14 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
     </button>
   );
 
-  const inputBaseClass = "w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none";
+  const inputBaseClass = "w-full pl-10 pr-4 py-2.5 glass-panel rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-300 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none";
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm mb-5 overflow-hidden"
+      className="glass-panel rounded-xl shadow-sm mb-5 overflow-hidden"
     >
       <div className="flex flex-col sm:flex-row gap-2 p-4">
         <div className="relative flex-1 min-w-0">
@@ -99,7 +99,7 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
             className={`rounded-xl border transition-all shrink-0 ${
               showAdvanced || activeFiltersCount > 0
                 ? 'bg-primary/10 dark:bg-primary/20 text-primary border-primary/40'
-                : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                : 'border-white/20 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             <Icon name="Filter" size={16} className="mr-2" />
@@ -134,7 +134,7 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 pt-0 border-t border-slate-200 dark:border-slate-700">
+            <div className="px-4 pb-4 pt-0 border-t border-white/20 dark:border-white/10">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
                 {establishmentsList.length > 0 && (
                   <Select
@@ -142,7 +142,7 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
                     options={establishmentsList}
                     value={filters.establishmentId || ''}
                     onChange={(v) => handleFilterChange('establishmentId', v)}
-                    buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                    buttonClassName="rounded-xl border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10"
                   />
                 )}
                 <Select
@@ -150,14 +150,14 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
                   options={statusOptions}
                   value={filters.status}
                   onChange={(v) => handleFilterChange('status', v)}
-                  buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  buttonClassName="rounded-xl border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10"
                 />
                 <Select
                   label="Sexe"
                   options={genderOptions}
                   value={filters.gender}
                   onChange={(v) => handleFilterChange('gender', v)}
-                  buttonClassName="rounded-xl border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+                  buttonClassName="rounded-xl border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10"
                 />
               </div>
             </div>
@@ -165,8 +165,8 @@ const PatientSearchFilters = ({ onSearch, onFilter, onReset }) => {
         )}
       </AnimatePresence>
 
-      <div className="px-4 py-3 flex flex-wrap items-center gap-2 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+      <div className="px-4 py-3 flex flex-wrap items-center gap-2 border-t border-white/20 dark:border-white/10 glass-surface">
+        <span className="text-xs uppercase tracking-wider font-semibold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
           <Icon name="Zap" size={11} />
           Rapide
         </span>

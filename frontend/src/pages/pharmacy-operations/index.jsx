@@ -437,7 +437,7 @@ const PharmacyOperations = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Header />
       
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
@@ -475,7 +475,7 @@ const PharmacyOperations = () => {
                     key={action.id}
                     type="button"
                     onClick={action.action}
-                    className="group flex items-start gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-md hover:border-primary/30 transition-all text-left"
+                    className="group flex items-start gap-3 p-4 glass-panel hover:shadow-md hover:border-primary/30 transition-all text-left"
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${action.color}`}>
                       <Icon name={action.icon} size={20} />
@@ -493,8 +493,8 @@ const PharmacyOperations = () => {
           </div>
 
           {/* Onglets */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="glass-panel shadow-sm">
+            <div className="p-4 border-b border-white/20 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               
               <div className="flex space-x-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl overflow-x-auto custom-scrollbar">
                 {Array.isArray(tabs) && tabs.map((tab) => {

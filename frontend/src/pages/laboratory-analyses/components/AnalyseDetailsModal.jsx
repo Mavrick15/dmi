@@ -117,7 +117,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
         </div>
       } size="lg" className="max-h-[85vh]">
         {isLoading ? (
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-12">
+          <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-12">
             <Icon name="Loader2" size={28} className="animate-spin text-primary" />
             <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
           </div>
@@ -209,7 +209,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
 
             {/* 3. Dates et Service */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="md:col-span-2 glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon name="Calendar" size={16} className="text-slate-600 dark:text-slate-400" />
                   <h4 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -351,7 +351,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
               {resultats && resultats.length > 0 ? (
                 <div className="space-y-4">
                   {/* Tableau des résultats */}
-                  <div className="bg-white dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10/50 rounded-lg border border-white/20 dark:border-white/10 overflow-hidden">
                     <div className="max-h-[300px] overflow-y-auto">
                       <ResultatsTable
                         resultats={resultats}
@@ -363,7 +363,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                   </div>
 
                   {/* Graphiques de visualisation */}
-                  <div className="bg-white dark:bg-slate-900/50 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
+                  <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10/50 rounded-lg p-4 border border-white/20 dark:border-white/10">
                     <div className="flex items-center gap-2 mb-3">
                       <Icon name="BarChart3" size={16} className="text-blue-600 dark:text-blue-400" />
                       <h5 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
@@ -374,7 +374,7 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                   </div>
 
                   {/* Actions d'export */}
-                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center justify-between gap-3 pt-3 border-t border-white/20 dark:border-white/10">
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       Exporter ou partager les résultats
                     </p>
@@ -425,8 +425,8 @@ const AnalyseDetailsModal = ({ isOpen, onClose, analyse: analyseProp }) => {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white dark:bg-slate-900/50 rounded-lg p-8 text-center border border-dashed border-slate-300 dark:border-slate-700">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full mb-3">
+                <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10/50 rounded-lg p-8 text-center border border-dashed border-slate-300 dark:border-slate-700">
+                  <div className="inline-flex items-center justify-center w-16 h-16 glass-surface rounded-full mb-3">
                     <Icon name="FileText" size={28} className="text-slate-400" />
                   </div>
                   <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">

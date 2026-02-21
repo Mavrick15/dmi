@@ -105,10 +105,10 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
       <div
-        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-700"
+        className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-white/20 dark:border-white/10"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between p-4 border-b border-white/20 dark:border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <Icon name="Truck" size={18} className="text-blue-600 dark:text-blue-400" />
@@ -146,7 +146,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
             <div className="space-y-4">
               {/* Informations générales */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Statut
                   </div>
@@ -158,7 +158,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                     {supplier.actif ? 'Actif' : 'Inactif'}
                   </span>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Total commandes
                   </div>
@@ -166,7 +166,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                     {supplier.totalCommandes || 0}
                   </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Délai de livraison moyen
                   </div>
@@ -174,7 +174,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                     {supplier.delaiLivraisonMoyen || supplier.delai_livraison_moyen || 0} jours
                   </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Date de création
                   </div>
@@ -221,8 +221,8 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
 
               {/* Commandes récentes */}
               {supplier.commandesRecentes && supplier.commandesRecentes.length > 0 && (
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                  <div className="p-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center gap-2">
+                <div className="rounded-xl border border-white/20 dark:border-white/10 overflow-hidden">
+                  <div className="p-3 border-b border-white/20 dark:border-white/10 glass-surface flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
                       <Icon name="Package" size={14} className="text-primary dark:text-blue-400" />
                     </div>
@@ -232,7 +232,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                   </div>
                   <div className="overflow-x-auto max-h-[200px] overflow-y-auto custom-scrollbar">
                     <table className="w-full text-xs">
-                      <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 sticky top-0">
+                      <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-white/20 dark:border-white/10 sticky top-0">
                         <tr>
                           <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Commande</th>
                           <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
@@ -240,7 +240,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
                           <th className="text-center py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+                      <tbody className="divide-y divide-white/20 dark:divide-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
                         {Array.isArray(supplier.commandesRecentes) && supplier.commandesRecentes.map((commande, index) => {
                           if (!commande || typeof commande !== 'object') return null;
                           return (
@@ -266,7 +266,7 @@ const SupplierDetailsModal = ({ isOpen, onClose, supplierId, onCreateOrder, onEd
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between gap-2 p-3 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between gap-2 px-3 py-1.5 border-t border-white/20 dark:border-white/10">
           <Button variant="outline" size="sm" onClick={onClose}>
             Fermer
           </Button>

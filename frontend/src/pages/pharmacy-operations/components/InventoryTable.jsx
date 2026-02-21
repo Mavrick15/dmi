@@ -133,7 +133,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
 
      if (detailsLoading) {
         return (
-             <tr className="col-span-full bg-slate-50 dark:bg-slate-800/50">
+             <tr className="col-span-full glass-surface">
                 <td colSpan={6} className="p-6 text-center">
                   <div className="flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
                     <Icon name="Loader2" size={20} className="animate-spin" />
@@ -147,7 +147,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
      return (
         <tr className='col-span-full animate-fade-in'>
             <td colSpan={6} className="p-0">
-                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 border-y border-slate-200 dark:border-slate-700 shadow-inner">
+                <div className="bg-slate-50 dark:bg-slate-900/50 p-6 border-y border-white/20 dark:border-white/10 shadow-inner">
                     <div className="flex justify-between items-center mb-4">
                         <h5 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                             <Icon name="ListTree" size={18} className="text-primary"/> 
@@ -157,10 +157,10 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                     </div>
                     
                     {details?.movements?.length > 0 ? (
-                        <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div className="overflow-x-auto rounded-lg border border-white/20 dark:border-white/10">
                             <table className="w-full text-xs">
                                  <thead>
-                                     <tr className="text-left text-slate-500 dark:text-slate-400 uppercase tracking-wider bg-white dark:bg-slate-800">
+                                     <tr className="text-left text-slate-500 dark:text-slate-400 uppercase tracking-wider glass-surface">
                                          <th className="p-3 font-semibold border-b dark:border-slate-700">Date</th>
                                          <th className="p-3 font-semibold border-b dark:border-slate-700">Type</th>
                                          <th className="p-3 font-semibold border-b dark:border-slate-700 text-right">Quantité</th>
@@ -169,7 +169,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                                          <th className="p-3 font-semibold border-b dark:border-slate-700">Raison</th>
                                      </tr>
                                  </thead>
-                                 <tbody className="bg-white dark:bg-slate-800/50 divide-y divide-slate-100 dark:divide-slate-700">
+                                 <tbody className="glass-surface divide-y divide-white/10 dark:divide-white/5">
                                     {Array.isArray(details.movements) && details.movements.map((move, i) => {
                                       if (!move || typeof move !== 'object') return null;
                                       return (
@@ -191,7 +191,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                             </table>
                         </div>
                     ) : (
-                        <div className="text-center p-6 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-sm">
+                        <div className="text-center p-6 text-slate-500 dark:text-slate-400 glass-panel text-sm">
                             Aucun mouvement de stock enregistré pour ce produit.
                         </div>
                     )}
@@ -235,17 +235,17 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
     );
   };
   
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white";
+  const inputClassName = "backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white";
 
   // --- RENDER PRINCIPAL ---
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden">
       
       {/* 1. Header & Filtres */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+      <div className="p-4 border-b border-white/20 dark:border-white/10 glass-surface">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+            <div className="w-10 h-10 glass-surface rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400">
                <Icon name="List" size={20} />
             </div>
             <div>
@@ -291,11 +291,11 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
               <th className="text-right p-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
+          <tbody className="divide-y divide-white/10 dark:divide-white/5 backdrop-blur-xl bg-white/50 dark:bg-white/10">
             {isLoading ? (
                <tr>
                   <td colSpan={6} className="p-12">
-                    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-10">
+                    <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface flex items-center justify-center gap-3 py-10">
                       <Icon name="Loader2" size={28} className="animate-spin text-primary" />
                       <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement de l'inventaire…</p>
                     </div>
@@ -315,8 +315,8 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
             ) : items.length === 0 ? (
                <tr>
                    <td colSpan={6} className="p-12">
-                     <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-                       <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                     <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
+                       <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
                          <Icon name="PackageX" size={28} className="text-slate-400 dark:text-slate-500" />
                        </div>
                        <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun médicament trouvé</p>
@@ -343,7 +343,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                                 <div>
                                     <div className="font-bold text-slate-900 dark:text-white">{item.name}</div>
                                     <div className="text-xs text-slate-500 flex items-center gap-2">
-                                        <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">{item.category}</span>
+                                        <span className="glass-surface px-1.5 py-0.5 rounded text-[10px]">{item.category}</span>
                                         {item.dosage && <span>{item.dosage}</span>}
                                     </div>
                                 </div>
@@ -351,7 +351,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                             <td className="p-4">
                                 <div className="flex items-center space-x-3">
                                     <span className="font-bold text-slate-700 dark:text-slate-200 w-8 text-right">{item.currentStock}</span>
-                                    <div className="w-20 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                    <div className="w-20 h-1.5 glass-surface rounded-full overflow-hidden">
                                         <div className={`h-full rounded-full ${stockColor}`} style={{ width: `${stockPercent}%` }} />
                                     </div>
                                 </div>
@@ -422,7 +422,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
 
       {/* 3. Footer & Pagination */}
       {!isLoading && !isError && totalItems > 0 && (
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="px-3 py-1.5 border-t border-white/20 dark:border-white/10 glass-surface flex flex-col sm:flex-row items-center justify-between gap-4">
              <PermissionGuard requiredPermission="medication_create">
                <Button variant="default" size="sm" iconName="Pill" onClick={onOpenAddMedication} disabled={!hasPermission('medication_create')} className="rounded-xl">
                  Ajouter médicament
@@ -435,7 +435,7 @@ const InventoryTable = ({ onOpenAddMedication, onEditMedication, onDelete }) => 
                 <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="rounded-xl">
                   Précédent
                 </Button>
-                <span className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span className="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 glass-surface rounded-xl">
                   Page {page} / {totalPages}
                 </span>
                 <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} className="rounded-xl">

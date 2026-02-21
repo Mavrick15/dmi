@@ -60,7 +60,7 @@ const QuickAccessCards = () => {
     <div className="w-full max-w-sm mx-auto mt-8 pt-8 border-t border-slate-100 dark:border-slate-800">
       
       {/* Status Card */}
-      <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-800 flex items-center justify-between mb-4">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl p-4 border border-white/40 dark:border-white/10 flex items-center justify-between mb-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]">
         <div className="flex items-center gap-3">
            <div className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -71,7 +71,7 @@ const QuickAccessCards = () => {
                 <p className="text-[10px] text-slate-500 dark:text-slate-400">Uptime {systemStatus.uptime}</p>
             </div>
         </div>
-        <span className="text-[10px] font-mono text-slate-400 bg-white dark:bg-slate-800 px-2 py-1 rounded border border-slate-200 dark:border-slate-700">
+        <span className="text-[10px] font-mono text-slate-400 backdrop-blur-md bg-white/60 dark:bg-white/10 px-2 py-1 rounded border border-white/40 dark:border-white/15">
             {systemStatus.version}
         </span>
       </div>
@@ -95,12 +95,12 @@ const QuickAccessCards = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-5 z-[100]"
+              className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-80 glass-dropdown shadow-2xl p-5 z-[100]"
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
             >
               {/* Flèche */}
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-900 border-r border-b border-slate-200 dark:border-slate-800 rotate-45"></div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 glass-dropdown border-r border-b border-white/40 rotate-45"></div>
               
               {/* Header */}
               <div className="mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -139,7 +139,7 @@ const QuickAccessCards = () => {
               </div>
 
               {/* Footer */}
-              <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="mt-3 pt-1.5 border-t border-slate-100 dark:border-slate-800">
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center">
                   Connectez-vous pour accéder à tous les modules
                 </p>

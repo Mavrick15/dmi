@@ -96,7 +96,7 @@ const ComplianceDashboard = () => {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex overflow-x-auto pb-1 mb-8 border-b border-slate-200 dark:border-slate-800 gap-6"
+          className="flex overflow-x-auto pb-1 mb-8 border-b border-white/20 dark:border-white/10 gap-6"
         >
           {Array.isArray(navigationSections) && navigationSections.map((section) => {
             if (!section || typeof section !== 'object') return null;

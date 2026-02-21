@@ -40,7 +40,7 @@ const SyncStatusPanel = () => {
       case 'syncing': return { icon: 'RefreshCw', color: 'text-blue-500 animate-spin', bg: 'bg-blue-50 dark:bg-blue-900/20' };
       case 'pending': return { icon: 'Clock', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' };
       case 'error': return { icon: 'AlertCircle', color: 'text-rose-500', bg: 'bg-rose-50 dark:bg-rose-900/20' };
-      default: return { icon: 'Circle', color: 'text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800' };
+      default: return { icon: 'Circle', color: 'text-slate-400', bg: 'glass-surface' };
     }
   };
 
@@ -53,7 +53,7 @@ const SyncStatusPanel = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+    <div className="glass-panel rounded-3xl shadow-sm overflow-hidden">
       
       {/* Header */}
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
@@ -98,7 +98,7 @@ const SyncStatusPanel = () => {
           if (!item || typeof item !== 'object') return null;
           const status = getStatusConfig(item.status);
           return (
-            <div key={index} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+            <div key={index} className="flex items-center justify-between p-3 rounded-xl glass-surface">
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${status.bg}`}>
                   <Icon name={status.icon} size={16} className={status.color} />
@@ -125,16 +125,16 @@ const SyncStatusPanel = () => {
       </div>
 
       {/* Footer Stats */}
-      <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-800 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-        <div className="p-4 text-center">
+      <div className="grid grid-cols-3 divide-x divide-white/10 dark:divide-white/5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+        <div className="px-3 py-1.5 text-center">
           <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">1,238</div>
           <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Synchronisés</div>
         </div>
-        <div className="p-4 text-center">
+        <div className="px-3 py-1.5 text-center">
           <div className="text-lg font-bold text-amber-500">14</div>
           <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">En attente</div>
         </div>
-        <div className="p-4 text-center">
+        <div className="px-3 py-1.5 text-center">
           <div className="text-lg font-bold text-slate-700 dark:text-slate-300">2.3 MB</div>
           <div className="text-[10px] uppercase tracking-wide text-slate-400 font-semibold">Cache</div>
         </div>

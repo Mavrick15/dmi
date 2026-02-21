@@ -55,7 +55,7 @@ const ConsultationAnalyses = ({ consultationId, patientId }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+      <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary">
         <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
         <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
@@ -64,7 +64,7 @@ const ConsultationAnalyses = ({ consultationId, patientId }) => {
 
   if (analyses.length === 0) {
     return (
-      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+      <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-6 border border-white/20 dark:border-white/10">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Icon name="TestTube" size={18} className="text-slate-600 dark:text-slate-400" />
@@ -91,7 +91,7 @@ const ConsultationAnalyses = ({ consultationId, patientId }) => {
   }
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-white/20 dark:border-white/10">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Icon name="TestTube" size={18} className="text-primary" />
@@ -120,7 +120,7 @@ const ConsultationAnalyses = ({ consultationId, patientId }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all"
+              className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg p-3 border border-white/20 dark:border-white/10 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">

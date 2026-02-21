@@ -145,7 +145,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
           placeholder="Rechercher par code ou libellé CIM-10..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+          className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
           autoFocus
         />
         {searchQuery && (
@@ -221,7 +221,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
                   className={`w-full text-left p-3 rounded-xl border transition-all ${
                     isSelected
                       ? 'bg-primary/10 border-primary dark:bg-primary/20 dark:border-primary/50'
-                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 dark:hover:border-primary/30'
+                      : 'bg-white dark:bg-slate-800 border-white/20 dark:border-white/10 hover:border-primary/30 dark:hover:border-primary/30'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -258,7 +258,7 @@ const CIM10Search = ({ onSelect, selectedCode = null, onClose }) => {
       </div>
 
       {/* Info */}
-      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-white/20 dark:border-white/10">
         <div className="flex items-start gap-2">
           <Icon name="Info" size={16} className="text-slate-500 dark:text-slate-400 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-slate-600 dark:text-slate-400">

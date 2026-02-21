@@ -157,11 +157,11 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess, preselectedSupplier = nu
 
   if (!isOpen) return null;
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-primary/20";
+  const inputClassName = "backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white focus:ring-primary/20";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
@@ -203,7 +203,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess, preselectedSupplier = nu
                />
              </div>
              
-             <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center h-full">
+             <div className="p-4 bg-slate-50 dark:bg-slate-950 rounded-xl border border-white/20 dark:border-white/10 flex flex-col justify-center h-full">
                 <span className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider mb-1">Total Estimé</span>
                 <span className="text-3xl font-bold text-slate-900 dark:text-white">{formatCurrency(calculateTotal())}</span>
              </div>
@@ -222,7 +222,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess, preselectedSupplier = nu
                 {Array.isArray(items) && items.map((item, index) => {
                   if (!item || typeof item !== 'object') return null;
                   return (
-                  <div key={item.id} className="flex flex-col md:flex-row gap-3 items-end p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 transition-all hover:border-primary/30">
+                  <div key={item.id} className="flex flex-col md:flex-row gap-3 items-end p-3 rounded-xl border border-white/20 dark:border-white/10 glass-surface transition-all hover:border-primary/30">
                     <div className="w-8 flex justify-center items-center pb-3 text-slate-400 font-mono text-xs flex-shrink-0">
                         {index + 1}
                     </div>
@@ -279,7 +279,7 @@ const CreateOrderModal = ({ isOpen, onClose, onSuccess, preselectedSupplier = nu
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3">
+        <div className="px-3 py-1.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3">
           <Button variant="ghost" onClick={onClose} disabled={loading}>Annuler</Button>
           <PermissionGuard requiredPermission="order_create">
             <Button 

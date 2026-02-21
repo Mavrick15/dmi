@@ -87,7 +87,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center"
+        className="glass-panel rounded-xl p-4 text-center"
       >
         <motion.div
           animate={{ 
@@ -127,61 +127,77 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
   return (
     <div className="space-y-4 md:space-y-6">
       {/* Métriques clés */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.05, y: -5 }}
+          whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 300 }}
-          className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-3 md:p-4 border border-indigo-200 dark:border-indigo-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         >
-          <div className="flex items-center gap-2 mb-1 md:mb-2">
-            <Icon name="TrendingUp" size={16} className="text-indigo-600 dark:text-indigo-400" />
-            <p className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase">Taux</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Taux</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{advancedStats.tauxCompletion}%</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
+              <Icon name="TrendingUp" size={20} />
+            </div>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-indigo-900 dark:text-indigo-100">{advancedStats.tauxCompletion}%</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.05, y: -5 }}
+          whileHover={{ scale: 1.02 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 300 }}
-          className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 md:p-4 border border-blue-200 dark:border-blue-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         >
-          <div className="flex items-center gap-2 mb-1 md:mb-2">
-            <Icon name="Clock" size={16} className="text-blue-600 dark:text-blue-400" />
-            <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">Délai</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Délai</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{advancedStats.delaiMoyen}j</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/20 text-blue-600 dark:text-blue-400">
+              <Icon name="Clock" size={20} />
+            </div>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-blue-900 dark:text-blue-100">{advancedStats.delaiMoyen}j</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.05, y: -5 }}
+          whileHover={{ scale: 1.02 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
-          className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-3 md:p-4 border border-emerald-200 dark:border-emerald-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         >
-          <div className="flex items-center gap-2 mb-1 md:mb-2">
-            <Icon name="CheckCircle" size={16} className="text-emerald-600 dark:text-emerald-400" />
-            <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">OK</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">OK</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{advancedStats.terminees}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+              <Icon name="CheckCircle" size={20} />
+            </div>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-emerald-900 dark:text-emerald-100">{advancedStats.terminees}</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          whileHover={{ scale: 1.05, y: -5 }}
+          whileHover={{ scale: 1.02 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
-          className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 md:p-4 border border-amber-200 dark:border-amber-700 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         >
-          <div className="flex items-center gap-2 mb-1 md:mb-2">
-            <Icon name="FileText" size={16} className="text-amber-600 dark:text-amber-400" />
-            <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">Presc</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Presc</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{advancedStats.prescrites}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <Icon name="FileText" size={20} />
+            </div>
           </div>
-          <p className="text-2xl md:text-3xl font-black text-amber-900 dark:text-amber-100">{advancedStats.prescrites}</p>
         </motion.div>
       </div>
 
@@ -193,7 +209,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 200 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-shadow"
+          className="glass-panel rounded-xl p-3 md:p-4 shadow-lg hover:shadow-2xl transition-shadow"
         >
           <h4 className="text-sm md:text-base font-bold text-slate-700 dark:text-slate-300 mb-3 md:mb-4 flex items-center gap-2">
             <div className="w-8 h-8 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center">
@@ -232,7 +248,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02 }}
             transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-shadow"
+            className="glass-panel rounded-xl p-3 md:p-4 shadow-lg hover:shadow-2xl transition-shadow"
           >
             <h4 className="text-sm md:text-base font-bold text-slate-700 dark:text-slate-300 mb-3 md:mb-4 flex items-center gap-2">
               <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
@@ -269,7 +285,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-shadow"
+            className="glass-panel rounded-xl p-3 md:p-4 shadow-lg hover:shadow-2xl transition-shadow"
           >
             <h4 className="text-sm md:text-base font-bold text-slate-700 dark:text-slate-300 mb-3 md:mb-4 flex items-center gap-2">
               <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
@@ -318,7 +334,7 @@ const AnalysesAdvancedStats = ({ analyses, stats }) => {
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 1.02 }}
           transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 md:p-6 shadow-lg hover:shadow-2xl transition-shadow"
+          className="glass-panel rounded-xl p-3 md:p-4 shadow-lg hover:shadow-2xl transition-shadow"
         >
           <h4 className="text-sm md:text-base font-bold text-slate-700 dark:text-slate-300 mb-3 md:mb-4 flex items-center gap-2">
             <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center">

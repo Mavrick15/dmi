@@ -164,7 +164,7 @@ const Agenda = () => {
   }, [selectedDate, appointments.length]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Helmet>
         <title>Agenda | MediCore</title>
         <meta name="description" content="Agenda des rendez-vous - Vue globale par date, médecin et statut." />
@@ -178,7 +178,7 @@ const Agenda = () => {
           className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8"
         >
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+            <div className="w-11 h-11 glass-surface flex items-center justify-center text-primary">
               <Icon name="CalendarDays" size={22} />
             </div>
             <div>
@@ -204,7 +204,7 @@ const Agenda = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm mb-6"
+          className="flex flex-wrap items-center gap-4 p-4 rounded-2xl glass-panel mb-6"
         >
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap w-full sm:w-auto">Période</label>
@@ -284,11 +284,11 @@ const Agenda = () => {
               className="min-w-[160px]"
             />
           </div>
-          <div className="flex gap-1 ml-auto rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+          <div className="flex gap-1 ml-auto rounded-xl glass-surface p-1">
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'list' ? 'glass-surface text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
               <Icon name="List" size={16} />
               Liste
@@ -296,7 +296,7 @@ const Agenda = () => {
             <button
               type="button"
               onClick={() => setViewMode('day')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'day' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${viewMode === 'day' ? 'glass-surface text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}
             >
               <Icon name="CalendarDays" size={16} />
               Jour
@@ -314,7 +314,7 @@ const Agenda = () => {
 
         {/* Contenu */}
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+          <div className="flex flex-col items-center justify-center py-24 rounded-2xl glass-panel border-l-4 border-l-primary">
             <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
             <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
           </div>
@@ -372,7 +372,7 @@ function AppointmentCard({ apt, onPatientClick, onStatusChange, onDelete, onOpen
   const medecinName = apt.medecin?.user?.nomComplet || apt.medecinName || '—';
   const motif = apt.motif || apt.type || null;
   return (
-    <div className={`rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden ${compact ? 'p-3' : 'p-4'} shadow-sm hover:shadow-md transition-shadow`}>
+    <div className={`rounded-2xl glass-panel overflow-hidden ${compact ? 'p-3' : 'p-4'} transition-all hover:shadow-lg`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <div className="font-medium text-slate-900 dark:text-white">{formatDate(apt.dateHeure)}</div>
@@ -434,12 +434,12 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, onOp
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="hidden md:block rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+        className="hidden md:block rounded-2xl glass-panel overflow-hidden"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <tr className="border-b border-white/20 dark:border-white/10 backdrop-blur-sm bg-white/30 dark:bg-white/5">
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Date & Heure</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Patient</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Médecin</th>
@@ -509,7 +509,7 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, onOp
 
       {/* Pagination : toujours visible dès qu'il y a au moins un rendez-vous */}
       {sorted.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-b-xl p-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-white/20 dark:border-white/10 glass-panel rounded-b-2xl p-4">
           <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
             <span className="font-semibold text-slate-700 dark:text-slate-300">{start + 1}</span>
             {' – '}
@@ -529,7 +529,7 @@ function ListView({ appointments, onPatientClick, onStatusChange, onDelete, onOp
               <Icon name="ChevronLeft" size={16} className="mr-1" />
               Précédent
             </Button>
-            <span className="px-3 py-1.5 text-sm font-medium bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+            <span className="px-3 py-1.5 text-sm font-medium glass-surface rounded-xl text-slate-700 dark:text-slate-200">
               Page {currentPage} / {totalPages}
             </span>
             <Button
@@ -592,7 +592,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
 
   if (dayAppointments.length === 0) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 text-center">
+      <div className="rounded-2xl glass-panel p-12 text-center">
         <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3">
           <Icon name="Calendar" size={28} className="text-slate-400 dark:text-slate-500" />
         </div>
@@ -606,9 +606,9 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+      className="rounded-2xl glass-panel overflow-hidden"
     >
-      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex flex-wrap items-center justify-between gap-2">
+      <div className="px-4 py-3 border-b border-white/20 dark:border-white/10 backdrop-blur-sm bg-white/30 dark:bg-white/5 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
           {formatDate(dayAppointments[0]?.dateHeure)} — Vue timeline
         </p>
@@ -619,7 +619,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
         )}
       </div>
       <div className="flex">
-        <div className="w-14 flex-shrink-0 border-r border-slate-200 dark:border-slate-700 py-1">
+        <div className="w-14 flex-shrink-0 border-r border-white/20 dark:border-white/10 py-1">
           {hours.map((h) => (
             <div
               key={h}
@@ -641,7 +641,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
           {blocks.map(({ apt, top, height }) => (
             <div
               key={apt.id}
-              className="absolute left-2 right-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden flex flex-col"
+              className="absolute left-2 right-2 rounded-xl glass-surface overflow-hidden flex flex-col border border-white/30 dark:border-white/10"
               style={{ top: `${top}px`, height: `${height}px`, minHeight: 40 }}
             >
               <div
@@ -711,7 +711,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
         </div>
       </div>
       {dayAppointments.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 border-t border-white/20 dark:border-white/10 glass-surface rounded-b-2xl">
           <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
             <span className="font-semibold text-slate-700 dark:text-slate-300">{startDay + 1}</span>
             {' – '}
@@ -724,7 +724,7 @@ function DayView({ appointments, selectedDate, onPatientClick, onStatusChange, o
               <Icon name="ChevronLeft" size={16} className="mr-1" />
               Précédent
             </Button>
-            <span className="px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+            <span className="px-3 py-1.5 text-sm font-medium bg-white dark:bg-slate-800 rounded-xl border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-200">
               Page {currentPage} / {totalDayPages}
             </span>
             <Button variant="outline" size="sm" onClick={() => onPageChange((p) => Math.min(totalDayPages, p + 1))} disabled={currentPage >= totalDayPages} className="rounded-xl">

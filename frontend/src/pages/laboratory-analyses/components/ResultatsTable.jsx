@@ -18,8 +18,8 @@ const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
 
   if (!resultats || resultats.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center border-l-4 border-l-primary">
-        <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+      <div className="glass-panel rounded-xl p-8 text-center border-l-4 border-l-primary">
+        <div className="w-14 h-14 mx-auto mb-4 rounded-xl glass-surface flex items-center justify-center">
           <Icon name="FileText" size={28} className="text-slate-500 dark:text-slate-400" />
         </div>
         <p className="font-medium text-slate-700 dark:text-slate-300">Aucun résultat enregistré</p>
@@ -31,10 +31,10 @@ const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
+    <div className="glass-panel rounded-xl overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-800 border-b border-white/20 dark:border-white/10">
             <tr>
               <th className="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Paramètre
@@ -59,7 +59,7 @@ const ResultatsTable = ({ resultats, onValidate, analyse, onEdit }) => {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-white/20 dark:divide-white/10">
             {resultats.map((resultat, idx) => {
               const badge = getInterpretationBadge(resultat.interpretation);
               const normale = resultat.valeurNormaleMin !== null && resultat.valeurNormaleMax !== null

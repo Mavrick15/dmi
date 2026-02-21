@@ -105,11 +105,11 @@ const AddMedicationModal = ({ isOpen, onClose, onSuccess, medicationToEdit = nul
     }
   };
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white";
+  const inputClassName = "glass-surface text-slate-900 dark:text-white";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
            <div>

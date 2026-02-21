@@ -114,10 +114,10 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
       <div 
         ref={modalRef}
-        className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-800"
+        className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl shadow-xl w-full max-w-2xl max-h-[85vh] flex flex-col border border-white/20 dark:border-white/10"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between p-4 border-b border-white/20 dark:border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="p-1.5 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <Icon name="FileText" size={18} className="text-blue-600 dark:text-blue-400" />
@@ -155,13 +155,13 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
             <div className="space-y-4">
               {/* Informations générales */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Statut
                   </div>
                   {getStatusBadge(order.status)}
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Montant total
                   </div>
@@ -169,7 +169,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
                     {formatCurrency(order.totalAmount)}
                   </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Date de commande
                   </div>
@@ -178,7 +178,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
                   </div>
                 </div>
                 {order.deliveryDate && (
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="glass-surface rounded-lg p-3">
                     <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                       Date de livraison estimée
                     </div>
@@ -226,7 +226,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
 
               {/* Créateur */}
               {order.createdBy && (
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                <div className="glass-surface rounded-lg p-3">
                   <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
                     Créée par
                   </div>
@@ -249,10 +249,10 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
                     Articles ({order.lines?.length || 0})
                   </h3>
                 </div>
-                <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
+                <div className="border border-white/20 dark:border-white/10 rounded-lg overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs">
-                      <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                      <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-white/20 dark:border-white/10">
                         <tr>
                           <th className="text-left py-2 px-3 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                             Médicament
@@ -271,7 +271,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      <tbody className="divide-y divide-white/10 dark:divide-white/5">
                         {order.lines && order.lines.length > 0 ? (
                           order.lines.map((line, index) => (
                             <tr key={line.id || index} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
@@ -328,7 +328,7 @@ const OrderDetailsModal = ({ isOpen, onClose, orderId }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 p-3 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-end gap-2 px-3 py-1.5 border-t border-white/20 dark:border-white/10">
           <Button variant="outline" size="sm" onClick={onClose}>
             Fermer
           </Button>

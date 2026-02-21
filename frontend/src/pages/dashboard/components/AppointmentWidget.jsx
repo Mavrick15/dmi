@@ -52,7 +52,7 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
       case 'cancelled':
         return { accent: 'bg-rose-500', card: 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-800', label: 'Annulé' };
       default:
-        return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700', label: status };
+        return { accent: 'bg-slate-400', card: 'bg-slate-50 dark:bg-slate-800 border-white/20 dark:border-white/10', label: status };
     }
   };
 
@@ -93,7 +93,7 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
                   transition={{ delay: 0 }}
                 >
                   <div className={`w-1 rounded-full self-stretch min-h-[2.5rem] shrink-0 ${style.accent}`} />
-                  <div className="p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 flex-shrink-0">
+                  <div className="p-2 rounded-lg glass-surface flex-shrink-0">
                     <Icon name="Clock" size={16} className="text-slate-600 dark:text-slate-400" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -125,7 +125,7 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
                     <button
                       type="button"
                       onClick={(e) => handleRemoveAppointment(e, appointment.id)}
-                      className="absolute top-2 right-2 p-1.5 rounded-xl bg-white dark:bg-slate-800 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 border border-slate-200 dark:border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-2 right-2 p-1.5 rounded-xl glass-surface text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 opacity-0 group-hover:opacity-100 transition-opacity"
                       title="Retirer de l'agenda"
                     >
                       <Icon name="X" size={14} />
@@ -137,7 +137,7 @@ const AppointmentWidget = ({ appointments = [], onAddAppointment }) => {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center text-center py-10">
-            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+            <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
               <Icon name="CalendarOff" size={24} className="text-slate-400 dark:text-slate-500" />
             </div>
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun rendez-vous aujourd'hui</p>

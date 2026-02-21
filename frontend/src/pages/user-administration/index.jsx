@@ -484,7 +484,7 @@ const UserAdministration = () => {
 
       {/* Onglets par rôle */}
       <div className="overflow-x-auto pb-2">
-        <div className="flex gap-2 p-1 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl w-fit min-w-full">
+        <div className="flex gap-2 p-1 bg-slate-50 dark:bg-slate-900/50 border border-white/20 dark:border-white/10 rounded-xl w-fit min-w-full">
           {Array.isArray(roleTabs) && roleTabs.map((tab) => {
             if (!tab || typeof tab !== 'object') return null;
             const isActive = activeRoleTab === tab.id;
@@ -531,12 +531,12 @@ const UserAdministration = () => {
       />
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+        <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary">
           <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
           <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
         </div>
       ) : (!Array.isArray(users) || users.length === 0) && searchQuery ? (
-        <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div className="text-center py-20 glass-panel">
           <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-3"><Icon name="UserX" size={28} className="text-slate-400" /></div>
           <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucun utilisateur trouvé pour cette recherche.</p>
         </div>
@@ -559,7 +559,7 @@ const UserAdministration = () => {
 
       {/* PAGINATION UTILISATEURS */}
       {!loading && totalUsers > 0 && (
-        <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+        <div className="flex justify-center items-center gap-4 pt-6 border-t border-white/20 dark:border-white/10 mt-6">
           <Button
             variant="outline"
             size="sm"
@@ -570,7 +570,7 @@ const UserAdministration = () => {
             <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
           </Button>
 
-          <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
+          <span className="flex items-center px-4 py-1 text-sm font-bold backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm">
             Page {currentPage || 1} / {lastPage || 1}
           </span>
 
@@ -613,12 +613,12 @@ const UserAdministration = () => {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary">
             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
         ) : establishments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
             <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building2" size={28} className="text-slate-400" /></div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun établissement</h3>
             <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsEstablishmentModalOpen(true)}>Créer maintenant</Button>
@@ -629,7 +629,7 @@ const UserAdministration = () => {
               {Array.isArray(establishments) && establishments.map(etab => {
                 const style = getTypeStyle(etab.typeEtablissement);
                 return (
-                  <div key={etab.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
+                  <div key={etab.id} className={`group glass-panel p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${style.border} ${!etab.actif ? 'opacity-60' : ''}`}>
                     <div className="flex justify-between items-start mb-4">
                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.bg} ${style.color}`}>
                         <Icon name={style.icon} size={24} />
@@ -669,7 +669,7 @@ const UserAdministration = () => {
 
             {/* PAGINATION ÉTABLISSEMENTS */}
             {etabTotal > 0 && (
-              <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+              <div className="flex justify-center items-center gap-4 pt-6 border-t border-white/20 dark:border-white/10 mt-6">
                 <Button
                   variant="outline"
                   size="sm"
@@ -680,7 +680,7 @@ const UserAdministration = () => {
                   <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
                 </Button>
 
-                <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
+                <span className="flex items-center px-4 py-1 text-sm font-bold backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm">
                   Page {etabCurrentPage || 1} / {etabLastPage || 1}
                 </span>
 
@@ -718,12 +718,12 @@ const UserAdministration = () => {
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary">
             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
         ) : departments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+          <div className="flex flex-col items-center justify-center py-20 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
             <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3"><Icon name="Building" size={28} className="text-slate-400" /></div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aucun département</h3>
             <Button variant="outline" size="sm" className="mt-4 rounded-xl" onClick={() => setIsDepartmentModalOpen(true)}>Créer maintenant</Button>
@@ -733,7 +733,7 @@ const UserAdministration = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
               {Array.isArray(departments) && departments.map(dept => {
                 return (
-                  <div key={dept.id} className={`group bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${!dept.actif ? 'opacity-60' : ''}`} style={{ borderLeftColor: dept.couleur || '#3B82F6' }}>
+                  <div key={dept.id} className={`group glass-panel p-6 shadow-sm hover:shadow-md transition-all duration-300 border-l-4 ${!dept.actif ? 'opacity-60' : ''}`} style={{ borderLeftColor: dept.couleur || '#3B82F6' }}>
                     <div className="flex justify-between items-start mb-4">
                       <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${dept.couleur || '#3B82F6'}20`, color: dept.couleur || '#3B82F6' }}>
                         <Icon name="Building" size={24} />
@@ -774,7 +774,7 @@ const UserAdministration = () => {
 
             {/* PAGINATION DÉPARTEMENTS */}
             {deptTotal > 0 && (
-              <div className="flex justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+              <div className="flex justify-center items-center gap-4 pt-6 border-t border-white/20 dark:border-white/10 mt-6">
                 <Button
                   variant="outline"
                   size="sm"
@@ -785,7 +785,7 @@ const UserAdministration = () => {
                   <Icon name="ChevronLeft" size={16} className="mr-1" /> Précédent
                 </Button>
 
-                <span className="flex items-center px-4 py-1 text-sm font-bold bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-sm">
+                <span className="flex items-center px-4 py-1 text-sm font-bold backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-200 shadow-sm">
                   Page {deptCurrentPage || 1} / {deptLastPage || 1}
                 </span>
 
@@ -807,7 +807,7 @@ const UserAdministration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Header />
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         <motion.div
@@ -817,7 +817,7 @@ const UserAdministration = () => {
           className="mb-8"
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+            <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-white/20 dark:border-white/10">
               <Icon name="Shield" size={22} />
             </div>
             <div>
@@ -827,7 +827,7 @@ const UserAdministration = () => {
           </div>
 
           <div className="overflow-x-auto pb-2">
-            <div className="flex p-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl w-fit shadow-sm">
+            <div className="flex p-1 backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10 rounded-xl w-fit shadow-sm">
               {Array.isArray(tabs) && tabs.map((tab) => {
                 if (!tab || typeof tab !== 'object') return null;
                 const isActive = activeTab === tab.id;
@@ -842,7 +842,7 @@ const UserAdministration = () => {
                     {isActive && (
                       <motion.div
                         layoutId="activeTabBackground"
-                        className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-lg border border-slate-200 dark:border-slate-700"
+                        className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-lg border border-white/20 dark:border-white/10"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}

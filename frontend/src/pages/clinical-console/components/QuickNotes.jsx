@@ -55,7 +55,7 @@ const QuickNotes = ({ onInsertNote, onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+      <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary">
         <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
         <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
@@ -72,7 +72,7 @@ const QuickNotes = ({ onInsertNote, onClose }) => {
           placeholder="Rechercher une note..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+          className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
         />
       </div>
 
@@ -107,7 +107,7 @@ const QuickNotes = ({ onInsertNote, onClose }) => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
               onClick={() => handleInsert(note)}
-              className="w-full text-left p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-md transition-all"
+              className="w-full text-left p-3 bg-white dark:bg-slate-800 border border-white/20 dark:border-white/10 rounded-xl hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">

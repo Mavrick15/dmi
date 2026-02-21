@@ -146,7 +146,7 @@ const Select = React.forwardRef(({
         ReactDOM.createPortal(
             <div
                 ref={dropdownRef}
-                className="fixed bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl animate-in fade-in-0 zoom-in-95 duration-100"
+                className="fixed backdrop-blur-2xl bg-white/90 dark:bg-slate-900/95 border border-white/40 dark:border-white/15 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)] animate-in fade-in-0 zoom-in-95 duration-100"
                 style={{
                     top: `${dropdownPosition.top}px`,
                     left: `${dropdownPosition.left}px`,
@@ -155,7 +155,7 @@ const Select = React.forwardRef(({
                 }}
             >
                 {searchable && (
-                    <div className="p-2 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-slate-50 dark:bg-slate-800/50 rounded-t-xl z-10">
+                    <div className="p-2 border-b border-white/20 dark:border-white/5 sticky top-0 backdrop-blur-xl bg-white/40 dark:bg-white/5 rounded-t-xl z-10">
                         <div className="relative flex items-center">
                             <Icon name="Search" size={16} className="absolute left-3 text-slate-400 dark:text-slate-500 pointer-events-none" />
                             <input
@@ -165,7 +165,7 @@ const Select = React.forwardRef(({
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 onClick={(e) => e.stopPropagation()}
-                                className="w-full pl-9 pr-3 py-1.5 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 outline-none"
+                                className="w-full pl-9 pr-3 py-1.5 text-sm backdrop-blur-xl bg-white/60 dark:bg-white/10 border border-white/40 dark:border-white/15 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:ring-0 focus:outline-none focus:border-white/60 dark:focus:border-white/25"
                             />
                         </div>
                     </div>
@@ -230,11 +230,10 @@ const Select = React.forwardRef(({
                     aria-expanded={isOpen}
                     aria-haspopup="listbox"
                     className={cn(
-                        "flex h-10 w-full items-center justify-between rounded-xl border px-4 py-2 text-sm ring-offset-background transition-all duration-200",
-                        // Utiliser les mêmes couleurs que les Input pour la cohérence
-                        "bg-white dark:bg-slate-900 text-slate-900 dark:text-white", 
-                        "border-slate-200 dark:border-slate-700", 
-                        "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
+                        "flex h-10 w-full items-center justify-between rounded-xl border px-4 py-2 text-sm transition-all duration-200",
+                        "backdrop-blur-xl bg-white/60 dark:bg-white/10 text-slate-900 dark:text-white", 
+                        "border-white/50 dark:border-white/15", 
+                        "focus:outline-none focus:ring-0 focus:border-white/60",
                         "disabled:cursor-not-allowed disabled:opacity-50",
                         error && "border-rose-500 focus:ring-rose-500/20",
                         !hasValue && "text-slate-500 dark:text-slate-400",

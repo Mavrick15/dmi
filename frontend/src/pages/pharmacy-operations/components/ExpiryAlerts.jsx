@@ -82,7 +82,7 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
         return {
           bg: 'bg-slate-50 dark:bg-slate-800',
           text: 'text-slate-600 dark:text-slate-400',
-          border: 'border-slate-200 dark:border-slate-700',
+          border: 'border-white/20 dark:border-white/10',
           iconBg: 'bg-slate-100 dark:bg-slate-700'
         };
     }
@@ -102,9 +102,9 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
 
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+      <div className="p-4 border-b border-white/20 dark:border-white/10 glass-surface">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl flex items-center justify-center border border-amber-200 dark:border-amber-800">
@@ -124,13 +124,13 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
       {/* Alerts List */}
       <div className="p-4 max-h-[500px] overflow-y-auto custom-scrollbar">
         {loading ? (
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-12">
+          <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface flex items-center justify-center gap-3 py-12">
             <Icon name="Loader2" size={28} className="animate-spin text-primary" />
             <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des alertes…</span>
           </div>
         ) : expiryAlerts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
+            <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
               <Icon name="CheckCircle" size={24} className="text-slate-400 dark:text-slate-500" />
             </div>
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune alerte</p>
@@ -235,7 +235,7 @@ const ExpiryAlerts = ({ refreshTrigger, onAlertsTreated, onMarkAllTreated, onMar
 
       {/* Summary Footer */}
       {expiryAlerts.length > 0 && (
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+          <div className="px-3 py-1.5 border-t border-white/20 dark:border-white/10 glass-surface">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
                 <span className="flex h-2 w-2 rounded-full bg-rose-500"></span>

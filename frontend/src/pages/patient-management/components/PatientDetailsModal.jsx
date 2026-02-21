@@ -35,7 +35,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
   if (patientId && isMinimalPatient && isLoadingPatient) {
     return ReactDOM.createPortal(
       <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={onClose}>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 shadow-xl flex flex-col items-center gap-4" onClick={(e) => e.stopPropagation()}>
+        <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-2xl p-8 shadow-xl flex flex-col items-center gap-4" onClick={(e) => e.stopPropagation()}>
           <Icon name="Loader2" size={40} className="animate-spin text-primary" />
           <p className="text-slate-600 dark:text-slate-400">Chargement du dossier patient…</p>
         </div>
@@ -195,11 +195,11 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
       <div className="mb-4">
         <h4 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wide">Historique Récent</h4>
       </div>
-      <div className="relative border-l-2 border-slate-200 dark:border-slate-800 ml-3 space-y-8">
+      <div className="relative border-l-2 border-white/20 dark:border-white/10 ml-3 space-y-8">
         {Array.isArray(data.medicalHistory) && data.medicalHistory.map((event, idx) => (
           <div key={idx} className="relative pl-6">
-            <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white dark:bg-slate-900 border-2 border-primary"></div>
-            <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-primary/20 transition-colors">
+            <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full backdrop-blur-xl bg-white/50 dark:bg-white/10 border-2 border-primary"></div>
+            <div className="glass-surface p-4 rounded-xl hover:border-primary/20 transition-colors">
               <div className="flex justify-between items-start mb-1">
                 <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded uppercase">{event.type}</span>
                 <span className="text-xs text-slate-400">{event.date}</span>
@@ -219,7 +219,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Colonne Gauche : Infos Contact & Admin */}
       <div className="lg:col-span-1 space-y-6">
-        <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+        <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
           <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
             <Icon name="Contact" size={14} /> Coordonnées
           </h4>
@@ -277,7 +277,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
 
         {/* Informations personnelles */}
         {(data.placeOfBirth || data.profession || data.maritalStatus) && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+          <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Icon name="User" size={14} /> Informations personnelles
             </h4>
@@ -337,7 +337,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
 
         {/* Informations médicales supplémentaires */}
         {(data.allergies || data.currentMedications || data.familyHistory || data.vaccinations || data.disabilities || data.organDonor) && (
-          <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
+          <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-slate-100 dark:border-slate-800 rounded-xl p-5 shadow-sm">
             <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Icon name="Activity" size={14} /> Informations médicales
             </h4>
@@ -413,11 +413,11 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-        className="bg-white dark:bg-slate-900 w-full max-w-5xl h-[85vh] my-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800"
+        className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-5xl h-[85vh] my-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/20 dark:border-white/10"
       >
 
         {/* En-tête Global */}
-        <div className="bg-white dark:bg-slate-900 p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-6 items-center sm:items-start relative">
+        <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-6 items-center sm:items-start relative">
           <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-slate-400 transition-colors"><Icon name="X" size={24} /></button>
 
           <div className="relative flex-shrink-0">
@@ -430,7 +430,7 @@ const PatientDetailsModal = ({ isOpen, onClose, patient, onEdit, onSchedule }) =
           <div className="flex-1 text-center sm:text-left space-y-1">
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{data.name}</h2>
             <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
-              <span className="flex items-center gap-1 font-mono bg-slate-100 dark:bg-slate-800 px-1.5 rounded"><Icon name="Fingerprint" size={12} /> {data.id}</span>
+              <span className="flex items-center gap-1 font-mono glass-surface px-1.5 rounded"><Icon name="Fingerprint" size={12} /> {data.id}</span>
               <span className="hidden sm:inline">•</span>
               <span>{data.age}</span>
               <span className="hidden sm:inline">•</span>

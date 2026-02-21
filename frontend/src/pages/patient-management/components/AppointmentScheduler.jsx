@@ -215,7 +215,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
     }
   };
 
-  const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputStyle = "glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
   const patientName = effectivePatient?.user?.nomComplet || effectivePatient?.name || 'Patient';
 
@@ -239,10 +239,10 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-hidden flex flex-col"
+            className="glass-panel shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             {/* En-tête avec patient */}
-            <div className="shrink-0 px-6 py-5 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900 flex justify-between items-start gap-4">
+            <div className="shrink-0 px-6 py-5 border-b border-white/20 dark:border-white/10 bg-gradient-to-r from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900 flex justify-between items-start gap-4">
               <div className="flex items-center gap-4 min-w-0">
                 <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
                   <Icon name="CalendarPlus" size={24} className="text-primary" />
@@ -280,7 +280,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                       placeholder="Nom, prénom ou numéro patient (min. 2 caractères)"
                       value={patientSearch}
                       onChange={(e) => setPatientSearch(e.target.value)}
-                      className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700"
+                      className="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10"
                     />
                   </div>
                   {patientsForSelect.length === 0 ? (
@@ -294,7 +294,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                           key={p.id}
                           type="button"
                           onClick={() => setSelectedPatientInternal(p)}
-                          className="w-full flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 text-left transition-all"
+                          className="w-full flex items-center gap-3 p-3 rounded-xl border border-white/20 dark:border-white/10 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10 text-left transition-all"
                         >
                           <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
                             <Icon name="User" size={18} className="text-primary" />
@@ -391,12 +391,12 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                             title={occupied ? `Créneau déjà réservé par ${patientName}` : undefined}
                             onClick={() => !unavailable && setAppointmentData({ ...appointmentData, time: slot })}
                             className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${past
-                              ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
+                              ? 'opacity-50 cursor-not-allowed glass-surface text-slate-400 dark:text-slate-500'
                               : occupied
                                 ? 'cursor-not-allowed bg-amber-100/90 dark:bg-amber-900/50 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-100'
                                 : appointmentData.time === slot
                                   ? 'bg-primary text-white border-primary shadow-sm'
-                                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
+                                  : 'glass-surface text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
                               }`}
                           >
                             {slot}
@@ -421,12 +421,12 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
                             title={occupied ? `Créneau déjà réservé par ${patientName}` : undefined}
                             onClick={() => !unavailable && setAppointmentData({ ...appointmentData, time: slot })}
                             className={`min-w-[3.5rem] py-2 px-2 text-sm rounded-lg border transition-all ${past
-                              ? 'opacity-50 cursor-not-allowed bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500'
+                              ? 'opacity-50 cursor-not-allowed glass-surface text-slate-400 dark:text-slate-500'
                               : occupied
                                 ? 'cursor-not-allowed bg-amber-100/90 dark:bg-amber-900/50 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-100'
                                 : appointmentData.time === slot
                                   ? 'bg-primary text-white border-primary shadow-sm'
-                                  : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
+                                  : 'glass-surface text-slate-600 dark:text-slate-300 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
                               }`}
                           >
                             {slot}
@@ -477,7 +477,7 @@ const AppointmentScheduler = ({ isOpen, onClose, patient, onSchedule }) => {
 
             {/* Pied (masqué pendant la sélection patient) */}
             {effectivePatient && (
-            <div className="shrink-0 px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 bg-slate-50/80 dark:bg-slate-800/30 rounded-b-2xl">
+            <div className="shrink-0 px-6 py-4 border-t border-white/20 dark:border-white/10 flex justify-end gap-3 bg-slate-50/80 dark:bg-slate-800/30 rounded-b-2xl">
               <Button variant="ghost" onClick={onClose} disabled={loading}>
                 Annuler
               </Button>

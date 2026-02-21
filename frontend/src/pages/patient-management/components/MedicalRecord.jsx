@@ -15,8 +15,8 @@ import {
 } from '../../../utils/dateTime';
 
 const EmptyBlock = ({ icon, title, description, className = '' }) => (
-  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
-    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-white/20 dark:border-white/10 glass-surface ${className}`}>
+    <div className="w-16 h-16 rounded-2xl glass-surface flex items-center justify-center mb-4 shadow-sm">
       <Icon name={icon} size={28} className="text-slate-400 dark:text-slate-500" />
     </div>
     <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
@@ -96,7 +96,7 @@ const MedicalRecord = ({ patient }) => {
   const renderConsultations = () => {
     if (loadingConsultations) {
       return (
-        <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+        <div className="w-full rounded-2xl border border-white/20 dark:border-white/10 glass-surface p-12 flex flex-col items-center justify-center gap-4">
           <Loader2 className="animate-spin text-primary" size={36} />
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des consultations...</p>
         </div>
@@ -115,7 +115,7 @@ const MedicalRecord = ({ patient }) => {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04, duration: 0.25 }}
-            className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all"
+            className="group relative flex overflow-hidden rounded-xl glass-panel hover:shadow-lg hover:border-primary/30 transition-all"
           >
             <div className="absolute left-0 top-0 bottom-0 w-1 shrink-0 bg-primary rounded-l-xl" />
             <div className="relative z-10 flex-1 pl-4 pr-4 py-4">
@@ -183,7 +183,7 @@ const MedicalRecord = ({ patient }) => {
             </div>
 
             {consultation.examenPhysique && (
-              <div className="mb-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+              <div className="mb-3 p-3 rounded-xl glass-surface">
                 <h5 className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase mb-1.5 flex items-center gap-1.5">
                   <Icon name="Eye" size={12} />
                   Examen physique
@@ -203,7 +203,7 @@ const MedicalRecord = ({ patient }) => {
             )}
 
             {Array.isArray(consultation.requestedExams) && consultation.requestedExams.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-white/20 dark:border-white/10">
                 <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 self-center mr-1">Examens:</span>
                 {consultation.requestedExams.map((exam, i) => (
                   <Badge key={i} variant="info" size="sm" className="text-xs">
@@ -214,7 +214,7 @@ const MedicalRecord = ({ patient }) => {
               </div>
             )}
 
-            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+            <div className="mt-3 pt-3 border-t border-white/20 dark:border-white/10">
               <Button
                 variant="ghost"
                 size="sm"
@@ -235,7 +235,7 @@ const MedicalRecord = ({ patient }) => {
   const renderHistory = () => {
     if (loadingDetails) {
       return (
-        <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+        <div className="w-full rounded-2xl border border-white/20 dark:border-white/10 glass-surface p-12 flex flex-col items-center justify-center gap-4">
           <Loader2 className="animate-spin text-primary" size={36} />
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du dossier...</p>
         </div>
@@ -249,9 +249,9 @@ const MedicalRecord = ({ patient }) => {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
+          className="rounded-xl glass-panel overflow-hidden"
         >
-          <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3 p-4 border-b border-white/20 dark:border-white/10">
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
               <Icon name="FileText" size={20} className="text-blue-600 dark:text-blue-400" />
             </div>
@@ -266,9 +266,9 @@ const MedicalRecord = ({ patient }) => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden"
+          className="rounded-xl glass-panel overflow-hidden"
         >
-          <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3 p-4 border-b border-white/20 dark:border-white/10">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <Icon name="Heart" size={20} className="text-emerald-600 dark:text-emerald-400" />
             </div>
@@ -283,7 +283,7 @@ const MedicalRecord = ({ patient }) => {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700"
+                className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-white/20 dark:border-white/10"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Icon name={item.icon} size={14} className="text-primary" />
@@ -392,7 +392,7 @@ const MedicalRecord = ({ patient }) => {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.04 }}
-            className="flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-md transition-all"
+            className="flex overflow-hidden rounded-xl glass-panel hover:shadow-md transition-all"
           >
             <div className="w-1 shrink-0 bg-primary" />
             <div className="flex-1 p-4">
@@ -408,7 +408,7 @@ const MedicalRecord = ({ patient }) => {
                 {vitalItems.filter(item => vital[item.key] != null && vital[item.key] !== '').map((item) => (
                   <div
                     key={item.key}
-                    className="text-center p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700"
+                    className="text-center p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/50 border border-white/20 dark:border-white/10"
                   >
                     <Icon name={item.icon} size={16} className={`mx-auto mb-1 ${item.color}`} />
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold uppercase">{item.label}</p>
@@ -448,7 +448,7 @@ const MedicalRecord = ({ patient }) => {
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap border ${
               activeTab === tab.id
                 ? 'bg-primary text-white border-primary shadow-md'
-                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-700'
+                : 'glass-surface text-slate-600 dark:text-slate-400 hover:bg-white/30 dark:hover:bg-white/10'
             }`}
           >
             <Icon name={tab.icon} size={16} className={activeTab === tab.id ? 'text-white' : ''} />

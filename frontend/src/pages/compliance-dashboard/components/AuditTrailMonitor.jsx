@@ -36,7 +36,7 @@ const AuditTrailMonitor = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col h-full">
+    <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-3xl border border-white/20 dark:border-white/10 shadow-sm overflow-hidden flex flex-col h-full">
       
       {/* Header */}
       <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-800/20">
@@ -94,7 +94,7 @@ const AuditTrailMonitor = () => {
 
                 {/* Metadata (IP) */}
                 <div className="sm:text-right flex flex-col sm:items-end gap-2">
-                   <div className="flex items-center gap-1.5 text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-slate-200 dark:border-slate-800">
+                   <div className="flex items-center gap-1.5 text-[10px] text-slate-400 bg-slate-50 dark:bg-slate-950 px-2 py-1 rounded border border-white/20 dark:border-white/10">
                       <Icon name="Globe" size={10} /> {activity.ip}
                    </div>
                    <Button variant="ghost" size="xs" className="opacity-0 group-hover:opacity-100 transition-opacity h-6 text-xs">
@@ -109,7 +109,7 @@ const AuditTrailMonitor = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-center">
+      <div className="px-3 py-1.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex justify-center">
          <PermissionGuard requiredPermission="audit_view">
            <Button variant="outline" size="sm" iconName="Download" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" disabled={!hasPermission('audit_view') || exportAudit.isPending} onClick={() => exportAudit.mutate({})}>
               {exportAudit.isPending ? 'Export...' : 'Exporter les logs (CSV)'}

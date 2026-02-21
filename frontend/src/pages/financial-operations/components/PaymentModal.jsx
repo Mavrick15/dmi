@@ -143,7 +143,7 @@ const PaymentModal = ({ isOpen, onClose, invoice }) => {
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Informations facture */}
-        <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+        <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 border border-white/20 dark:border-white/10">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-bold text-slate-600 dark:text-slate-400">Facture</span>
             <span className="font-mono font-bold text-slate-900 dark:text-white">{invoice.numeroFacture}</span>
@@ -244,13 +244,13 @@ const PaymentModal = ({ isOpen, onClose, invoice }) => {
             placeholder="Notes supplémentaires sur le paiement..."
             rows={3}
             maxLength={500}
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+            className="w-full glass-panel rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
           />
         </div>
 
         {/* Aperçu */}
         {formData.montant && parseFloat(formData.montant) > 0 && (
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+          <div className="glass-surface rounded-xl p-4">
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-600 dark:text-slate-400">Montant payé actuel</span>
@@ -264,7 +264,7 @@ const PaymentModal = ({ isOpen, onClose, invoice }) => {
                   +{formatCurrency(parseFloat(formData.montant || 0))}
                 </span>
               </div>
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <div className="pt-2 border-t border-white/20 dark:border-white/10">
                 <div className="flex justify-between">
                   <span className="font-bold text-slate-700 dark:text-slate-300">Total payé après</span>
                   <span className="text-lg font-bold text-emerald-600">
@@ -272,7 +272,7 @@ const PaymentModal = ({ isOpen, onClose, invoice }) => {
                   </span>
                 </div>
               </div>
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <div className="pt-2 border-t border-white/20 dark:border-white/10">
                 <div className="flex justify-between">
                   <span className="font-bold text-slate-700 dark:text-slate-300">Reste à payer</span>
                   <span className={`text-lg font-bold ${montantRestant - parseFloat(formData.montant || 0) > 0 ? 'text-amber-600' : 'text-emerald-600'}`}>

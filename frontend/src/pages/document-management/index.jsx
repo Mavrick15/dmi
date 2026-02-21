@@ -287,14 +287,14 @@ const DocumentManagement = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors">
       <Header />
 
       <main className="pt-24 max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         {/* En-tête de page */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+            <div className="w-11 h-11 rounded-2xl glass-surface flex items-center justify-center text-primary">
               <Icon name="FileText" size={22} />
             </div>
             <div>
@@ -309,7 +309,7 @@ const DocumentManagement = () => {
                 queryClient.invalidateQueries({ queryKey: ['documents'], exact: false });
                 showToast('Documents actualisés', 'success');
               }}
-              className="gap-2 border-slate-200 dark:border-slate-700"
+              className="gap-2 border-white/20 dark:border-white/10"
             >
               <Icon name="RefreshCw" size={16} className={isLoading ? 'animate-spin' : ''} />
               Actualiser
@@ -354,10 +354,10 @@ const DocumentManagement = () => {
         )}
 
         {/* Conteneur principal */}
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm min-h-[400px] overflow-hidden">
+        <div className="rounded-2xl glass-panel min-h-[400px] overflow-hidden">
           <div className="p-6">
             {/* Barre de recherche */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/20 dark:border-white/10">
               <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                 Fichiers ({totalDocuments})
               </h2>
@@ -369,7 +369,7 @@ const DocumentManagement = () => {
                   value={searchTerm}
                   onChange={(e) => handleSearchChange(e.target.value)}
                   maxLength={100}
-                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder:text-slate-400"
+                  className="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-white/20 dark:border-white/10 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder:text-slate-400"
                 />
                 {searchTerm && (
                   <button
@@ -386,13 +386,13 @@ const DocumentManagement = () => {
 
             {/* Grille de documents */}
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+              <div className="flex flex-col items-center justify-center py-24 rounded-2xl glass-panel border-l-4 border-l-primary">
                 <Icon name="Loader2" size={32} className="animate-spin text-primary mb-4" />
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Chargement des documents…</p>
               </div>
             ) : documents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
+              <div className="flex flex-col items-center justify-center py-16 text-center rounded-2xl glass-panel">
+                <div className="w-12 h-12 rounded-2xl glass-surface flex items-center justify-center mb-3">
                   <Icon name="FileText" size={28} className="text-slate-400 dark:text-slate-500" />
                 </div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
@@ -447,7 +447,7 @@ const DocumentManagement = () => {
 
             {/* Pagination */}
             {documents.length > 0 && totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-white/20 dark:border-white/10">
                 <p className="text-xs text-slate-500 dark:text-slate-400 order-2 sm:order-1">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">{((currentPage - 1) * limit) + 1}</span>
                   {' – '}

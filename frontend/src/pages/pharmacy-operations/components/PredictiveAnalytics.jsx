@@ -276,7 +276,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-3 rounded-xl shadow-xl text-xs">
+        <div className="glass-dropdown p-3 rounded-xl shadow-xl text-xs">
           <p className="font-bold text-slate-700 dark:text-slate-200 mb-2">{label}</p>
           <div className="space-y-1.5">
             {Array.isArray(payload) && payload.map((entry, index) => {
@@ -300,11 +300,11 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
     return null;
   };
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white";
+  const inputClassName = "backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white";
 
   if (loading) {
     return (
-        <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+        <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-white/20 dark:border-white/10 p-6">
            <Icon name="Loader2" className="animate-spin mb-3" size={32} />
            <p>Chargement des analyses prédictives...</p>
         </div>
@@ -318,7 +318,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
   
   if (!hasAnyData && !loading) {
        return (
-          <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 p-6">
+          <div className="flex flex-col items-center justify-center h-[600px] text-slate-400 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-dashed border-white/20 dark:border-white/10 p-6">
               <Icon name="Database" size={40} className="mb-4" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Pas de données de consommation</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 text-center max-w-sm">
@@ -333,7 +333,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
     <div className="space-y-6">
       
       {/* Header & Controls */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-white/20 dark:border-white/10 p-6 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-violet-100 dark:bg-violet-900/20 rounded-xl flex items-center justify-center text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-900/50">
@@ -364,7 +364,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* Usage Forecast Chart */}
-        <div className="xl:col-span-2 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+        <div className="xl:col-span-2 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-white/20 dark:border-white/10 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h4 className="font-bold text-slate-800 dark:text-white">Consommation sur 6 mois (Sorties)</h4>
             <div className="flex items-center gap-4 text-xs font-medium">
@@ -388,7 +388,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
         </div>
 
         {/* Category Distribution (Pie Chart) */}
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-col">
+        <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-white/20 dark:border-white/10 p-6 shadow-sm flex flex-col">
           <h4 className="font-bold text-slate-800 dark:text-white mb-2">Répartition par Catégorie</h4>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">Distribution de la consommation attendue</p>
           
@@ -442,7 +442,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
       </div>
 
       {/* Reorder Recommendations */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-white/20 dark:border-white/10 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 flex justify-between items-center">
           <div>
              <h4 className="font-bold text-slate-800 dark:text-white">Recommandations de Commande</h4>
@@ -466,7 +466,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
               if (!rec || typeof rec !== 'object') return null;
               const style = getUrgencyStyle(rec.urgency);
               return (
-               <div key={rec.id} className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800/50 hover:border-primary/30 transition-all group">
+               <div key={rec.id} className="p-4 rounded-2xl glass-panel hover:border-primary/30 transition-all group">
                  <div className="flex flex-col lg:flex-row lg:items-center gap-4">
                    
                    <div className="flex-1 min-w-0">
@@ -480,7 +480,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
                      </div>
                    </div>
 
-                   <div className="grid grid-cols-4 gap-x-4 gap-y-2 text-xs w-full lg:w-auto lg:border-l border-slate-200 dark:border-slate-700 lg:pl-4">
+                   <div className="grid grid-cols-4 gap-x-4 gap-y-2 text-xs w-full lg:w-auto lg:border-l border-white/20 dark:border-white/10 lg:pl-4">
                       <div>
                          <span className="block text-slate-400 dark:text-slate-500 mb-0.5">Stock</span>
                          <span className="font-semibold text-slate-700 dark:text-slate-200">{rec.currentStock}</span>
@@ -512,7 +512,7 @@ const PredictiveAnalytics = ({ onCreateOrder, onViewMedication }) => {
                           variant="outline" 
                           size="sm" 
                           iconName="ShoppingCart" 
-                          className="h-8 w-8 p-0 rounded-lg border-slate-200 dark:border-slate-700 text-primary hover:bg-primary/10"
+                          className="h-8 w-8 p-0 rounded-lg border-white/20 dark:border-white/10 text-primary hover:bg-primary/10"
                           onClick={() => handleCreateOrderFromRecommendation(rec)}
                           disabled={loadingOrder}
                           title="Créer une commande"

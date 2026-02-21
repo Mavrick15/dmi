@@ -23,10 +23,10 @@ const UserFilters = ({ filters, onFilterChange, hideRoleFilter = false }) => {
     onFilterChange({ [key]: value });
   };
 
-  const inputClass = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-sm";
+  const inputClass = "glass-surface text-sm";
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 mb-8 flex flex-col gap-4 transition-colors duration-300">
+    <div className="glass-surface p-4 rounded-xl mb-8 flex flex-col gap-4 transition-colors duration-300">
 
       <div className="flex flex-col md:flex-row gap-4 items-center">
 
@@ -47,7 +47,7 @@ const UserFilters = ({ filters, onFilterChange, hideRoleFilter = false }) => {
               }
             }}
             maxLength={100}
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
           />
           {/* Bouton Effacer la recherche */}
           {filters.search && (

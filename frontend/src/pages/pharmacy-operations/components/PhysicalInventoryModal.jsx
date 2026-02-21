@@ -105,11 +105,11 @@ const PhysicalInventoryModal = ({ isOpen, onClose, onSuccess }) => {
 
   if (!isOpen) return null;
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white";
+  const inputClassName = "glass-surface text-slate-900 dark:text-white";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -131,7 +131,7 @@ const PhysicalInventoryModal = ({ isOpen, onClose, onSuccess }) => {
            />
 
            {selectedMedId && (
-             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700 grid grid-cols-2 gap-6 animate-fade-in">
+             <div className="p-4 glass-surface rounded-xl grid grid-cols-2 gap-6 animate-fade-in">
                 <div>
                     <span className="text-xs text-slate-500 uppercase font-bold">Stock Système (Théorique)</span>
                     <p className="text-2xl font-bold text-slate-700 dark:text-slate-200 mt-1">{systemStock}</p>

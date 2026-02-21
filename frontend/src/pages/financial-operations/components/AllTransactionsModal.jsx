@@ -47,7 +47,7 @@ const AllTransactionsModal = ({ isOpen, onClose, transactions = [] }) => {
         
         <div className="overflow-x-auto custom-scrollbar max-h-[600px]">
           <table className="w-full">
-            <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+            <thead className="glass-surface border-b border-white/20 dark:border-white/10 sticky top-0 z-10">
               <tr>
                 <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Patient</th>
                 <th className="text-left py-3 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">N° Facture</th>
@@ -57,7 +57,7 @@ const AllTransactionsModal = ({ isOpen, onClose, transactions = [] }) => {
                 <th className="text-center py-3 px-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+            <tbody className="divide-y divide-white/20 dark:divide-white/10">
               {transactions.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="py-12 text-center">
@@ -79,9 +79,9 @@ const AllTransactionsModal = ({ isOpen, onClose, transactions = [] }) => {
                           <Image 
                             src={tx.patientAvatar} 
                             alt={tx.patientName} 
-                            className="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700" 
+                            className="w-10 h-10 rounded-full object-cover border border-white/20 dark:border-white/10" 
                           />
-                          <div className="absolute -bottom-0.5 -right-0.5 bg-white dark:bg-slate-900 rounded-full p-0.5">
+                          <div className="absolute -bottom-0.5 -right-0.5 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-full p-0.5">
                             <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900"></div>
                           </div>
                         </div>

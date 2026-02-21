@@ -12,8 +12,8 @@ import { Loader2 } from 'lucide-react';
 import { formatDateTimeInBusinessTimezone } from '../../../utils/dateTime';
 
 const EmptyBlock = ({ icon, title, description, action, className = '' }) => (
-  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 ${className}`}>
-    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+  <div className={`flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-white/20 dark:border-white/10 glass-surface ${className}`}>
+    <div className="w-16 h-16 rounded-2xl glass-surface flex items-center justify-center mb-4 shadow-sm">
       <Icon name={icon} size={28} className="text-slate-400 dark:text-slate-500" />
     </div>
     <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">{title}</h3>
@@ -119,7 +119,7 @@ const PatientAnalysesHistory = ({ patient }) => {
 
   if (isLoading) {
     return (
-      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+      <div className="w-full rounded-2xl border border-white/20 dark:border-white/10 glass-surface p-12 flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={36} />
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses...</p>
       </div>
@@ -193,7 +193,7 @@ const PatientAnalysesHistory = ({ patient }) => {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
+          className="glass-panel rounded-xl p-4"
         >
           <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
             <Icon name="TrendingUp" size={16} className="text-primary" />
@@ -210,9 +210,9 @@ const PatientAnalysesHistory = ({ patient }) => {
             key={type}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden"
+            className="glass-panel rounded-xl overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2">
+            <div className="px-4 py-3 border-b border-white/20 dark:border-white/10 flex items-center gap-2">
               <Icon name="TestTube" size={16} className="text-primary" />
               <h4 className="font-bold text-slate-900 dark:text-white capitalize">
                 {type.replace(/_/g, ' ')}
@@ -220,7 +220,7 @@ const PatientAnalysesHistory = ({ patient }) => {
               <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">({analysesType.length})</span>
             </div>
 
-            <div className="divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="divide-y divide-white/20 dark:divide-white/10">
               {Array.isArray(analysesType) && analysesType.map((analyse, idx) => {
                 const statutBadge = getStatutBadge(analyse.statut);
                 const isSelected = selectedAnalyse?.id === analyse.id;
@@ -283,7 +283,7 @@ const PatientAnalysesHistory = ({ patient }) => {
               const res = historiqueResultats.find(h => h.analyseId === analyse?.id)?.resultats;
               if (!analyse || !res?.length) return null;
               return (
-                <div className="px-4 pb-4 pt-0 border-t border-slate-200 dark:border-slate-700">
+                <div className="px-4 pb-4 pt-0 border-t border-white/20 dark:border-white/10">
                   <div className="pl-4 mt-3">
                     <p className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mb-2">Résultats</p>
                     <ResultatsChart

@@ -231,7 +231,7 @@ const PatientManagement = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Helmet>
         <title>Gestion des Patients - MediCore</title>
         <meta name="description" content="Gérez les dossiers patients, consultez les informations médicales et planifiez les rendez-vous." />
@@ -241,7 +241,7 @@ const PatientManagement = () => {
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+            <div className="w-11 h-11 rounded-2xl glass-surface flex items-center justify-center text-primary">
               <Icon name="Users" size={22} />
             </div>
             <div>
@@ -253,7 +253,7 @@ const PatientManagement = () => {
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="flex glass-surface p-1 rounded-xl">
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
@@ -288,16 +288,16 @@ const PatientManagement = () => {
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 animate-pulse">
+                <div key={i} className="rounded-xl border border-white/20 dark:border-white/10 bg-white dark:bg-slate-800/50 p-4 animate-pulse">
                   <div className="h-3 w-16 rounded bg-slate-200 dark:bg-slate-600 mb-3" />
                   <div className="h-8 w-12 rounded bg-slate-200 dark:bg-slate-600" />
                 </div>
               ))}
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-4 h-14 animate-pulse">
+            <div className="rounded-xl border border-white/20 dark:border-white/10 bg-white dark:bg-slate-800/50 p-4 h-14 animate-pulse">
               <div className="h-10 w-full max-w-md rounded-lg bg-slate-200 dark:bg-slate-600" />
             </div>
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 overflow-hidden flex">
+            <div className="rounded-xl border border-white/20 dark:border-white/10 bg-white dark:bg-slate-800/50 overflow-hidden flex">
               <div className="w-1.5 shrink-0 bg-primary" />
               <div className="flex-1 p-8 flex flex-col items-center justify-center gap-5">
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center border border-primary/20">
@@ -316,7 +316,7 @@ const PatientManagement = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                <div key={i} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 overflow-hidden animate-pulse">
+                <div key={i} className="rounded-xl border border-white/20 dark:border-white/10 bg-white dark:bg-slate-800/50 overflow-hidden animate-pulse">
                   <div className="h-2 w-full bg-primary/30" />
                   <div className="p-4 space-y-3">
                     <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ const PatientManagement = () => {
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); initiateDelete(patient); }}
-                          className="absolute top-2 right-2 p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-400 opacity-0 group-hover:opacity-100 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 shadow-md border border-slate-200 dark:border-slate-700 transition-all"
+                          className="absolute top-2 right-2 p-2 bg-white dark:bg-slate-800 rounded-xl text-slate-400 opacity-0 group-hover:opacity-100 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 shadow-md border border-white/20 dark:border-white/10 transition-all"
                           disabled={deletePatient.isPending || !hasPermission('patient_delete')}
                           title="Supprimer le dossier"
                         >
@@ -372,8 +372,8 @@ const PatientManagement = () => {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 px-6 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-                  <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col items-center justify-center py-16 px-6 text-center rounded-xl border border-white/20 dark:border-white/10 glass-surface">
+                  <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-white/20 dark:border-white/10">
                     <Icon name="UserX" size={28} className="text-slate-400 dark:text-slate-500" />
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun patient trouvé</h3>
@@ -391,7 +391,7 @@ const PatientManagement = () => {
                   <Icon name="ChevronLeft" size={16} className="mr-1" />
                   Précédent
                 </Button>
-                <span className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 glass-panel">
                   Page <span className="font-bold text-primary">{currentPage}</span> / {lastPage}
                 </span>
                 <Button variant="outline" size="sm" disabled={currentPage === lastPage || loading} onClick={() => setCurrentPage(p => p + 1)} className="rounded-xl">

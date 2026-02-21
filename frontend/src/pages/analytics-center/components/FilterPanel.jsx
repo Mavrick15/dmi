@@ -63,7 +63,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
   // Mode Replié (Bouton simple)
   if (isCollapsed) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm h-fit">
+      <div className="glass-panel p-4 h-fit">
         <Button
           variant="outline"
           onClick={onToggle}
@@ -78,10 +78,10 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
 
   // Mode Déplié (Panneau complet)
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col h-full overflow-hidden transition-all duration-300 w-80">
+    <div className="glass-panel flex flex-col h-full overflow-hidden transition-all duration-300 w-80">
       
       {/* Header */}
-      <div className="flex items-center justify-between p-5 border-b border-slate-200 dark:border-slate-700">
+      <div className="flex items-center justify-between p-5 border-b border-white/20 dark:border-white/10">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Icon name="Filter" size={20} className="text-primary" />
           Filtres
@@ -113,7 +113,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
                   px-2 py-2 text-xs font-medium rounded-lg transition-all duration-200 border
                   ${filters.dateRange === option.value 
                     ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' 
-                    : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-primary/50'}
+                    : 'bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-300 border-white/20 dark:border-white/10 hover:border-primary/50 dark:hover:border-primary/50'}
                 `}
               >
                 {option.label}
@@ -124,20 +124,20 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
 
         {/* Dates personnalisées */}
         {filters.dateRange === 'custom' && (
-          <div className="grid grid-cols-1 gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 animate-fade-in">
+          <div className="grid grid-cols-1 gap-3 p-4 glass-surface rounded-xl animate-fade-in">
             <Input
               type="date"
               label="Du"
               value={filters.customStartDate}
               onChange={(e) => handleFilterChange('customStartDate', e.target.value)}
-              className="bg-white dark:bg-slate-900"
+              className="glass-surface"
             />
             <Input
               type="date"
               label="Au"
               value={filters.customEndDate}
               onChange={(e) => handleFilterChange('customEndDate', e.target.value)}
-              className="bg-white dark:bg-slate-900"
+              className="glass-surface"
             />
           </div>
         )}
@@ -157,7 +157,7 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
             // Le composant Select personnalisé retourne la valeur directement, pas l'événement
             onChange={(value) => handleFilterChange('department', value)}
             placeholder="Tous les départements"
-            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+            buttonClassName="glass-surface text-slate-900 dark:text-white"
           />
 
           <Select
@@ -167,13 +167,13 @@ const FilterPanel = ({ onFiltersChange, isCollapsed, onToggle }) => {
             onChange={(value) => handleFilterChange('provider', value)}
             placeholder="Tous les praticiens"
             searchable // Activation de la recherche
-            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white"
+            buttonClassName="glass-surface text-slate-900 dark:text-white"
           />
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="p-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex flex-col gap-3">
+      <div className="px-3 py-1.5 border-t border-white/20 dark:border-white/10 glass-surface flex flex-col gap-3">
         <Button
           variant="default"
           className="w-full shadow-lg shadow-primary/20"

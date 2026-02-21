@@ -63,11 +63,11 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
       onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
     >
       <div
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-6xl max-h-[calc(100vh-3rem)] flex flex-col overflow-hidden"
+        className="glass-panel rounded-xl shadow-xl w-full max-w-6xl max-h-[calc(100vh-3rem)] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* En-tête */}
-        <div className="flex items-center justify-between gap-4 p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <div className="flex items-center justify-between gap-4 p-4 border-b border-white/20 dark:border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
               <Icon name="FileText" size={20} className="text-primary dark:text-blue-400" />
@@ -109,8 +109,8 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
 
         {/* Barre zoom (images uniquement, le PDF gère son propre zoom navigateur) */}
         {isImage && (
-          <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-            <div className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-white/20 dark:border-white/10 glass-surface">
+            <div className="flex items-center gap-1 rounded-lg glass-surface p-1">
               <button type="button" onClick={handleZoomOut} disabled={zoomLevel <= 50} className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 disabled:opacity-40 transition-colors">
                 <Icon name="Minus" size={14} />
               </button>
@@ -128,7 +128,7 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
         <div className="flex-1 overflow-auto bg-slate-100 dark:bg-slate-950 min-h-0 flex items-start justify-center p-4">
           {isImage && (
             <div
-              className="bg-white dark:bg-slate-900 rounded-lg shadow-lg overflow-hidden transition-transform origin-top"
+              className="glass-surface rounded-lg shadow-lg overflow-hidden transition-transform origin-top"
               style={{ transform: `scale(${zoomLevel / 100})` }}
             >
               <img src={getPreviewUrl()} alt={document.title || 'Aperçu'} className="max-w-full h-auto block" />
@@ -138,12 +138,12 @@ const DocumentViewer = ({ document, isOpen, onClose, onSign, onDownload }) => {
             <iframe
               src={getPreviewUrl()}
               title="Aperçu PDF"
-              className="w-full min-h-[600px] flex-1 rounded-lg border-0 bg-white dark:bg-slate-900"
+              className="w-full min-h-[600px] flex-1 rounded-lg border-0 glass-surface"
               style={{ minHeight: '70vh' }}
             />
           )}
           {!isImage && !isPdf && (
-            <div className="w-full max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 p-8 flex flex-col items-center justify-center text-center">
+            <div className="w-full max-w-md rounded-xl glass-panel p-8 flex flex-col items-center justify-center text-center">
               <Icon name="FileText" size={40} className="text-slate-300 dark:text-slate-600 mb-3" />
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Aperçu non disponible pour ce type de fichier.</p>
               <Button size="sm" onClick={() => onDownload?.(document)}>Télécharger</Button>

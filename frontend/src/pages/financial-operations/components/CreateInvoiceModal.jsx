@@ -276,7 +276,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
     >
       {showPreview ? (
         <div className="space-y-6">
-          <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-6 border border-slate-200 dark:border-slate-700">
+          <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-6 border border-white/20 dark:border-white/10">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white">
                 <Icon name="FileText" size={24} />
@@ -288,11 +288,11 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6 space-y-6">
+          <div className="glass-panel rounded-xl p-6 space-y-6">
             {/* Informations patient */}
             <div>
               <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Patient</h4>
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+              <div className="glass-surface rounded-xl p-4">
                 <p className="text-lg font-bold text-slate-900 dark:text-white">
                   {selectedPatient?.name || selectedPatient?.user?.nomComplet || 'Patient non sélectionné'}
                 </p>
@@ -308,7 +308,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             {selectedConsultation && (
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Consultation liée</h4>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+                <div className="glass-surface rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
                     {selectedConsultation.dateConsultation
                       ? formatLongDateInBusinessTimezone(selectedConsultation.dateConsultation)
@@ -327,11 +327,11 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             <div>
               <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Montants</h4>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <div className="flex justify-between items-center p-3 glass-surface rounded-xl">
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Montant total</span>
                   <span className="text-lg font-bold text-slate-900 dark:text-white">{formatCurrency(parseFloat(formData.montantTotal || 0))}</span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <div className="flex justify-between items-center p-3 glass-surface rounded-xl">
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Montant payé</span>
                   <span className="text-lg font-bold text-emerald-600">{formatCurrency(parseFloat(formData.montantPaye || 0))}</span>
                 </div>
@@ -348,7 +348,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Date d'émission</h4>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+                <div className="glass-surface rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
                     {formData.dateEmission
                       ? formatLongDateInBusinessTimezone(formData.dateEmission)
@@ -358,7 +358,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Date d'échéance</h4>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+                <div className="glass-surface rounded-xl p-4">
                   <p className="text-sm font-medium text-slate-900 dark:text-white">
                     {dateEcheance ? formatLongDateInBusinessTimezone(dateEcheance) : 'Non définie'}
                   </p>
@@ -369,7 +369,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             {/* Statut */}
             <div>
               <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Statut</h4>
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+              <div className="glass-surface rounded-xl p-4">
                 <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-bold ${
                   formData.statut === 'payee' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
                   formData.statut === 'en_attente' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
@@ -385,7 +385,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             {formData.notes && (
               <div>
                 <h4 className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Notes</h4>
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+                <div className="glass-surface rounded-xl p-4">
                   <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{formData.notes}</p>
                 </div>
               </div>
@@ -411,7 +411,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                 { value: '', label: 'Sélectionner un patient' },
                 ...patientOptions
               ]}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
             />
           )}
         </div>
@@ -431,7 +431,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               { value: 'traitement', label: 'Traitement' },
               { value: 'autre', label: 'Autre' }
             ]}
-            buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+            buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
           />
         </div>
 
@@ -494,7 +494,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                       };
                     }).filter(Boolean) : [])
                 ]}
-                buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+                buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
               />
             )}
 
@@ -519,7 +519,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
                         className={`p-3 border rounded-xl cursor-pointer text-sm transition-all ${
                           isSelected
                             ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/20 dark:border-indigo-500 dark:text-indigo-300 ring-1 ring-indigo-500'
-                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-indigo-300'
+                            : 'glass-surface text-slate-600 dark:text-slate-300 hover:border-indigo-300'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -600,7 +600,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               onChange={(e) => handleChange('montantTotal', e.target.value)}
               placeholder="0.00"
               iconName="DollarSign"
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -616,14 +616,14 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               onChange={(e) => handleChange('montantPaye', e.target.value)}
               placeholder="0.00"
               iconName="Wallet"
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
             />
           </div>
         </div>
 
         {/* Reste à payer */}
         {formData.montantTotal && (
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+          <div className="glass-surface rounded-xl p-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Reste à payer :</span>
               <span className={`text-lg font-bold ${
@@ -658,7 +658,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               type="date"
               value={formData.dateEmission}
               onChange={(e) => handleChange('dateEmission', e.target.value)}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
               required
             />
           </div>
@@ -671,7 +671,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
               value={formData.dateEcheance}
               onChange={(e) => handleChange('dateEcheance', e.target.value)}
               min={formData.dateEmission}
-              buttonClassName="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+              buttonClassName="backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 text-slate-900 dark:text-white"
               placeholder="30 jours par défaut"
             />
           </div>
@@ -687,7 +687,7 @@ const CreateInvoiceModal = ({ isOpen, onClose }) => {
             onChange={(e) => handleChange('notes', e.target.value)}
             placeholder="Notes supplémentaires sur la facture..."
             rows={3}
-            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+            className="w-full glass-panel rounded-xl px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
           />
         </div>
       </form>

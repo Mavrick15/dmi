@@ -38,7 +38,7 @@ const MobileFeatureCard = ({
       className={`
         relative bg-gradient-to-br ${gradient 
           ? 'from-indigo-50 via-white to-indigo-50/50 dark:from-indigo-950/30 dark:via-slate-900 dark:to-indigo-950/20 border-indigo-100 dark:border-indigo-900/50' 
-          : 'from-slate-50 via-white to-slate-50/50 dark:from-slate-950/30 dark:via-slate-900 dark:to-slate-950/20 border-slate-200 dark:border-slate-800'
+          : 'from-slate-50 via-white to-slate-50/50 dark:from-slate-950/30 dark:via-slate-900 dark:to-slate-950/20 border-white/20 dark:border-white/10'
         } border rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden
       `}
     >

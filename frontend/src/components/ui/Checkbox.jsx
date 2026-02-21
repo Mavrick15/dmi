@@ -49,10 +49,10 @@ const Checkbox = React.forwardRef(({
                     className={cn(
                         "flex items-center justify-center shrink-0 rounded-lg border transition-all duration-200 cursor-pointer shadow-sm",
                         // Styles de base (Light/Dark)
-                        "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700",
+                        "backdrop-blur-sm bg-white/80 dark:bg-white/10 border-white/50 dark:border-white/15",
                         
                         // Focus ring via le 'peer' (l'input caché)
-                        "peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 peer-focus-visible:border-primary",
+                        "peer-focus-visible:ring-0 peer-focus-visible:border-white/60 dark:peer-focus-visible:border-white/25",
                         
                         // Taille
                         sizeClasses?.[size],

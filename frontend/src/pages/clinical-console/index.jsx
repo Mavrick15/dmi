@@ -21,6 +21,7 @@ import {
   formatTimeInBusinessTimezone,
   getTodayInBusinessTimezone,
 } from '../../utils/dateTime';
+import { formatNotificationMessage, parseNotificationMessage, normalizeAllergiesList } from '../../utils/notificationMessage';
 
 // Sous-composants
 import PatientSelector from './components/PatientSelector';
@@ -125,28 +126,45 @@ const ClinicalConsole = () => {
     });
   }, [notificationsData, user?.role]);
   
+  // Parser les allergies (string JSON, array, string simple) en liste propre
+  const parseAllergiesList = useCallback((input) => {
+    if (!input) return [];
+    if (Array.isArray(input)) {
+      return input.map(a => typeof a === 'string' ? a.trim() : (a?.name || a)?.toString?.() || '').filter(Boolean);
+    }
+    if (typeof input === 'string') {
+      const s = input.trim();
+      if (!s) return [];
+      try {
+        const parsed = JSON.parse(s);
+        return Array.isArray(parsed) ? parsed.map(a => String(a).trim()).filter(Boolean) : [s];
+      } catch {
+        return s.split(/[,;]| et /).map(a => a.replace(/^["\[\]\s]+|["\[\]\s]+$/g, '').trim()).filter(Boolean);
+      }
+    }
+    return [];
+  }, []);
+
   // Calculer les alertes critiques cliniques (basées sur le patient et la consultation en cours)
   const calculateClinicalCriticalAlerts = useMemo(() => {
     if (!selectedPatient) return [];
     
     const alertList = [];
-    const consultationData = {}; // On pourrait récupérer les données de consultation si disponibles
     
-    // Vérifier les allergies du patient (si disponibles)
-    if (selectedPatient?.allergies && Array.isArray(selectedPatient.allergies) && selectedPatient.allergies.length > 0) {
-      selectedPatient.allergies.forEach(allergy => {
-        if (!allergy) return;
-        const allergyName = typeof allergy === 'string' ? allergy : (allergy.name || allergy);
-        alertList.push({
-          id: `clinical-allergy-${allergyName}`,
-          type: 'critical',
-          title: 'Allergie connue',
-          message: `Le patient présente une allergie: ${allergyName}`,
-          category: 'clinical',
-          isClinical: true,
-          patientId: selectedPatient.id,
-          patientName: selectedPatient.name
-        });
+    // Vérifier les allergies du patient (si disponibles) - une seule notification avec toutes les allergies
+    const allergiesList = parseAllergiesList(selectedPatient?.allergies);
+    if (allergiesList.length > 0) {
+      const allergiesFormatted = allergiesList.join(', ');
+      alertList.push({
+        id: 'clinical-allergies',
+        type: 'critical',
+        title: allergiesList.length > 1 ? 'Allergies connues' : 'Allergie connue',
+        message: `Le patient présente ${allergiesList.length > 1 ? 'des allergies' : 'une allergie'} : ${allergiesFormatted}`,
+        category: 'clinical',
+        isClinical: true,
+        patientId: selectedPatient.id,
+        patientName: selectedPatient.name,
+        allergies: allergiesList
       });
     }
     
@@ -174,7 +192,7 @@ const ClinicalConsole = () => {
     }
     
     return alertList;
-  }, [selectedPatient]);
+  }, [selectedPatient, parseAllergiesList]);
   
   // Combiner les notifications du médecin et les alertes cliniques
   const allDoctorNotifications = [
@@ -494,7 +512,7 @@ const ClinicalConsole = () => {
         <meta name="description" content="Espace de travail clinique pour la gestion des consultations." />
       </Helmet>
 
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
         <Header />
 
         <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
@@ -502,26 +520,26 @@ const ClinicalConsole = () => {
             variants={containerVariants} 
             initial="hidden" 
             animate="visible"
-            className="space-y-8"
+            className="space-y-6"
           >
             {/* En-tête Page */}
-            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-11 h-11 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
-                  <Icon name="Stethoscope" size={22} />
+            <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center text-primary border border-white/20 dark:border-white/10">
+                  <Icon name="Stethoscope" size={18} />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Console Clinique</h1>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Espace de travail médical unifié</p>
+                  <h1 className="text-xl font-semibold text-slate-900 dark:text-white tracking-tight">Console Clinique</h1>
+                  <p className="text-xs text-slate-600 dark:text-slate-300">Espace de travail médical unifié</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {/* Notifications Médicales */}
                 <div className="relative" ref={criticalNotificationsRef}>
                   <motion.button
                     onClick={() => setIsCriticalNotificationsOpen(!isCriticalNotificationsOpen)}
-                    className={`relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 group ${
+                    className={`relative flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200 group ${
                       isCriticalNotificationsOpen
                         ? 'bg-primary/15 dark:bg-primary/25 text-primary dark:text-blue-400 ring-2 ring-primary/30 dark:ring-primary/40 shadow-lg shadow-primary/10'
                         : doctorUnreadCount > 0
@@ -531,7 +549,7 @@ const ClinicalConsole = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Icon name="Bell" size={22} className="group-hover:scale-110 transition-transform" />
+                    <Icon name="Bell" size={18} className="group-hover:scale-110 transition-transform" />
                     {doctorUnreadCount > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
@@ -549,9 +567,9 @@ const ClinicalConsole = () => {
                         initial="hidden" 
                         animate="visible" 
                         exit="exit" 
-                        className="absolute top-full right-0 mt-3 w-[420px] bg-white dark:bg-slate-900 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
+                        className="absolute top-full right-0 mt-3 w-[420px] backdrop-blur-xl bg-white/50 dark:bg-white/10 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-xl shadow-xl z-50 overflow-hidden"
                       >
-                        <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/50">
+                        <div className="p-4 border-b border-white/20 dark:border-white/10 bg-slate-50/80 dark:bg-slate-800/50">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                               <div className="relative w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center border border-primary/20 dark:border-primary/30 shrink-0">
@@ -559,7 +577,7 @@ const ClinicalConsole = () => {
                               </div>
                               <div className="min-w-0">
                                 <h3 className="font-bold text-slate-900 dark:text-white text-sm">Notifications médicales</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                                   {doctorUnreadCount > 0 ? `${doctorUnreadCount} non lue${doctorUnreadCount > 1 ? 's' : ''}` : 'Tout est à jour'}
                                 </p>
                               </div>
@@ -583,9 +601,9 @@ const ClinicalConsole = () => {
                         </div>
                         <div className="max-h-[650px] overflow-y-auto custom-scrollbar">
                           {loadingNotifications ? (
-                            <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2">
+                            <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2">
                               <Icon name="Loader2" size={24} className="animate-spin text-primary mb-3" />
-                              <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
+                              <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Chargement…</span>
                             </div>
                           ) : notificationsError ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -593,7 +611,7 @@ const ClinicalConsole = () => {
                                 <Icon name="AlertCircle" size={24} className="text-rose-500 dark:text-rose-400" />
                               </div>
                               <p className="text-sm font-semibold text-slate-900 dark:text-white mb-1">Erreur de chargement</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400">Veuillez réessayer</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-300">Veuillez réessayer</p>
                             </div>
                           ) : Array.isArray(allDoctorNotifications) && allDoctorNotifications.length > 0 ? (
                             <div className="p-3 space-y-4">
@@ -605,7 +623,7 @@ const ClinicalConsole = () => {
                               ].map(({ key, label, items }) =>
                                 items.length === 0 ? null : (
                                   <div key={key} className="space-y-2">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-1 sticky top-0 bg-white dark:bg-slate-900 py-0.5 z-10">
+                                    <p className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 px-1 sticky top-0 backdrop-blur-xl bg-white/50 dark:bg-white/10 py-0.5 z-10">
                                       {label}
                                     </p>
                                     {items.map((n, index) => {
@@ -622,11 +640,11 @@ const ClinicalConsole = () => {
                                         if (!n.isClinical && id) archive.mutate(id);
                                       };
                                       const getNotificationStyles = () => {
-                                        if (n.type === 'critical') return { bg: !isRead ? 'bg-rose-50 dark:bg-rose-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-rose-200 dark:border-rose-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-rose-500 to-pink-500', icon: 'AlertTriangle', dot: 'bg-rose-500' };
-                                        if (n.type === 'warning') return { bg: !isRead ? 'bg-amber-50 dark:bg-amber-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-amber-200 dark:border-amber-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-amber-500 to-orange-500', icon: 'AlertCircle', dot: 'bg-amber-500' };
-                                        if (n.type === 'error') return { bg: !isRead ? 'bg-red-50 dark:bg-red-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-red-200 dark:border-red-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-red-500 to-rose-500', icon: 'XCircle', dot: 'bg-red-500' };
-                                        if (n.type === 'success') return { bg: !isRead ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-emerald-200 dark:border-emerald-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-emerald-500 to-teal-500', icon: 'CheckCircle', dot: 'bg-emerald-500' };
-                                        return { bg: !isRead ? 'bg-blue-50 dark:bg-blue-950/30' : 'bg-white dark:bg-slate-900', border: !isRead ? 'border-blue-200 dark:border-blue-800/50' : 'border-slate-200 dark:border-slate-700', iconBg: 'from-blue-500 to-indigo-500', icon: 'Info', dot: 'bg-blue-500' };
+                                        if (n.type === 'critical') return { bg: !isRead ? 'bg-rose-50 dark:bg-rose-950/30' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10', border: !isRead ? 'border-rose-200 dark:border-rose-800/50' : 'border-white/20 dark:border-white/10', iconBg: 'from-rose-500 to-pink-500', icon: 'AlertTriangle', dot: 'bg-rose-500' };
+                                        if (n.type === 'warning') return { bg: !isRead ? 'bg-amber-50 dark:bg-amber-950/30' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10', border: !isRead ? 'border-amber-200 dark:border-amber-800/50' : 'border-white/20 dark:border-white/10', iconBg: 'from-amber-500 to-orange-500', icon: 'AlertCircle', dot: 'bg-amber-500' };
+                                        if (n.type === 'error') return { bg: !isRead ? 'bg-red-50 dark:bg-red-950/30' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10', border: !isRead ? 'border-red-200 dark:border-red-800/50' : 'border-white/20 dark:border-white/10', iconBg: 'from-red-500 to-rose-500', icon: 'XCircle', dot: 'bg-red-500' };
+                                        if (n.type === 'success') return { bg: !isRead ? 'bg-emerald-50 dark:bg-emerald-950/30' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10', border: !isRead ? 'border-emerald-200 dark:border-emerald-800/50' : 'border-white/20 dark:border-white/10', iconBg: 'from-emerald-500 to-teal-500', icon: 'CheckCircle', dot: 'bg-emerald-500' };
+                                        return { bg: !isRead ? 'bg-blue-50 dark:bg-blue-950/30' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10', border: !isRead ? 'border-blue-200 dark:border-blue-800/50' : 'border-white/20 dark:border-white/10', iconBg: 'from-blue-500 to-indigo-500', icon: 'Info', dot: 'bg-blue-500' };
                                       };
                                       const styles = getNotificationStyles();
                                       return (
@@ -654,7 +672,7 @@ const ClinicalConsole = () => {
                                                     {!isRead && <span className={`shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold text-white ${styles.dot}`}>Nouveau</span>}
                                                     {n.isClinical && <span className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Clinique</span>}
                                                   </div>
-                                                  <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 line-clamp-2">{n.message || 'Aucun message'}</p>
+                                                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-0.5 line-clamp-2">{formatNotificationMessage(n.message) || 'Aucun message'}</p>
                                                 </div>
                                                 {!n.isClinical && (
                                                   <button type="button" onClick={(e) => handleArchiveNotification(e, n.id)} className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-rose-500 shrink-0" title="Supprimer"><Icon name="Trash2" size={12} /></button>
@@ -662,11 +680,11 @@ const ClinicalConsole = () => {
                                               </div>
                                               <div className="flex items-center gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
                                                 <Icon name="Clock" size={10} className="text-slate-400" />
-                                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{n._relativeTime || formatRelativeTime(n.createdAt || n.created_at)}</span>
+                                                <span className="text-xs text-slate-600 dark:text-slate-400">{n._relativeTime || formatRelativeTime(n.createdAt || n.created_at)}</span>
                                                 {n.category && (
                                                   <>
                                                     <span className="text-slate-300 dark:text-slate-600">·</span>
-                                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{n.category === 'appointment' ? 'Rendez-vous' : n.category}</span>
+                                                    <span className="text-xs text-slate-600 dark:text-slate-400 capitalize">{n.category === 'appointment' ? 'Rendez-vous' : n.category}</span>
                                                   </>
                                                 )}
                                               </div>
@@ -685,7 +703,7 @@ const ClinicalConsole = () => {
                                 <Icon name="Bell" size={32} className="text-slate-400 dark:text-slate-500" />
                               </div>
                               <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Aucune notification</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-[200px]">Les alertes et rappels médicaux apparaîtront ici.</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-300 max-w-[200px]">Les alertes et rappels médicaux apparaîtront ici.</p>
                             </div>
                           )}
                         </div>
@@ -695,18 +713,18 @@ const ClinicalConsole = () => {
                 </div>
 
                 {/* Sélecteur de Vue */}
-                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="flex backdrop-blur-xl bg-white/50 dark:bg-white/10 p-0.5 rounded-lg border border-white/20 dark:border-white/10 shadow-sm">
                   {Array.isArray(viewOptions) && viewOptions.map(option => (
                     <button
                       key={option.id}
                       onClick={() => setActiveView(option.id)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-normal transition-all duration-200 ${
                         activeView === option.id 
-                          ? 'bg-slate-100 dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm' 
-                          : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                          ? 'bg-slate-100 dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm font-medium' 
+                          : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50'
                       }`}
                     >
-                      <Icon name={option.icon} size={16} />
+                      <Icon name={option.icon} size={14} />
                       <span className="hidden md:inline">{option.label}</span>
                     </button>
                   ))}
@@ -714,8 +732,8 @@ const ClinicalConsole = () => {
               </div>
             </motion.div>
 
-            {/* Cartes Métriques (style Pharmacie) */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* Cartes Métriques (style PatientStatsOverview) */}
+            <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { id: 1, title: 'Consultations Aujourd\'hui', value: Array.isArray(appointmentsToday) ? appointmentsToday.length : (typeof dashboardData?.metrics?.appointments === 'number' ? dashboardData.metrics.appointments : 0), icon: 'Users', theme: 'blue' },
                 { id: 2, title: 'Patients Actifs', value: patientStats?.activePatients || dashboardData?.metrics?.patients || 0, icon: 'FileText', theme: 'emerald' },
@@ -723,29 +741,31 @@ const ClinicalConsole = () => {
                 { id: 4, title: 'Alertes', value: dashboardData?.metrics?.alerts || 0, icon: 'Bell', theme: 'violet' }
               ].map((stat) => {
                 const themeStyles = {
-                  blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-700', icon: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' },
-                  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-700', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
-                  amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-700', icon: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
-                  violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-700', icon: 'bg-violet-500/20 text-violet-600 dark:text-violet-400' }
+                  blue: { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-800', icon: 'bg-blue-500/20 text-blue-600 dark:text-blue-400' },
+                  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
+                  amber: { bg: 'bg-amber-50 dark:bg-amber-900/20', border: 'border-amber-200 dark:border-amber-800', icon: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
+                  violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-800', icon: 'bg-violet-500/20 text-violet-600 dark:text-violet-400' }
                 };
                 const style = themeStyles[stat.theme] || themeStyles.blue;
                 return (
                   <motion.div
                     key={stat.id}
                     variants={itemVariants}
-                    className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+                    className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
                   >
-                    <div className="flex items-center justify-between gap-3 mb-2">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.icon}`}>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                          {stat.title}
+                        </p>
+                        <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+                          {stat.value}
+                        </p>
+                      </div>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
                         <Icon name={stat.icon} size={20} />
                       </div>
                     </div>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-                      {stat.value}
-                    </p>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      {stat.title}
-                    </p>
                   </motion.div>
                 );
               })}
@@ -768,7 +788,7 @@ const ClinicalConsole = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
-                  className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-3xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-[780px]"
+                  className="glass-panel shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden h-[780px]"
                 >
                    {renderMainContent()}
                 </motion.div>
@@ -777,7 +797,7 @@ const ClinicalConsole = () => {
             </div>
 
             {/* Footer */}
-            <motion.div variants={itemVariants} className="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+            <motion.div variants={itemVariants} className="px-3 py-1.5 border-t border-white/20 dark:border-white/10 flex items-center justify-between text-sm text-slate-600 dark:text-slate-300">
               <div className="flex items-center space-x-4">
                 <span>Dernière synchro: {formatTimeInBusinessTimezone(new Date())}</span>
                 <span className="w-1 h-1 bg-slate-300 dark:bg-slate-700 rounded-full"></span>
@@ -816,7 +836,7 @@ const ClinicalConsole = () => {
         className="max-w-2xl w-full"
       >
         {selectedNotification && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden">
+          <div className="glass-panel shadow-2xl overflow-hidden">
             {/* Header */}
             <div className={`p-6 border-b-2 ${
               selectedNotification.type === 'critical' ? 'bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950 dark:to-pink-950 border-rose-200 dark:border-rose-800' :
@@ -848,7 +868,7 @@ const ClinicalConsole = () => {
                     </h2>
                     <div className="flex items-center gap-3 flex-wrap">
                       {selectedNotification.isClinical && (
-                        <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold uppercase rounded-full border border-slate-200 dark:border-slate-700">
+                        <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold uppercase rounded-full border border-white/20 dark:border-white/10">
                           Alerte Clinique
                         </span>
                       )}
@@ -893,13 +913,18 @@ const ClinicalConsole = () => {
 
             {/* Content */}
             <div className="p-6 space-y-6">
-              {/* Message principal */}
-              <div>
-                <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Message</h3>
-                <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
-                  {selectedNotification.message || 'Aucun message disponible'}
-                </p>
-              </div>
+              {/* Message principal (sans les tableaux bruts - affichés en badges ci-dessous) */}
+              {(() => {
+                const { cleanMessage } = parseNotificationMessage(selectedNotification.message);
+                return cleanMessage ? (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Message</h3>
+                    <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {cleanMessage}
+                    </p>
+                  </div>
+                ) : null;
+              })()}
 
               {/* Informations spécifiques selon le type */}
               {selectedNotification.isClinical && selectedNotification.patientName && (
@@ -911,13 +936,26 @@ const ClinicalConsole = () => {
                   <p className="text-rose-700 dark:text-rose-400 font-semibold">
                     {selectedNotification.patientName}
                   </p>
-                  {selectedNotification.allergies && (
-                    <div className="mt-2">
-                      <p className="text-xs text-rose-600 dark:text-rose-400">
-                        Allergies: {selectedNotification.allergies}
-                      </p>
-                    </div>
-                  )}
+                  {(() => {
+                    const { extractedItems } = parseNotificationMessage(selectedNotification.message);
+                    const allergiesFromField = normalizeAllergiesList(selectedNotification.allergies);
+                    const allergies = allergiesFromField.length > 0 ? allergiesFromField : extractedItems;
+                    return allergies.length > 0 ? (
+                      <div className="mt-3">
+                        <p className="text-xs font-medium text-rose-600 dark:text-rose-400 mb-1.5 flex items-center gap-1.5">
+                          <Icon name="AlertTriangle" size={12} />
+                          Allergies
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {allergies.map((a, i) => (
+                            <span key={i} className="inline-flex items-center px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-xs font-medium border border-rose-200 dark:border-rose-800/50">
+                              {typeof a === 'string' ? a : (a?.name || a)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
                   {selectedNotification.conditions && (
                     <div className="mt-2">
                       <p className="text-xs text-rose-600 dark:text-rose-400">
@@ -992,7 +1030,7 @@ const ClinicalConsole = () => {
               )}
 
               {/* Informations temporelles */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+              <div className="pt-4 border-t border-white/20 dark:border-white/10">
                 <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                   <div className="flex items-center gap-2">
                     <Icon name="Clock" size={14} />
@@ -1027,7 +1065,7 @@ const ClinicalConsole = () => {
 
             {/* Footer avec actions */}
             {!selectedNotification.isClinical && (
-              <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 flex items-center justify-end gap-3">
+              <div className="px-3 py-1.5 border-t border-white/20 dark:border-white/10 glass-surface flex items-center justify-end gap-3">
                 {selectedNotification.category === 'appointment' && selectedNotification.targetId ? (
                   <>
                     {loadingAppointmentDetails ? (

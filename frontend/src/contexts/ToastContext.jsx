@@ -61,7 +61,7 @@ const ToastComponent = ({ id, type, message, duration = 3000, onClose }) => {
             animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: 100, scale: 0.9, transition: { duration: 0.2 } }}
             transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            className={`${baseStyle} ${styles.bg} ${styles.border} ${styles.text} max-w-sm backdrop-blur-sm shadow-2xl hover:shadow-3xl transition-shadow duration-300`}
+            className={`${baseStyle} ${styles.bg} ${styles.border} ${styles.text} max-w-sm backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] transition-shadow duration-300`}
             role="alert"
             whileHover={{ scale: 1.02 }}
         >

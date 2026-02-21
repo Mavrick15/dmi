@@ -103,15 +103,15 @@ const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
 
   if (!isOpen) return null;
 
-  const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputStyle = "glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-2xl rounded-xl shadow-xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
-        <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
+        <div className="p-5 border-b border-white/20 dark:border-white/10 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
           <div className="flex gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-white/20 dark:border-white/10">
               <Icon name="Building2" size={24} />
             </div>
             <div>
@@ -172,7 +172,7 @@ const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
                     type="color"
                     value={formData.couleur}
                     onChange={e => handleInputChange('couleur', e.target.value)}
-                    className="w-16 h-10 rounded-lg border border-slate-200 dark:border-slate-800 cursor-pointer"
+                    className="w-16 h-10 rounded-lg border border-white/20 dark:border-white/10 cursor-pointer"
                   />
                   <Input 
                     value={formData.couleur} 
@@ -210,7 +210,7 @@ const DepartmentModal = ({ isOpen, onClose, onSave, department = null }) => {
               <Icon name="Settings" size={14} /> Statut
             </h3>
             
-            <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-3 p-4 glass-surface rounded-xl">
               <Checkbox
                 checked={formData.actif}
                 onCheckedChange={(checked) => handleInputChange('actif', checked)}

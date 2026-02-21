@@ -68,15 +68,15 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
   const activeFiltersCount = Object.keys(localFilters).filter(key => localFilters[key] && localFilters[key] !== '').length;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
-      <div className="p-4 md:p-5">
-        <div className="flex items-center justify-between mb-4">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden">
+      <div className="px-3 py-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary border border-primary/20 flex items-center justify-center">
-              <Icon name="Filter" size={20} />
+            <div className="w-8 h-8 rounded-lg bg-primary/20 text-primary border border-primary/20 flex items-center justify-center">
+              <Icon name="Filter" size={16} />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">Filtres de recherche</h3>
+              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Filtres de recherche</h3>
               {activeFiltersCount > 0 && (
                 <motion.span 
                   initial={{ scale: 0 }}
@@ -104,7 +104,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
           </AnimatePresence>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -123,7 +123,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                 onChange={(e) => setSearchInput(e.target.value)}
                 onKeyDown={handleSearchKeyDown}
                 iconName="Search"
-                className="h-10 flex-1"
+                className="h-9 flex-1"
               />
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
@@ -132,7 +132,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                   size="sm"
                   iconName="Search"
                   onClick={handleSearchSubmit}
-                  className="h-10 px-3 md:px-4 rounded-xl"
+                  className="h-9 px-3 rounded-xl"
                   title="Rechercher"
                 />
               </motion.div>
@@ -194,7 +194,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-200 dark:border-slate-700"
+              className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3 pt-3 border-t border-white/20 dark:border-white/10"
             >
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -230,7 +230,7 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                   type="date"
                   value={localFilters.dateDebut || ''}
                   onChange={(e) => handleFilterChange('dateDebut', e.target.value)}
-                  className="h-10"
+                  className="h-9"
                 />
               </motion.div>
 
@@ -247,14 +247,14 @@ const AnalysesFilters = ({ filters, onFiltersChange }) => {
                   type="date"
                   value={localFilters.dateFin || ''}
                   onChange={(e) => handleFilterChange('dateFin', e.target.value)}
-                  className="h-10"
+                  className="h-9"
                 />
               </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        <div className="mt-4 flex justify-end">
+        <div className="mt-3 flex justify-end">
           <Button variant="ghost" size="sm" className="rounded-xl text-xs font-semibold text-primary hover:bg-primary/10" iconName={isExpanded ? "ChevronUp" : "ChevronDown"} onClick={() => setIsExpanded(!isExpanded)}>
             {isExpanded ? 'Moins de filtres' : 'Plus de filtres'}
           </Button>

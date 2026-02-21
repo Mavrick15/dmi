@@ -73,8 +73,8 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
 
   if (!resultats || resultats.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
-        <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+      <div className="glass-panel rounded-xl p-4 text-center">
+        <div className="w-14 h-14 mx-auto mb-4 rounded-xl glass-surface flex items-center justify-center">
           <Icon name="BarChart3" size={28} className="text-slate-500 dark:text-slate-400" />
         </div>
         <p className="font-medium text-slate-700 dark:text-slate-300">Aucun résultat disponible</p>
@@ -89,44 +89,52 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
     <div className="space-y-6">
       {/* Statistiques rapides */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-blue-500">
-            <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <Icon name="TestTube" size={18} className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Total</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.total}</p>
-            </div>
-          </div>
-
-          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-emerald-500">
-            <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
-              <Icon name="CheckCircle" size={18} className="text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Normaux</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.normaux}</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-xl p-4 border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Total</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{stats.total}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                <Icon name="TestTube" size={20} />
+              </div>
             </div>
           </div>
 
-          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-amber-500">
-            <div className="w-9 h-9 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-              <Icon name="AlertTriangle" size={18} className="text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Anormaux</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.anormaux}</p>
+          <div className="rounded-xl p-4 border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Normaux</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{stats.normaux}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                <Icon name="CheckCircle" size={20} />
+              </div>
             </div>
           </div>
 
-          <div className="rounded-xl p-4 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-start gap-3 border-l-4 border-l-rose-500">
-            <div className="w-9 h-9 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
-              <Icon name="AlertCircle" size={18} className="text-rose-600 dark:text-rose-400" />
+          <div className="rounded-xl p-4 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Anormaux</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{stats.anormaux}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                <Icon name="AlertTriangle" size={20} />
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Critiques</p>
-              <p className="text-xl font-bold text-slate-900 dark:text-white">{stats.critiques}</p>
+          </div>
+
+          <div className="rounded-xl p-4 border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-900/20 hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Critiques</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{stats.critiques}</p>
+              </div>
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-rose-500/20 text-rose-600 dark:text-rose-400">
+                <Icon name="AlertCircle" size={20} />
+              </div>
             </div>
           </div>
         </div>
@@ -134,7 +142,7 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
 
       {/* Graphique en barres - Interprétation */}
       {interpretationData.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
+        <div className="glass-panel rounded-xl p-4">
           <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center gap-2">
             <Icon name="BarChart3" size={18} className="text-primary" />
             Répartition des interprétations
@@ -184,7 +192,7 @@ const ResultatsChart = ({ resultats, historique = [] }) => {
           {Object.entries(chartData).map(([parametre, data]) => (
             <div
               key={parametre}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+              className="glass-panel rounded-xl p-6"
             >
               <h5 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">
                 {parametre}

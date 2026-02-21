@@ -52,12 +52,12 @@ const AnalysesWidget = () => {
     blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
     emerald: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800',
     violet: 'bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800',
-    slate: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+    slate: 'bg-slate-50 dark:bg-slate-800 border-white/20 dark:border-white/10'
   };
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden flex">
+      <div className="glass-panel rounded-xl overflow-hidden flex">
         <div className="w-1.5 shrink-0 bg-cyan-500" />
         <div className="flex-1 p-6 flex flex-col items-center justify-center gap-3 min-h-[200px]">
           <Icon name="Loader2" size={28} className="animate-spin text-primary" />
@@ -68,7 +68,7 @@ const AnalysesWidget = () => {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden flex h-full">
+    <div className="glass-panel rounded-xl overflow-hidden flex h-full">
       <div className="w-1.5 shrink-0 bg-cyan-500 self-stretch" aria-hidden />
       <div className="flex-1 flex flex-col min-w-0">
       <div className="flex items-center justify-between p-4 pb-2">
@@ -98,7 +98,7 @@ const AnalysesWidget = () => {
       <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 custom-scrollbar">
         {!Array.isArray(analyses) || analyses.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-10">
-            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+            <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
               <Icon name="CheckCircle" size={24} className="text-slate-400 dark:text-slate-500" />
             </div>
             <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune analyse récente</p>
@@ -121,7 +121,7 @@ const AnalysesWidget = () => {
                   onClick={() => navigate(`/analyses-laboratoire?analyseId=${analyse.id}`)}
                 >
                   <div className={`w-1 rounded-full self-stretch min-h-[2rem] shrink-0 ${accent}`} />
-                  <div className="p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 flex-shrink-0">
+                  <div className="p-2 rounded-lg glass-surface flex-shrink-0">
                     <Icon name="TestTube" size={16} className="text-slate-600 dark:text-slate-400" />
                   </div>
                   <div className="flex-1 min-w-0">

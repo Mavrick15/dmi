@@ -100,9 +100,9 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-lg border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="glass-panel shadow-xl w-full max-w-lg flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 shrink-0">
+        <div className="flex items-center justify-between p-6 border-b border-white/20 dark:border-white/10 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
               <Icon name="Upload" size={20} className="text-primary" />
@@ -124,7 +124,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5 overflow-y-auto flex-1 min-h-0">
           {/* Patient */}
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 p-4">
+          <div className="rounded-xl glass-surface p-4">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
               Patient concerné <span className="text-red-500">*</span>
             </p>
@@ -135,7 +135,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
                 onChange={(e) => setSelectedPatientId(e.target.value)}
                 required
                 disabled={isLoadingPatients}
-                className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
+                className="w-full pl-10 pr-10 py-2.5 glass-surface outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
               >
                 <option value="">Sélectionner un patient</option>
                 {patientsArray.map((p) => (
@@ -155,7 +155,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
 
           {/* Médecin (obligatoire pour infirmier) */}
           {isInfirmier && (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-amber-50/50 dark:bg-amber-900/10 p-4">
+            <div className="rounded-xl backdrop-blur-md bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-800/50 p-4">
               <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                 Document attribué au médecin <span className="text-red-500">*</span>
               </p>
@@ -169,7 +169,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
                   onChange={(e) => setSelectedDoctorId(e.target.value)}
                   required={isInfirmier}
                   disabled={isLoadingDoctors}
-                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
+                  className="w-full pl-10 pr-10 py-2.5 glass-surface outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
                 >
                   <option value="">Choisir un médecin</option>
                   {doctors.map((d) => (
@@ -195,7 +195,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ex: Radio Thorax..."
                   required
-                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm"
+                  className="w-full pl-10 pr-4 py-2.5 glass-surface focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm"
                 />
               </div>
             </div>
@@ -204,7 +204,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm cursor-pointer"
+                className="w-full px-4 py-2.5 glass-surface focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm cursor-pointer"
               >
                 <option value="general">Général / Administratif</option>
                 <option value="prescription">Ordonnance</option>
@@ -223,12 +223,12 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Description du document..."
               rows={3}
-              className="w-full px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm resize-none"
+              className="w-full px-4 py-2.5 glass-surface focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-slate-900 dark:text-white text-sm resize-none"
             />
           </div>
 
           {/* Zone fichier */}
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+          <div className="pt-2 border-t border-white/20 dark:border-white/10">
             <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Fichier</p>
             <div
               role="button"
@@ -238,7 +238,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
               className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all group ${
                 selectedFile
                   ? 'border-emerald-500 dark:border-emerald-600 bg-emerald-50/50 dark:bg-emerald-900/10'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                  : 'border-white/30 dark:border-white/10 hover:border-primary/50 hover:bg-white/30 dark:hover:bg-white/10'
               }`}
             >
               <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" />
@@ -252,7 +252,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onUpload, isUploading }) => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center text-slate-500 dark:text-slate-400 group-hover:text-primary transition-colors">
-                  <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-2 group-hover:bg-primary/10 transition-colors">
+                  <div className="w-12 h-12 rounded-xl glass-surface flex items-center justify-center mb-2 group-hover:bg-primary/10 transition-colors">
                     <Icon name="Upload" size={24} />
                   </div>
                   <p className="font-medium text-sm">Cliquez pour choisir un fichier</p>

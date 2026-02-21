@@ -135,10 +135,10 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
   const formatDate = (dateString) => (dateString ? formatDateInBusinessTimezone(dateString) : 'N/A');
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden">
       
       {/* Header with Tabs */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+      <div className="p-4 border-b border-white/20 dark:border-white/10 glass-surface">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
@@ -161,7 +161,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
           <button
             onClick={() => setActiveTab('suppliers')}
             className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
-              activeTab === 'suppliers' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
+              activeTab === 'suppliers' ? 'glass-surface text-slate-900 dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/30 dark:hover:bg-white/10'
             }`}
           >
             Fournisseurs ({loadingSuppliers ? '...' : pagination.total})
@@ -169,7 +169,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
           <button
             onClick={() => setActiveTab('orders')}
             className={`px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-200 ${
-              activeTab === 'orders' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'
+              activeTab === 'orders' ? 'glass-surface text-slate-900 dark:text-white shadow-sm ring-1 ring-black/5 dark:ring-white/10' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/30 dark:hover:bg-white/10'
             }`}
           >
             Commandes récentes ({loadingOrders ? '...' : recentOrders.length})
@@ -178,19 +178,19 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
       </div>
 
       {/* Content */}
-      <div className="p-6 bg-white dark:bg-slate-900">
+      <div className="p-6 backdrop-blur-xl bg-white/50 dark:bg-white/10">
         {/* TAB: FOURNISSEURS */}
         {activeTab === 'suppliers' && (
           <div className="space-y-6 animate-fade-in">
 
             {loadingSuppliers ? (
-                 <div className="rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center gap-3 py-12">
+                 <div className="rounded-xl border border-white/20 dark:border-white/10 border-l-4 border-l-primary glass-surface flex flex-col items-center justify-center gap-3 py-12">
                    <Icon name="Loader2" size={28} className="animate-spin text-primary" />
                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement…</span>
                  </div>
             ) : suppliers.length === 0 ? (
-                 <div className="flex flex-col items-center justify-center py-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30">
-                   <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                 <div className="flex flex-col items-center justify-center py-14 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
+                   <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
                      <Icon name="Truck" size={28} className="text-slate-400 dark:text-slate-500" />
                    </div>
                    <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucun fournisseur</p>
@@ -201,7 +201,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
                   {Array.isArray(suppliers) && suppliers.map((supplier) => {
                     if (!supplier || typeof supplier !== 'object') return null;
                     return (
-                      <div key={supplier.id} className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-4 hover:shadow-md hover:border-primary/30 transition-all">
+                      <div key={supplier.id} className="group rounded-xl border border-white/20 dark:border-white/10 glass-surface p-4 hover:shadow-md hover:border-primary/30 transition-all">
                       
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -213,11 +213,11 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
 
                       <div className="space-y-3 mb-5">
                         <div className="flex items-center space-x-3 text-sm text-slate-600 dark:text-slate-300">
-                          <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"><Icon name="Mail" size={14} /></div>
+                          <div className="p-1.5 rounded-lg glass-surface text-slate-500 dark:text-slate-400"><Icon name="Mail" size={14} /></div>
                           <span>{supplier.email}</span>
                         </div>
                         <div className="flex items-center space-x-3 text-sm text-slate-600 dark:text-slate-300">
-                          <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"><Icon name="Phone" size={14} /></div>
+                          <div className="p-1.5 rounded-lg glass-surface text-slate-500 dark:text-slate-400"><Icon name="Phone" size={14} /></div>
                           <span>{supplier.telephone || 'N/A'}</span>
                         </div>
                       </div>
@@ -322,7 +322,7 @@ const SupplierManagement = ({ onOpenAddSupplier, refreshTrigger, onDelete, onRec
 
             {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="flex justify-center items-center gap-4 mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex justify-center items-center gap-4 mt-6 pt-6 border-t border-white/20 dark:border-white/10">
                 <Button variant="outline" size="sm" iconName="ChevronLeft" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1} className="rounded-xl">
                   Précédent
                 </Button>

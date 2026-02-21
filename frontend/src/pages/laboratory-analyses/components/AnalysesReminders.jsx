@@ -88,7 +88,7 @@ const AnalysesReminders = () => {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
+      <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
         <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
         <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
@@ -97,7 +97,7 @@ const AnalysesReminders = () => {
 
   if (reminders.length === 0) {
     return (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
+        <div className="glass-panel rounded-xl p-4 text-center">
         <Icon name="CheckCircle" size={48} className="mx-auto text-emerald-500 mb-4" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
           Aucun rappel
@@ -156,7 +156,7 @@ const AnalysesReminders = () => {
   return (
     <div className="space-y-4">
       {/* Résumé */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {['critical', 'high', 'medium', 'low'].map((priority) => {
           const count = reminders.filter(r => r.priority === priority).length;
           const config = getPriorityConfig(priority);
@@ -167,13 +167,17 @@ const AnalysesReminders = () => {
               key={priority}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`${config.bg} rounded-xl p-3 border ${config.border}`}
+              className={`${config.bg} rounded-xl p-4 border ${config.border} hover:shadow-md transition-shadow`}
             >
-              <div className="flex items-center gap-2 mb-1">
-                <Icon name="Bell" size={16} className={config.text} />
-                <p className={`text-xs font-bold ${config.text} uppercase`}>{config.label}</p>
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">{config.label}</p>
+                  <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{count}</p>
+                </div>
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${config.color} text-white`}>
+                  <Icon name="Bell" size={20} />
+                </div>
               </div>
-              <p className={`text-2xl font-black ${config.text}`}>{count}</p>
             </motion.div>
           );
         })}
@@ -191,7 +195,7 @@ const AnalysesReminders = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className={`rounded-xl p-4 border transition-all cursor-pointer hover:shadow-md ${config.bg} ${config.border}`}
+              className={`rounded-xl p-3 border transition-all cursor-pointer hover:shadow-md ${config.bg} ${config.border}`}
               onClick={() => navigate(`/analyses-laboratoire?analyseId=${analyse.id}`)}
             >
               <div className="flex items-start justify-between">

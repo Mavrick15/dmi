@@ -96,7 +96,7 @@ const ValidateResultatModal = ({ isOpen, onClose, resultat, analyse }) => {
     >
       <div className="space-y-6">
         {/* Informations du résultat */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+        <div className="glass-surface rounded-xl p-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Paramètre</p>
@@ -171,7 +171,7 @@ const ValidateResultatModal = ({ isOpen, onClose, resultat, analyse }) => {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-white/20 dark:border-white/10">
           <Button
             variant="outline"
             onClick={onClose}

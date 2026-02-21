@@ -150,7 +150,7 @@ const IntegrationCenter = () => {
                   }).filter(Boolean)}
                     </div>
                   ) : (
-                    <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+                    <div className="text-center py-20 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-2xl border border-dashed border-white/20 dark:border-white/10">
                       <Icon name="Zap" size={48} className="mx-auto mb-4 text-slate-300 dark:text-slate-600" />
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Aucune intégration</h3>
                       <p className="text-slate-500 dark:text-slate-400 mb-6">Créez votre première intégration pour commencer</p>
@@ -226,7 +226,7 @@ const IntegrationCenter = () => {
           </div>
         </motion.div>
 
-        <div className="flex overflow-x-auto pb-1 mb-8 border-b border-slate-200 dark:border-slate-800 gap-6">
+        <div className="flex overflow-x-auto pb-1 mb-8 border-b border-white/20 dark:border-white/10 gap-6">
             {Array.isArray(tabs) && tabs.map(tab => {
               if (!tab || typeof tab !== 'object') return null;
               return (

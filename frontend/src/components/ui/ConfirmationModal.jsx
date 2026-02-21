@@ -48,7 +48,7 @@ const ConfirmationModal = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="bg-white dark:bg-slate-900 w-full max-w-md rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center text-center relative overflow-hidden"
+            className="w-full max-w-md rounded-2xl p-6 flex flex-col items-center text-center relative overflow-hidden backdrop-blur-2xl bg-white/85 dark:bg-slate-900/90 border border-white/40 dark:border-white/15 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
             onClick={(e) => e.stopPropagation()}
             style={{ zIndex: 1000000, position: 'relative' }}
           >

@@ -16,7 +16,7 @@ import { printPatientRegistrationForm } from '../../../print/patientRegistration
 const Section = ({ title, icon, children, className = "" }) => (
   <div className={`space-y-3 ${className}`}>
     {title && (
-      <div className="flex items-center gap-2 pb-2 border-b border-slate-200 dark:border-slate-700">
+      <div className="flex items-center gap-2 pb-2 border-b border-white/20 dark:border-white/10">
         <div className="p-1.5 bg-primary/10 dark:bg-primary/20 rounded-lg">
           <Icon name={icon} size={16} className="text-primary" />
         </div>
@@ -567,8 +567,8 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
 
   if (!isOpen) return null;
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-primary/20";
-  const textareaClassName = "w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all resize-none";
+  const inputClassName = "glass-surface text-slate-900 dark:text-white focus:ring-primary/20";
+  const textareaClassName = "w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all resize-none";
 
   const renderStepContent = () => {
     switch (activeStep) {
@@ -583,7 +583,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <div 
-                    className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative group cursor-pointer transition-all hover:border-primary/50"
+                    className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/20 dark:border-white/10 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative group cursor-pointer transition-all hover:border-primary/50"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     {avatarPreview ? (
@@ -992,7 +992,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
         return (
           <div className="space-y-4">
             <Section title="Récapitulatif" icon="FileText">
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface p-4 rounded-xl">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="space-y-1">
                     <span className="text-slate-400 text-xs uppercase block font-medium">Patient</span>
@@ -1030,7 +1030,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
 
             <Section title="Consentements" icon="ShieldCheck">
               <div className="space-y-3">
-                <div className={`p-4 rounded-lg border transition-colors ${errors.consentTreatment ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30'}`}>
+                <div className={`p-4 rounded-lg border transition-colors ${errors.consentTreatment ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/10' : 'border-white/20 dark:border-white/10 glass-surface'}`}>
                   <Checkbox 
                     label="Je confirme l'exactitude des informations médicales et autorise leur utilisation pour les soins." 
                     checked={formData.consentTreatment} 
@@ -1039,7 +1039,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
                     error={errors.consentTreatment} 
                   />
                 </div>
-                <div className={`p-4 rounded-lg border transition-colors ${errors.consentData ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/10' : 'border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30'}`}>
+                <div className={`p-4 rounded-lg border transition-colors ${errors.consentData ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/10' : 'border-white/20 dark:border-white/10 glass-surface'}`}>
                   <Checkbox 
                     label="J'accepte le traitement des données personnelles conformément au RGPD." 
                     checked={formData.consentData} 
@@ -1060,9 +1060,9 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal={true}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="shrink-0 p-5 sm:p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center">
+        <div className="shrink-0 p-5 sm:p-6 border-b border-white/20 dark:border-white/10 glass-surface flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
               <Icon name={patient ? "Edit" : "UserPlus"} size={20} className="text-primary" />
@@ -1080,13 +1080,13 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
         </div>
 
         {/* Stepper */}
-        <div className="shrink-0 px-5 sm:px-6 pt-4 pb-3 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+        <div className="shrink-0 px-5 sm:px-6 pt-4 pb-3 border-b border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
           <div className="flex justify-between relative">
             <div className="absolute top-4 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-700 rounded-full -z-10" />
             <div className="absolute top-4 left-0 h-0.5 bg-primary rounded-full -z-10 transition-all duration-400 ease-out" style={{ width: `${(activeStep / Math.max(steps.length - 1, 1)) * 100}%` }} />
             {steps.map((s, i) => (
               <div key={s.id} className="flex flex-col items-center gap-1.5 relative z-0">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${i <= activeStep ? 'bg-primary text-white border-primary shadow-md' : 'bg-white dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-600'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 ${i <= activeStep ? 'bg-primary text-white border-primary shadow-md' : 'glass-surface text-slate-400 border-white/30 dark:border-white/10'}`}>
                   {i < activeStep ? <Icon name="Check" size={14} /> : <Icon name={s.icon} size={14} />}
                 </div>
                 <span className={`text-[10px] font-semibold uppercase tracking-wider max-w-[4rem] text-center leading-tight ${i <= activeStep ? 'text-primary' : 'text-slate-400 dark:text-slate-500'}`}>
@@ -1113,7 +1113,7 @@ const PatientRegistrationModal = ({ isOpen, onClose, onSubmit, patient = null })
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 p-5 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex justify-between items-center rounded-b-2xl">
+        <div className="shrink-0 px-3 py-1.5 border-t border-white/20 dark:border-white/10 glass-surface flex justify-between items-center rounded-b-2xl">
           <Button
             variant="ghost"
             onClick={activeStep === 0 ? onClose : handleBack}

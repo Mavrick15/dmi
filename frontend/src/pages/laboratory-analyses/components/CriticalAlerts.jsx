@@ -101,7 +101,7 @@ const CriticalAlerts = () => {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
+      <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center py-8">
         <Icon name="Loader2" size={24} className="animate-spin text-primary mb-2" />
         <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
       </div>
@@ -110,7 +110,7 @@ const CriticalAlerts = () => {
 
   if (criticalResults.length === 0) {
     return (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center">
+        <div className="glass-panel rounded-xl p-4 text-center">
         <Icon name="CheckCircle" size={48} className="mx-auto text-emerald-500 mb-4" />
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
           Aucune alerte critique
@@ -128,30 +128,38 @@ const CriticalAlerts = () => {
   return (
     <div className="space-y-4">
       {/* Résumé */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-4 border border-rose-200 dark:border-rose-700"
+          className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-4 border border-rose-200 dark:border-rose-800 hover:shadow-md transition-shadow"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="AlertCircle" size={20} className="text-rose-600 dark:text-rose-400" />
-            <p className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase">Critiques</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Critiques</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{critiques.length}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-rose-500/20 text-rose-600 dark:text-rose-400">
+              <Icon name="AlertCircle" size={20} />
+            </div>
           </div>
-          <p className="text-3xl font-black text-rose-900 dark:text-rose-100">{critiques.length}</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-700"
+          className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800 hover:shadow-md transition-shadow"
         >
-          <div className="flex items-center gap-2 mb-2">
-            <Icon name="AlertTriangle" size={20} className="text-amber-600 dark:text-amber-400" />
-            <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">Avertissements</p>
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Avertissements</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">{warnings.length}</p>
+            </div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <Icon name="AlertTriangle" size={20} />
+            </div>
           </div>
-          <p className="text-3xl font-black text-amber-900 dark:text-amber-100">{warnings.length}</p>
         </motion.div>
       </div>
 
@@ -167,7 +175,7 @@ const CriticalAlerts = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className={`rounded-xl p-4 border transition-all cursor-pointer hover:shadow-md ${
+              className={`rounded-xl p-3 border transition-all cursor-pointer hover:shadow-md ${
                 isCritique
                   ? 'bg-rose-50 dark:bg-rose-900/20 border-rose-200 dark:border-rose-700'
                   : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700'

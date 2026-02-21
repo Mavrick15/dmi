@@ -152,7 +152,7 @@ const MyAccount = () => {
           transition={{ duration: 0.3 }}
           className="mb-8"
         >
-          <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+          <div className="rounded-xl backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10 shadow-sm overflow-hidden">
             <div className="h-16 bg-primary/10 dark:bg-primary/20" />
             <div className="px-6 pb-6 -mt-8 relative">
               <div className="flex flex-col sm:flex-row sm:items-end gap-4">
@@ -170,7 +170,7 @@ const MyAccount = () => {
                     {user?.nomComplet || 'Mon compte'}
                   </h1>
                   {roleLabel && (
-                    <span className="inline-block mt-2 px-2.5 py-1 text-xs font-semibold rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 border border-slate-200 dark:border-slate-700">
+                    <span className="inline-block mt-2 px-2.5 py-1 text-xs font-semibold rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-blue-400 border border-white/20 dark:border-white/10">
                       {roleLabel}
                     </span>
                   )}
@@ -185,13 +185,13 @@ const MyAccount = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.08 }}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden"
+          className="rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 shadow-sm overflow-hidden"
         >
-          <div className="flex p-1.5 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex p-1.5 bg-slate-50 dark:bg-slate-800/50 border-b border-white/20 dark:border-white/10">
             <button
               type="button"
               onClick={() => setActiveTab('profile')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'profile' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'profile' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-white/20 dark:border-white/10' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
             >
               <Icon name="User" size={18} />
               Profil
@@ -199,7 +199,7 @@ const MyAccount = () => {
             <button
               type="button"
               onClick={() => setActiveTab('password')}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'password' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-slate-200 dark:border-slate-700' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${activeTab === 'password' ? 'bg-white dark:bg-slate-800 text-primary dark:text-blue-400 shadow-sm border border-white/20 dark:border-white/10' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
             >
               <Icon name="Lock" size={18} />
               Mot de passe
@@ -223,7 +223,7 @@ const MyAccount = () => {
                       placeholder="Votre nom"
                     />
                   </div>
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <div className="pt-2 border-t border-white/20 dark:border-white/10">
                     <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
                       <Icon name="Phone" size={16} />
                       Contact
@@ -245,7 +245,7 @@ const MyAccount = () => {
                       />
                     </div>
                   </div>
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <div className="pt-2 border-t border-white/20 dark:border-white/10">
                     <h2 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-2 mb-4">
                       <Icon name="Image" size={16} />
                       Photo

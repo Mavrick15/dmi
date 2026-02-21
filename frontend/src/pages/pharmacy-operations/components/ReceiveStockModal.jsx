@@ -114,11 +114,11 @@ const ReceiveStockModal = ({ isOpen, onClose, onSuccess, orderId, onCloseAndRese
 
   if (!isOpen) return null;
 
-  const inputClassName = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white";
+  const inputClassName = "glass-surface text-slate-900 dark:text-white";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal={true}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -156,7 +156,7 @@ const ReceiveStockModal = ({ isOpen, onClose, onSuccess, orderId, onCloseAndRese
                       {orderLines.map((line) => {
                         if (!line || typeof line !== 'object') return null;
                         return (
-                          <div key={line.id || Math.random()} className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 transition-all hover:border-emerald-300">
+                          <div key={line.id || Math.random()} className="flex items-center justify-between p-3 rounded-xl glass-surface transition-all hover:border-emerald-300">
                             <div className="font-medium text-slate-900 dark:text-white flex-1 min-w-0 pr-2">{line.name}</div>
                             <div className="flex items-center gap-16 flex-shrink-0">
                                 {/* Quantité Commandée */}

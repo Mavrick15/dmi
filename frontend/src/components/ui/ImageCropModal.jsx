@@ -227,7 +227,7 @@ const ImageCropModal = ({ isOpen, onClose, imageSrc, onCrop, aspectRatio = 1 }) 
         </div>
 
         {/* Controls */}
-        <div className="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+        <div className="px-3 py-1.5 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
           <div className="flex items-center justify-between gap-4 mb-4">
             <div className="flex items-center gap-2">
               <Button

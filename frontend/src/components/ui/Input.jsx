@@ -13,14 +13,15 @@ const Input = React.forwardRef(({
   ...props 
 }, ref) => {
   const inputClasses = cn(
-    'flex h-10 w-full items-center rounded-xl border border-slate-200 dark:border-slate-700',
-    'bg-white dark:bg-slate-900',
+    'flex h-10 w-full items-center rounded-xl',
+    'backdrop-blur-xl bg-white/60 dark:bg-white/10',
+    'border border-white/50 dark:border-white/15',
     'px-4 py-2 text-sm font-medium',
     'text-slate-900 dark:text-white',
     'placeholder:text-slate-400 dark:placeholder:text-slate-500',
     'transition-all duration-300',
-    'focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary',
-    'hover:border-slate-300 dark:hover:border-slate-700',
+    'focus:outline-none focus:ring-0 focus:border-white/60 dark:focus:border-white/25',
+    'shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
     'disabled:opacity-50 disabled:cursor-not-allowed',
     error && 'border-rose-300 dark:border-rose-700 focus:ring-rose-500/20 focus:border-rose-500',
     icon && iconPosition === 'left' && 'pl-11',

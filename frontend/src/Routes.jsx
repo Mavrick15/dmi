@@ -459,7 +459,7 @@ const AppLoader = () => {
                 delay: 0.2
             }}
             // CORRECTION : relative ici pour servir de conteneur aux pages absolues
-            className="relative w-full min-h-screen overflow-x-hidden bg-slate-50 dark:bg-slate-950"
+            className="relative w-full min-h-screen overflow-x-hidden bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/95 dark:to-slate-950"
         >
              <Suspense fallback={<div className="h-screen w-full" />}>
                 <AnimatedRoutes />

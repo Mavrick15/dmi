@@ -79,14 +79,14 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
     if (invoice.statut === 'payee') return 'bg-emerald-50 dark:bg-emerald-900/20';
     if (invoice.statut === 'en_retard') return 'bg-rose-50 dark:bg-rose-900/20';
     if (invoice.statut === 'en_attente') return 'bg-amber-50 dark:bg-amber-900/20';
-    return 'bg-white dark:bg-slate-900';
+    return 'backdrop-blur-xl bg-white/50 dark:bg-white/10';
   };
 
   const getBorderColor = () => {
     if (invoice.statut === 'payee') return 'border-emerald-200 dark:border-emerald-700';
     if (invoice.statut === 'en_retard') return 'border-rose-200 dark:border-rose-700';
     if (invoice.statut === 'en_attente') return 'border-amber-200 dark:border-amber-700';
-    return 'border-slate-200 dark:border-slate-700';
+    return 'border-white/20 dark:border-white/10';
   };
 
   return (
@@ -107,9 +107,9 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
                 <Image 
                   src={invoice.patient?.avatar || invoice.patient?.user?.photoProfil} 
                   alt={invoice.patient?.name || invoice.patient?.user?.nomComplet || 'Patient'} 
-                  className="w-14 h-14 rounded-xl object-cover border-2 border-slate-200 dark:border-slate-700"
+                  className="w-14 h-14 rounded-xl object-cover border-2 border-white/20 dark:border-white/10"
                 />
-                <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-0.5">
+                <div className="absolute -bottom-1 -right-1 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-full p-0.5">
                   <div className="w-3 h-3 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900"></div>
                 </div>
               </div>
@@ -158,7 +158,7 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
         </div>
 
         {/* Montants (widget compact) */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg px-3 py-2 mb-3 border border-slate-200 dark:border-slate-700">
+        <div className="glass-surface rounded-lg px-3 py-2 mb-3">
           <div className="grid grid-cols-3 gap-2">
             <div>
               <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -220,7 +220,7 @@ const InvoiceCard = ({ invoice, onView, onPay, onDownload, onPrint }) => {
         )}
 
         {/* Actions */}
-        <div className={`flex items-center gap-2 pt-4 border-t border-slate-200 dark:border-slate-700 ${!onView ? 'justify-center' : ''}`}>
+        <div className={`flex items-center gap-2 pt-4 border-t border-white/20 dark:border-white/10 ${!onView ? 'justify-center' : ''}`}>
           {onView && (
             <Button
               variant="ghost"

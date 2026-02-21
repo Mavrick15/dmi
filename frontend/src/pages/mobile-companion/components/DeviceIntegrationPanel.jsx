@@ -25,14 +25,14 @@ const DeviceIntegrationPanel = () => {
     <div className="space-y-6">
       
       {/* Features Grid */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Fonctionnalités Appareil</h3>
         <div className="grid grid-cols-1 gap-3">
           {Array.isArray(deviceFeatures) && deviceFeatures.map((feature) => {
             if (!feature || typeof feature !== 'object') return null;
             return (
-            <div key={feature.id} className="flex items-center gap-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
-              <div className="w-10 h-10 bg-white dark:bg-slate-700 rounded-lg flex items-center justify-center text-primary shadow-sm">
+            <div key={feature.id} className="flex items-center gap-4 p-3 rounded-xl glass-surface">
+              <div className="w-10 h-10 glass-surface rounded-lg flex items-center justify-center text-primary shadow-sm">
                 <Icon name={feature.icon} size={20} />
               </div>
               <div className="flex-1">
@@ -49,7 +49,7 @@ const DeviceIntegrationPanel = () => {
       </div>
 
       {/* Connected Devices */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div className="glass-panel rounded-2xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">Appareils Connectés</h3>
           <PermissionGuard requiredPermission="settings_manage">
@@ -61,7 +61,7 @@ const DeviceIntegrationPanel = () => {
           {Array.isArray(connectedDevices) && connectedDevices.map((device) => {
             if (!device || typeof device !== 'object') return null;
             return (
-            <div key={device.id} className="p-4 border border-slate-200 dark:border-slate-800 rounded-xl hover:border-primary/30 transition-colors">
+            <div key={device.id} className="p-4 border border-white/20 dark:border-white/10 rounded-xl hover:border-primary/30 transition-colors">
               <div className="flex items-start gap-4">
                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${device.status === 'connected' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>
                   <Icon name={device.icon} size={20} />

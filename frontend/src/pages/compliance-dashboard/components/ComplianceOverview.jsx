@@ -74,7 +74,7 @@ const ComplianceOverview = () => {
           const isGoodTrend = (metric.trend === 'up' && metric.theme !== 'rose') || (metric.trend === 'down' && metric.theme === 'rose');
           
           return (
-            <div key={metric.id} className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
+            <div key={metric.id} className="group backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-2xl border border-white/20 dark:border-white/10 p-6 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-300">
               <div className="flex justify-between items-start mb-4">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${style.iconBg} ${style.text}`}>
                    {/* Mapping simple d'icônes */}

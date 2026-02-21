@@ -318,15 +318,15 @@ const UserModal = ({ isOpen, onClose, user = null, onSave }) => {
 
   if (!isOpen) return null;
 
-  const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputStyle = "glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="glass-panel w-full max-w-2xl shadow-xl flex flex-col max-h-[90vh] overflow-hidden">
 
-        <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-start">
+        <div className="p-5 border-b border-white/20 dark:border-white/10 glass-surface flex justify-between items-start">
           <div className="flex gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+            <div className="w-11 h-11 rounded-xl glass-surface flex items-center justify-center text-primary">
               <Icon name="User" size={24} />
             </div>
             <div>
@@ -361,7 +361,7 @@ const UserModal = ({ isOpen, onClose, user = null, onSave }) => {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div
-                  className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative group cursor-pointer transition-all hover:border-primary/50"
+                  className="w-16 h-16 rounded-full overflow-hidden border-2 border-white/30 dark:border-white/10 glass-surface flex items-center justify-center relative group cursor-pointer transition-all hover:border-primary/50"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {avatarPreview ? (

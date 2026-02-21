@@ -125,7 +125,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
       </div>
     } size="lg" className="max-h-[85vh]">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-200 dark:border-slate-700 max-h-[50vh] overflow-y-auto">
+        <div className="glass-surface rounded-xl p-3 max-h-[50vh] overflow-y-auto">
           <div className="space-y-3">
             {Array.isArray(resultats) && resultats.map((resultat, index) => (
               <motion.div
@@ -133,7 +133,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white dark:bg-slate-900 rounded-lg p-3 border border-slate-200 dark:border-slate-700 shadow-sm"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg p-3 border border-white/20 dark:border-white/10 shadow-sm"
               >
                 <div className="grid grid-cols-12 gap-2 items-end">
                   <div className="col-span-12 md:col-span-4">
@@ -209,7 +209,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
                       onChange={(e) => handleChange(index, 'commentaire', e.target.value)}
                       placeholder="Commentaire optionnel"
                       rows={2}
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm resize-none"
+                      className="w-full px-3 py-2 rounded-lg glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm resize-none"
                     />
                   </div>
                   {resultats.length > 1 && existingResultats.length === 0 && (
@@ -232,7 +232,7 @@ const ResultatsAnalyseModal = ({ isOpen, onClose, analyse, existingResultats = [
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-between pt-2 border-t border-white/20 dark:border-white/10">
           {existingResultats.length === 0 && (
             <Button
               type="button"

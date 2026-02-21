@@ -37,7 +37,7 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
       const change = previousValue ? ((value - previousValue) / previousValue) * 100 : null;
       
       return (
-        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl shadow-xl">
+        <div className="glass-dropdown p-4 rounded-xl shadow-xl">
           <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mb-2 uppercase tracking-wider">
             {label}
           </p>
@@ -76,8 +76,8 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
 
   if (!dataArray || dataArray.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-8">
-        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+      <div className="h-full flex flex-col items-center justify-center rounded-xl border border-white/20 dark:border-white/10 glass-surface p-8">
+        <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
           <Icon name="BarChart3" size={28} className="text-slate-400 dark:text-slate-500" />
         </div>
         <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune donnée financière</p>
@@ -95,7 +95,7 @@ const RevenueChart = ({ data = [], title = "Revenus mensuels" }) => {
     <div className="h-full flex flex-col">
       {/* Statistiques en haut */}
       {stats && (
-        <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-white/20 dark:border-white/10">
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Total</p>
             <p className="text-lg font-bold text-slate-900 dark:text-white">

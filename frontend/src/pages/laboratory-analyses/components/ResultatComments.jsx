@@ -72,7 +72,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
       >
         <div className="space-y-6">
           {/* Informations du résultat */}
-          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700 border-l-4 border-l-blue-500">
+          <div className="glass-surface rounded-xl p-4 border-l-4 border-l-blue-500">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Paramètre</p>
@@ -107,7 +107,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               placeholder="Ajoutez un commentaire médical sur ce résultat..."
-              className="w-full min-h-[120px] px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+              className="w-full min-h-[120px] px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Ce commentaire sera visible dans les rapports et pourra être partagé avec le patient.
@@ -126,7 +126,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
               value={annotation}
               onChange={(e) => setAnnotation(e.target.value)}
               placeholder="Ajoutez une annotation technique (notes internes uniquement)..."
-              className="w-full min-h-[100px] px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+              className="w-full min-h-[100px] px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
             />
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Cette annotation est réservée au personnel médical et ne sera pas visible par le patient.
@@ -134,7 +134,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
           </div>
 
           {/* Mentions légales */}
-          <div className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 border-l-4 border-l-amber-500">
+          <div className="glass-surface rounded-xl p-4 border-l-4 border-l-amber-500">
             <div className="flex items-start gap-2">
               <Icon name="Info" size={16} className="text-slate-600 dark:text-slate-400 mt-0.5" />
               <div className="text-xs text-slate-700 dark:text-slate-300">
@@ -152,7 +152,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
 
           {/* Informations de traçabilité */}
           {resultat?.updatedAt && (
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 border border-slate-200 dark:border-slate-700 border-l-4 border-l-slate-500">
+            <div className="glass-surface rounded-xl p-3 border-l-4 border-l-slate-500">
               <p className="text-xs text-slate-600 dark:text-slate-400">
                 <span className="font-semibold">Dernière modification :</span>{' '}
                 {format(new Date(resultat.updatedAt), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
@@ -161,7 +161,7 @@ const ResultatComments = ({ resultat, analyse, onUpdate }) => {
           )}
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-white/20 dark:border-white/10">
             <Button
               variant="outline"
               onClick={() => setIsOpen(false)}

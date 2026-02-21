@@ -167,10 +167,10 @@ const LaboratoryAnalyses = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans flex flex-col">
         <Header />
         <div className="flex-1 flex flex-col items-center justify-center pt-24 px-4">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 border-l-4 border-l-primary p-12 flex flex-col items-center justify-center gap-4">
+          <div className="rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 border-l-4 border-l-primary p-12 flex flex-col items-center justify-center gap-4">
             <Icon name="Loader2" size={36} className="animate-spin text-primary" />
             <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses…</p>
           </div>
@@ -180,7 +180,7 @@ const LaboratoryAnalyses = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/50 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Helmet>
         <title>Analyses - MediCore</title>
         <meta name="description" content="Gestion des analyses et résultats de laboratoire." />
@@ -191,7 +191,7 @@ const LaboratoryAnalyses = () => {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-slate-200 dark:border-slate-700">
+              <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-white/20 dark:border-white/10">
                 <Icon name="TestTube" size={22} />
               </div>
               <div>
@@ -230,7 +230,7 @@ const LaboratoryAnalyses = () => {
           />
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1 bg-white dark:bg-slate-900 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
+            <div className="flex items-center gap-1 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl p-1 border border-white/20 dark:border-white/10">
               <button
                 onClick={() => {
                   setViewMode('list');
@@ -289,7 +289,7 @@ const LaboratoryAnalyses = () => {
             />
           ) : viewMode === 'kanban' ? (
             <Suspense fallback={
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+              <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
                 <Icon name="Loader2" size={28} className="animate-spin text-primary" />
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du kanban…</span>
               </div>
@@ -304,7 +304,7 @@ const LaboratoryAnalyses = () => {
             </Suspense>
           ) : (
             <Suspense fallback={
-              <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+              <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
                 <Icon name="Loader2" size={28} className="animate-spin text-primary" />
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du calendrier…</span>
               </div>

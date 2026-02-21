@@ -32,7 +32,7 @@ const OfflineIndicator = () => {
             <p className="text-xs text-emerald-700 dark:text-emerald-300">Sync temps réel active</p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 px-2 py-1 bg-white dark:bg-slate-900/50 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
+        <div className="flex items-center gap-1.5 px-2 py-1 backdrop-blur-xl bg-white/50 dark:bg-white/10/50 rounded-lg border border-emerald-100 dark:border-emerald-900/30">
            <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
            <span className="text-[10px] font-mono text-emerald-800 dark:text-emerald-200">LIVE</span>
         </div>

@@ -68,7 +68,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+      <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
         <Icon name="Loader2" size={28} className="animate-spin text-primary" />
         <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des analyses…</span>
       </div>
@@ -77,8 +77,8 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
 
   if (!Array.isArray(analyses) || analyses.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-        <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+      <div className="flex flex-col items-center justify-center py-16 glass-panel rounded-xl">
+        <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
           <Icon name="TestTube" size={28} className="text-slate-400 dark:text-slate-500" />
         </div>
         <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune analyse</p>
@@ -88,35 +88,35 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-white/20 dark:border-white/10">
             <tr>
-              <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 N°
               </th>
-              <th className="hidden sm:table-cell px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="hidden sm:table-cell px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Patient
               </th>
-              <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Type
               </th>
-              <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Statut
               </th>
-              <th className="hidden lg:table-cell px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="hidden lg:table-cell px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Date
               </th>
-              <th className="hidden xl:table-cell px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="hidden xl:table-cell px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Service
               </th>
-              <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <th className="px-3 md:px-4 py-2 md:py-2.5 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+          <tbody className="divide-y divide-white/20 dark:divide-white/10">
             {Array.isArray(analyses) && analyses.map((analyse, idx) => {
               const statutBadge = getStatutBadge(analyse.statut);
               return (
@@ -137,19 +137,19 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                   }}
                   className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border-b border-slate-100 dark:border-slate-800 group cursor-pointer"
                 >
-                  <td className="px-6 py-5 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/20 text-primary rounded-xl flex items-center justify-center border border-primary/20">
-                        <Icon name={getTypeIcon(analyse.typeAnalyse)} size={18} />
+                      <div className="w-8 h-8 bg-primary/20 text-primary rounded-lg flex items-center justify-center border border-primary/20">
+                        <Icon name={getTypeIcon(analyse.typeAnalyse)} size={16} />
                       </div>
-                      <span className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg" title={`Numéro d'analyse: ${analyse.numeroAnalyse}`}>
+                      <span className="font-mono text-sm font-bold text-slate-900 dark:text-white glass-surface px-3 py-1.5 rounded-lg" title={`Numéro d'analyse: ${analyse.numeroAnalyse}`}>
                         {analyse.numeroAnalyse}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold border border-emerald-200 dark:border-emerald-800">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold border border-emerald-200 dark:border-emerald-800 text-xs">
                         {analyse.patient?.name && typeof analyse.patient.name === 'string' ? analyse.patient.name.charAt(0).toUpperCase() : 'P'}
                       </div>
                       <div>
@@ -159,25 +159,25 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 capitalize bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 capitalize glass-surface px-3 py-1.5 rounded-lg">
                         {analyse.typeAnalyse?.replace('_', ' ')}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-3">
                     <Badge variant={statutBadge.variant} size="sm" className="font-bold shadow-sm">
                       {statutBadge.label}
                     </Badge>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-2">
                       <Icon name="Calendar" size={14} className="text-slate-400" />
                       <span>{formatDate(analyse.datePrescription)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                  <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-2">
                       {analyse.laboratoire ? (
                         <>
@@ -189,7 +189,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-5 whitespace-nowrap">
+                  <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button
@@ -265,7 +265,7 @@ const AnalysesList = ({ analyses, meta, isLoading, onViewDetails, onCancel, onDe
 
       {/* Pagination */}
       {meta && meta.total > 0 && (
-        <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="px-4 py-3 border-t border-white/20 dark:border-white/10 glass-surface">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
               {meta.from || 0}-{meta.to || 0} sur {meta.total || 0}

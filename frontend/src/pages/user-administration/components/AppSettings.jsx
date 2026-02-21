@@ -27,7 +27,7 @@ const AppSettings = () => {
     }
   };
 
-  const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputStyle = "glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
   return (
     <div className="space-y-6">
@@ -36,7 +36,7 @@ const AppSettings = () => {
           <Icon name="DollarSign" size={14} /> Configuration de la devise
         </h3>
         
-        <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+        <div className="p-6 glass-surface rounded-xl space-y-4">
           <div>
             <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
               Devise par défaut
@@ -59,7 +59,7 @@ const AppSettings = () => {
             />
           </div>
 
-          <div className="p-4 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="p-4 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg border border-white/20 dark:border-white/10">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">

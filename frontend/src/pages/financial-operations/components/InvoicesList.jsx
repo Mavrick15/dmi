@@ -143,7 +143,7 @@ const InvoicesList = () => {
     <>
       <div className="space-y-6">
         {/* Filtres et recherche */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-6">
+        <div className="glass-panel rounded-xl p-6">
           <div className="flex flex-wrap items-end gap-4">
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1">
             <div className={establishmentsList.length > 0 ? 'md:col-span-2' : 'md:col-span-2'}>
@@ -192,13 +192,13 @@ const InvoicesList = () => {
 
         {/* Liste des factures */}
         {isLoading ? (
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-slate-50/50 dark:bg-slate-800/30 flex flex-col items-center justify-center py-20">
+          <div className="rounded-xl border border-white/20 dark:border-white/10 border-l-4 border-l-primary glass-surface flex flex-col items-center justify-center py-20">
             <Icon name="Loader2" size={40} className="animate-spin text-primary mb-2" />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
         ) : invoices.length === 0 ? (
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-12 text-center">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <div className="glass-panel rounded-xl p-12 text-center">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-xl glass-surface flex items-center justify-center">
               <Icon name="FileX" className="text-slate-400" size={28} />
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
@@ -239,7 +239,7 @@ const InvoicesList = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between pt-6 mt-6 border-t border-white/20 dark:border-white/10">
                 <div className="text-sm text-slate-500 dark:text-slate-400">
                   Affichage de <span className="font-bold text-slate-900 dark:text-white">
                     {((currentPage - 1) * limit) + 1}
@@ -278,7 +278,7 @@ const InvoicesList = () => {
                           className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                             currentPage === page
                               ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                              : 'glass-surface text-slate-600 dark:text-slate-400 hover:bg-white/30 dark:hover:bg-white/10'
                           }`}
                         >
                           {page}

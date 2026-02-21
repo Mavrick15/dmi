@@ -94,7 +94,7 @@ const AnalysesCalendar = () => {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
+      <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface border-l-4 border-l-primary flex flex-col items-center justify-center gap-3 py-16">
         <Icon name="Loader2" size={28} className="animate-spin text-primary" />
         <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement du calendrier…</span>
       </div>
@@ -134,9 +134,9 @@ const AnalysesCalendar = () => {
       </div>
 
       {/* Calendrier */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         {/* Jours de la semaine */}
-        <div className="grid grid-cols-7 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div className="grid grid-cols-7 glass-surface border-b border-white/20 dark:border-white/10">
           {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map((day, idx) => (
             <div
               key={idx}
@@ -194,8 +194,8 @@ const AnalysesCalendar = () => {
                   }
                 }}
                 className={`
-                  min-h-[100px] p-2 border-r border-b border-slate-200 dark:border-slate-700 relative group
-                  ${!isCurrentMonth ? 'bg-slate-50 dark:bg-slate-950 opacity-50' : 'bg-white dark:bg-slate-900'}
+                  min-h-[100px] p-2 border-r border-b border-white/20 dark:border-white/10 relative group
+                  ${!isCurrentMonth ? 'bg-slate-50 dark:bg-slate-950 opacity-50' : 'backdrop-blur-xl bg-white/50 dark:bg-white/10'}
                   ${isToday ? 'ring-2 ring-primary ring-inset' : ''}
                   ${isSelected ? 'bg-primary/10 dark:bg-primary/20' : ''}
                   ${isCurrentMonth ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : ''}
@@ -270,7 +270,7 @@ const AnalysesCalendar = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6"
+          className="glass-panel rounded-xl p-4"
         >
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -299,7 +299,7 @@ const AnalysesCalendar = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   onClick={() => navigate(`/analyses-laboratoire?analyseId=${analyse.id}`)}
-                  className="p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+                  className="p-4 border border-white/20 dark:border-white/10 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1">

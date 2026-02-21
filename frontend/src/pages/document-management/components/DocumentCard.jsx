@@ -42,7 +42,7 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all overflow-hidden flex flex-col"
+      className="group rounded-xl glass-panel shadow-sm hover:shadow-md hover:border-primary/30 transition-all overflow-hidden flex flex-col"
     >
       <div className="p-4 flex flex-col flex-1 min-h-0">
         {/* En-tête */}
@@ -88,7 +88,7 @@ const DocumentCard = ({ document, onDownload, onDelete, onView, onShare, canDele
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-1 pt-3 border-t border-slate-200 dark:border-slate-700 mt-auto">
+        <div className="flex items-center gap-1 pt-3 border-t border-white/20 dark:border-white/10 mt-auto">
           {onView && (
             <button
               type="button"

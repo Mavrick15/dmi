@@ -34,7 +34,7 @@ const RegulatoryReports = () => {
   const getStatusIcon = (status) => status === 'ready' ? 'CheckCircle' : 'Clock';
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+    <div className="glass-panel rounded-3xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Icon name="FileText" className="text-slate-400" /> Rapports Réglementaires
@@ -63,7 +63,7 @@ const RegulatoryReports = () => {
                 {Array.isArray(category.reports) && category.reports.map((report, idx) => {
                   if (!report || typeof report !== 'object') return null;
                   return (
-                    <div key={idx} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/50 dark:border-slate-800 shadow-sm">
+                    <div key={idx} className="flex items-center justify-between p-3 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl border border-slate-200/50 dark:border-slate-800 shadow-sm">
                         <div className="flex items-center gap-3">
                             <Icon name={getStatusIcon(report.status)} size={16} className={getStatusColor(report.status)} />
                             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{report.name}</span>

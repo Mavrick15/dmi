@@ -148,7 +148,7 @@ const LoginPortal = () => {
 
           {/* Header Mobile */}
           <div className="text-center mb-10">
-            <div className="inline-flex lg:hidden items-center gap-2 mb-6 text-primary p-3 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+            <div className="inline-flex lg:hidden items-center gap-2 mb-6 text-primary p-3 backdrop-blur-2xl bg-white/70 dark:bg-slate-900/80 rounded-2xl shadow-xl border border-white/40 dark:border-white/15">
               <Icon name="Activity" size={28} />
               <span className="font-bold text-xl text-slate-900 dark:text-white">MediCore</span>
             </div>
@@ -156,9 +156,9 @@ const LoginPortal = () => {
           </div>
 
           {/* Onglets Switcher (Style iOS/Segmented Control) */}
-          <div className="bg-slate-100 dark:bg-slate-900/50 p-1.5 rounded-2xl flex mb-8 relative border border-slate-200 dark:border-slate-800 mx-auto w-fit">
+          <div className="backdrop-blur-xl bg-white/40 dark:bg-white/5 p-1.5 rounded-2xl flex mb-8 relative border border-white/40 dark:border-white/10 mx-auto w-fit">
             <motion.div
-              className="absolute top-1.5 bottom-1.5 rounded-xl shadow-sm bg-white dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700"
+              className="absolute top-1.5 bottom-1.5 rounded-xl backdrop-blur-xl bg-white/80 dark:bg-white/10 border border-white/50 dark:border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]"
               initial={false}
               animate={{
                 x: authMethod === 'email' ? 0 : '100%',
@@ -191,7 +191,7 @@ const LoginPortal = () => {
                 transition={{ duration: 0.3 }}
               >
                 {authMethod === 'email' ? (
-                  <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-800">
+                  <div className="backdrop-blur-2xl bg-white/75 dark:bg-slate-900/85 p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] border border-white/50 dark:border-white/15">
                     {/* Message d'alerte si session révoquée ou token expiré */}
                     <AnimatePresence>
                       {sessionRevokedMessage && (
@@ -223,7 +223,7 @@ const LoginPortal = () => {
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
-                          className="mb-6 p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-start gap-3"
+                          className="mb-6 p-4 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-white/20 dark:border-white/10 flex items-start gap-3"
                         >
                           <Icon name="Clock" size={20} className="text-slate-600 dark:text-slate-400 flex-shrink-0 mt-0.5" />
                           <div className="flex-1">
@@ -250,7 +250,7 @@ const LoginPortal = () => {
                     />
                   </div>
                 ) : (
-                  <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-800">
+                  <div className="backdrop-blur-2xl bg-white/75 dark:bg-slate-900/85 p-8 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.6)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08)] border border-white/50 dark:border-white/15">
                     <BiometricLogin
                       onBiometricLogin={handleLoginSuccess}
                       isLoading={isLoading}

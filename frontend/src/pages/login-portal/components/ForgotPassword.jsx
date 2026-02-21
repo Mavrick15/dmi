@@ -29,7 +29,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 transition-colors duration-300">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-md p-8 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-md p-8 rounded-3xl shadow-xl border border-white/20 dark:border-white/10">
         
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-blue-600 dark:text-blue-400">
@@ -62,7 +62,7 @@ const ForgotPassword = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoFocus
-                className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+                className="bg-slate-50 dark:bg-slate-950 border-white/20 dark:border-white/10"
               />
             </div>
 

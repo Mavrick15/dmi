@@ -61,12 +61,12 @@ const LoginForm = ({ onLoginSuccess, isLoading, setIsLoading }) => {
 
   const inputClasses = `
     block w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm font-medium transition-all duration-200 outline-none
-    bg-slate-50 dark:bg-slate-950 
-    border border-slate-200 dark:border-slate-800
+    backdrop-blur-xl bg-white/60 dark:bg-white/10 
+    border border-white/50 dark:border-white/15
     text-slate-900 dark:text-white 
-    placeholder:text-slate-400 dark:placeholder:text-slate-600
-    focus:border-primary focus:ring-4 focus:ring-primary/10 dark:focus:ring-primary/20 
-    focus:bg-white dark:focus:bg-slate-950
+    placeholder:text-slate-400 dark:placeholder:text-slate-500
+    focus:border-white/60 dark:focus:border-white/25 focus:ring-0
+    shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]
     disabled:opacity-50 disabled:cursor-not-allowed
   `;
 

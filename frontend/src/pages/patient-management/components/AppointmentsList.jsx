@@ -146,7 +146,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
 
   if (loadingAppointments) {
     return (
-      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+      <div className="w-full rounded-2xl border border-white/20 dark:border-white/10 glass-surface p-12 flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={36} />
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des rendez-vous...</p>
       </div>
@@ -184,8 +184,8 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
       {/* Content */}
       <div className="w-full">
         {appointments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-white/20 dark:border-white/10 glass-surface">
+            <div className="w-16 h-16 rounded-2xl glass-surface flex items-center justify-center mb-4 shadow-sm">
               <Icon name="CalendarX" size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
@@ -217,7 +217,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.04, duration: 0.25 }}
-                className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer"
+                className="group relative flex overflow-hidden rounded-xl glass-panel hover:shadow-lg hover:border-primary/30 transition-all cursor-pointer"
                 onClick={() => onSelectAppointment && onSelectAppointment(appointment)}
               >
                 {/* Barre d'accent par statut */}
@@ -301,7 +301,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 {/* Notes (repliable ou une ligne) */}
                 {appointment.notes && (
                   <div className="px-4 pb-4 pt-0">
-                    <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700">
+                    <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg glass-surface">
                       <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
                         {appointment.notes}
                       </p>
@@ -352,7 +352,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 type="date"
                 value={newAppointment.date}
                 onChange={(e) => setNewAppointment({ ...newAppointment, date: e.target.value })}
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
               <div className="grid grid-cols-2 gap-4">
                 <Input
@@ -360,14 +360,14 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                   type="time"
                   value={newAppointment.time}
                   onChange={(e) => setNewAppointment({ ...newAppointment, time: e.target.value })}
-                  className="bg-white dark:bg-slate-900"
+                  className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
                 />
                 <Input
                   label="Durée (minutes)"
                   type="number"
                   value={newAppointment.duration}
                   onChange={(e) => setNewAppointment({ ...newAppointment, duration: e.target.value })}
-                  className="bg-white dark:bg-slate-900"
+                  className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
                 />
               </div>
             </div>
@@ -391,7 +391,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 <select
                   value={newAppointment.provider}
                   onChange={(e) => setNewAppointment({ ...newAppointment, provider: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                  className="w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                 >
                   <option value="">Sélectionner un médecin</option>
                   {doctors.map(d => (
@@ -404,7 +404,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 value={newAppointment.type}
                 onChange={(e) => setNewAppointment({ ...newAppointment, type: e.target.value })}
                 placeholder="Consultation, Suivi, etc."
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
               <div className="w-full">
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">
@@ -413,7 +413,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
                 <select
                   value={newAppointment.priority}
                   onChange={(e) => setNewAppointment({ ...newAppointment, priority: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                  className="w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                 >
                   <option value="faible">Faible</option>
                   <option value="normale">Normale</option>
@@ -438,7 +438,7 @@ const AppointmentsList = ({ patient, onSelectAppointment, onOpenScheduler }) => 
               value={newAppointment.notes}
               onChange={(e) => setNewAppointment({ ...newAppointment, notes: e.target.value })}
               placeholder="Notes optionnelles..."
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none shadow-sm"
+              className="w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none shadow-sm"
               rows={3}
             />
           </motion.div>

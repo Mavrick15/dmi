@@ -127,7 +127,7 @@ const OutstandingInvoicesCard = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-primary bg-white/50 dark:bg-slate-800/30 py-8">
+          <div className="flex-1 flex flex-col items-center justify-center rounded-xl border border-white/20 dark:border-white/10 border-l-4 border-l-primary bg-white/50 dark:bg-slate-800/30 py-8">
             <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
           </div>
@@ -163,7 +163,7 @@ const OutstandingInvoicesCard = () => {
               </AnimatePresence>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700 text-center">
+            <div className="mt-4 pt-4 border-t border-white/20 dark:border-white/10 text-center">
               <p className="text-xs text-slate-500">
                 Total dû : <span className="font-bold text-slate-900 dark:text-white">
                   {formatCurrency(totalDue)}

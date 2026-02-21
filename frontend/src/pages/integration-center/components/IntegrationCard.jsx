@@ -52,7 +52,7 @@ const IntegrationCard = ({ integration, onConnect, onDisconnect, onConfigure }) 
     const cat = integration?.category;
     if (cat === 'medical-device') return 'border-blue-100 dark:border-blue-900/50';
     if (cat === 'laboratory') return 'border-violet-100 dark:border-violet-900/50';
-    return 'border-slate-200 dark:border-slate-800';
+    return 'border-white/20 dark:border-white/10';
   };
 
   const statusConfig = getStatusConfig(integration?.status);

@@ -108,12 +108,12 @@ const PrescriptionsList = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden">
       
       {/* 1. Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+      <div className="p-4 border-b border-white/20 dark:border-white/10 glass-surface">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+          <div className="w-10 h-10 glass-surface rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400">
             <Icon name="FileText" size={20} />
           </div>
           <div>
@@ -155,11 +155,11 @@ const PrescriptionsList = () => {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
+          <tbody className="divide-y divide-white/10 dark:divide-white/5 backdrop-blur-xl bg-white/50 dark:bg-white/10">
             {isLoading ? (
               <tr>
                 <td colSpan={7} className="p-12">
-                  <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 flex items-center justify-center gap-3 py-10">
+                  <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface flex items-center justify-center gap-3 py-10">
                     <Icon name="Loader2" size={28} className="animate-spin text-primary" />
                     <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des prescriptions…</p>
                   </div>
@@ -179,8 +179,8 @@ const PrescriptionsList = () => {
             ) : prescriptions.length === 0 ? (
               <tr>
                 <td colSpan={7} className="p-12">
-                  <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-                    <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                  <div className="flex flex-col items-center justify-center py-10 rounded-xl border border-white/20 dark:border-white/10 glass-surface">
+                    <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-3">
                       <Icon name="FileText" size={28} className="text-slate-400 dark:text-slate-500" />
                     </div>
                     <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune prescription en attente</p>
@@ -309,7 +309,7 @@ const PrescriptionsList = () => {
 
       {/* 3. Pagination */}
       {totalPages > 1 && (
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
+        <div className="p-4 border-t border-white/20 dark:border-white/10 glass-surface">
           <div className="flex items-center justify-between">
             <p className="text-sm text-slate-600 dark:text-slate-400">
               Page {page} sur {totalPages} ({totalItems} prescription{totalItems > 1 ? 's' : ''})
@@ -341,8 +341,8 @@ const PrescriptionsList = () => {
       {/* Modale de visualisation */}
       <AnimatedModal isOpen={showViewModal} onClose={() => { setShowViewModal(false); setSelectedPrescription(null); }} usePortal={true}>
         {selectedPrescription && (
-          <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-2xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-6 border-b-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-2xl rounded-2xl shadow-2xl border-2 border-white/20 dark:border-white/10 overflow-hidden">
+            <div className="p-6 border-b-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Icon name="FileText" size={24} className="text-primary" />
                 Détails de la prescription
@@ -402,7 +402,7 @@ const PrescriptionsList = () => {
                 </div>
               )}
             </div>
-            <div className="p-6 border-t-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-end">
+            <div className="p-6 border-t-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 flex justify-end">
               <Button variant="outline" onClick={() => { setShowViewModal(false); setSelectedPrescription(null); }}>
                 Fermer
               </Button>
@@ -414,8 +414,8 @@ const PrescriptionsList = () => {
       {/* Modale de modification */}
       <AnimatedModal isOpen={showEditModal} onClose={() => { setShowEditModal(false); setSelectedPrescription(null); }} usePortal={true}>
         {selectedPrescription && (
-          <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-6 border-b-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-lg rounded-2xl shadow-2xl border-2 border-white/20 dark:border-white/10 overflow-hidden">
+            <div className="p-6 border-b-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Icon name="Edit2" size={24} className="text-primary" />
                 Modifier la prescription
@@ -436,24 +436,24 @@ const PrescriptionsList = () => {
                 min="1"
                 value={editFormData.quantite}
                 onChange={(e) => setEditFormData({ ...editFormData, quantite: e.target.value })}
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
               <Input
                 label="Posologie"
                 value={editFormData.posologie}
                 onChange={(e) => setEditFormData({ ...editFormData, posologie: e.target.value })}
                 placeholder="Ex: 1 matin / 1 soir"
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
               <Input
                 label="Durée de traitement"
                 value={editFormData.dureeTraitement}
                 onChange={(e) => setEditFormData({ ...editFormData, dureeTraitement: e.target.value })}
                 placeholder="Ex: 5 jours"
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
             </div>
-            <div className="p-6 border-t-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-end gap-3">
+            <div className="p-6 border-t-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 flex justify-end gap-3">
               <Button variant="outline" onClick={() => { setShowEditModal(false); setSelectedPrescription(null); }}>
                 Annuler
               </Button>
@@ -468,8 +468,8 @@ const PrescriptionsList = () => {
       {/* Modale de confirmation d'annulation */}
       <AnimatedModal isOpen={showCancelModal} onClose={() => { setShowCancelModal(false); setSelectedPrescription(null); }} usePortal={true}>
         {selectedPrescription && (
-          <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div className="p-6 border-b-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+          <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-md rounded-2xl shadow-2xl border-2 border-white/20 dark:border-white/10 overflow-hidden">
+            <div className="p-6 border-b-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
               <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Icon name="AlertTriangle" size={24} className="text-rose-600" />
                 Annuler la prescription
@@ -479,7 +479,7 @@ const PrescriptionsList = () => {
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Êtes-vous sûr de vouloir annuler cette prescription ?
               </p>
-              <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 space-y-2 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4 space-y-2">
                 <p className="text-sm">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">Médicament:</span>{' '}
                   <span className="text-slate-900 dark:text-white">{selectedPrescription.medicament?.nom}</span>
@@ -494,7 +494,7 @@ const PrescriptionsList = () => {
                 </p>
               </div>
             </div>
-            <div className="p-6 border-t-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex justify-end gap-3">
+            <div className="p-6 border-t-2 border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 flex justify-end gap-3">
               <Button variant="outline" onClick={() => { setShowCancelModal(false); setSelectedPrescription(null); }}>
                 Non, garder
               </Button>

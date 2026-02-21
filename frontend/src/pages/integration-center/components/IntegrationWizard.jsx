@@ -142,7 +142,7 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-3xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-2xl shadow-2xl w-full max-w-3xl border border-white/20 dark:border-white/10 overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
@@ -154,7 +154,7 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
         </div>
 
         {/* Stepper */}
-        <div className="px-8 py-4 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+        <div className="px-8 py-4 backdrop-blur-xl bg-white/50 dark:bg-white/10 border-b border-slate-100 dark:border-slate-800">
             <div className="flex justify-between items-center relative">
                 <div className="absolute top-1/2 left-0 w-full h-0.5 bg-slate-100 dark:bg-slate-800 -z-10" />
                 <div className="absolute top-1/2 left-0 h-0.5 bg-primary -z-10 transition-all duration-300" style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }} />
@@ -162,8 +162,8 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
                 {Array.isArray(steps) && steps.map((step) => {
                   if (!step || typeof step !== 'object') return null;
                   return (
-                    <div key={step.id} className={`flex flex-col items-center gap-2 bg-white dark:bg-slate-900 px-2`}>
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${currentStep >= step.id ? 'bg-primary text-white border-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700'}`}>
+                    <div key={step.id} className={`flex flex-col items-center gap-2 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-2`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all ${currentStep >= step.id ? 'bg-primary text-white border-primary' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 border-white/20 dark:border-white/10'}`}>
                             {currentStep > step.id ? <Icon name="Check" size={14} /> : <Icon name={step.icon} size={14} />}
                         </div>
                         <span className={`text-[10px] font-medium ${currentStep >= step.id ? 'text-primary' : 'text-slate-400'}`}>{step.title}</span>
@@ -183,7 +183,7 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
                         <button
                             key={type.id}
                             onClick={() => setFormData({...formData, integrationType: type.id})}
-                            className={`p-4 rounded-xl border text-left transition-all hover:shadow-md flex items-start gap-4 ${formData.integrationType === type.id ? 'border-primary bg-primary/5 ring-1 ring-primary/50' : 'border-slate-200 dark:border-slate-700 hover:border-primary/50'}`}
+                            className={`p-4 rounded-xl border text-left transition-all hover:shadow-md flex items-start gap-4 ${formData.integrationType === type.id ? 'border-primary bg-primary/5 ring-1 ring-primary/50' : 'border-white/20 dark:border-white/10 hover:border-primary/50'}`}
                         >
                             <div className="p-3 rounded-lg bg-slate-100 dark:bg-slate-800 text-primary"><Icon name={type.icon} size={24} /></div>
                             <div>
@@ -242,7 +242,7 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
                                     className={`p-4 rounded-xl border text-center transition-all ${
                                         formData.authentication === auth.id
                                             ? 'border-primary bg-primary/5 ring-1 ring-primary/50'
-                                            : 'border-slate-200 dark:border-slate-700 hover:border-primary/50'
+                                            : 'border-white/20 dark:border-white/10 hover:border-primary/50'
                                     }`}
                                 >
                                     <Icon name={auth.icon} size={20} className="mx-auto mb-2 text-primary" />
@@ -366,10 +366,10 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
                         </p>
                     </div>
 
-                    <div className="p-6 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div className="p-6 glass-surface rounded-xl space-y-4">
                         <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Endpoint</span>
-                            <code className="text-xs bg-white dark:bg-slate-900 px-2 py-1 rounded border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">
+                            <code className="text-xs backdrop-blur-xl bg-white/50 dark:bg-white/10 px-2 py-1 rounded border border-white/20 dark:border-white/10 text-slate-600 dark:text-slate-400">
                                 {formData.endpoint || 'Non défini'}
                             </code>
                         </div>
@@ -445,7 +445,7 @@ const IntegrationWizard = ({ isOpen, onClose, onComplete }) => {
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between">
+        <div className="px-3 py-1.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between">
             <Button 
                 variant="ghost" 
                 onClick={handlePrevious} 

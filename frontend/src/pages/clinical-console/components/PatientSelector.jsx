@@ -183,17 +183,17 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
       initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]"
+      className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col h-[780px]"
     >
       {/* Header */}
-      <div className="p-5 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-            <Icon name="Users" size={20} className="text-primary dark:text-blue-400" />
+      <div className="p-4 border-b border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+            <Icon name="Users" size={18} className="text-primary dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Sélection du patient</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Recherchez ou choisissez un dossier</p>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Sélection du patient</h2>
+                <p className="text-xs text-slate-600 dark:text-slate-300">Recherchez ou choisissez un dossier</p>
           </div>
         </div>
         <div className="relative">
@@ -203,7 +203,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
             placeholder="Nom, n° patient..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder-slate-400"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-white/20 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:text-white placeholder-slate-500 dark:placeholder-slate-300"
           />
           {searchQuery && (
             <button
@@ -221,12 +221,12 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
       {/* Liste des patients */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2 bg-slate-50/30 dark:bg-slate-900">
         {authLoading || loadingList ? (
-          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2 border-l-4 border-l-primary">
             <Icon name="Loader2" size={28} className="animate-spin text-primary mb-3" />
             <span className="text-sm text-slate-500 dark:text-slate-400">Chargement des dossiers…</span>
           </div>
         ) : isError ? (
-          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-rose-500 text-rose-600 dark:text-rose-400">
+          <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2 border-l-4 border-l-rose-500 text-rose-600 dark:text-rose-400">
             <div className="w-10 h-10 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mb-2">
               <Icon name="AlertCircle" size={24} />
             </div>
@@ -235,7 +235,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
           </div>
         ) : filteredPatients.length > 0 ? (
           <>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 px-1 mb-2">
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 px-1 mb-2">
               {filteredPatients.length} patient{filteredPatients.length > 1 ? 's' : ''}
             </p>
             {filteredPatients.map((patient, index) => {
@@ -265,7 +265,7 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
 
                   <div className="relative flex items-center gap-3 z-10">
                     <div className="relative flex-shrink-0">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/20 dark:border-white/10">
                         <Image src={patient.avatar} alt={patient.name} className="w-full h-full object-cover" />
                       </div>
                       <span className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-800 ${styles.dot}`} />
@@ -275,9 +275,9 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
                         <h4 className={`font-semibold text-sm truncate ${isSelected ? 'text-primary dark:text-blue-400' : 'text-slate-800 dark:text-slate-100'}`}>
                           {patient.name}
                         </h4>
-                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 shrink-0">{patient.numeroPatient}</span>
+                        <span className="text-xs font-mono text-slate-600 dark:text-slate-400 shrink-0">{patient.numeroPatient}</span>
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                         <span>{patient.age}</span>
                         <span>·</span>
                         <span className="truncate">{patient.gender}</span>
@@ -289,10 +289,10 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
                         )}
                       </div>
                       <div className="flex items-center justify-between mt-1.5">
-                        <span className="text-xs text-slate-600 dark:text-slate-400 truncate max-w-[100px]" title={patient.condition}>
+                        <span className="text-xs text-slate-700 dark:text-slate-300 truncate max-w-[100px]" title={patient.condition}>
                           {patient.condition}
                         </span>
-                        <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-md border ${getConsultationStatusStyles(patient.appointmentStatus)}`}>
+                        <span className={`px-2 py-0.5 text-xs font-semibold rounded-md border ${getConsultationStatusStyles(patient.appointmentStatus)}`}>
                           {getConsultationStatusLabel(patient.appointmentStatus)}
                         </span>
                       </div>
@@ -308,12 +308,12 @@ const PatientSelector = React.memo(({ selectedPatient, onPatientSelect }) => {
             {isDoctor && patientsForList.length === 0 ? (
               <>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun rendez-vous programmé</p>
-                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Les patients apparaîtront ici lorsqu&apos;ils auront un rendez-vous avec vous</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Les patients apparaîtront ici lorsqu&apos;ils auront un rendez-vous avec vous</p>
               </>
             ) : (
               <>
                 <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Aucun patient trouvé</p>
-                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">Vérifiez l&apos;orthographe ou créez un nouveau dossier</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Vérifiez l&apos;orthographe ou créez un nouveau dossier</p>
               </>
             )}
           </div>

@@ -219,7 +219,7 @@ const MedicalCalculators = ({ onClose }) => {
                 <select
                   value={creatinineData.gender}
                   onChange={(e) => setCreatinineData({ ...creatinineData, gender: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
                 >
                   <option value="male">Homme</option>
                   <option value="female">Femme</option>
@@ -249,7 +249,7 @@ const MedicalCalculators = ({ onClose }) => {
                 <select
                   value={glasgowData.eyes}
                   onChange={(e) => setGlasgowData({ ...glasgowData, eyes: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
                 >
                   <option value="4">4 - Spontanée</option>
                   <option value="3">3 - À la voix</option>
@@ -262,7 +262,7 @@ const MedicalCalculators = ({ onClose }) => {
                 <select
                   value={glasgowData.verbal}
                   onChange={(e) => setGlasgowData({ ...glasgowData, verbal: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
                 >
                   <option value="5">5 - Orientée</option>
                   <option value="4">4 - Confuse</option>
@@ -276,7 +276,7 @@ const MedicalCalculators = ({ onClose }) => {
                 <select
                   value={glasgowData.motor}
                   onChange={(e) => setGlasgowData({ ...glasgowData, motor: e.target.value })}
-                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
+                  className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-white/20 dark:border-white/10 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white"
                 >
                   <option value="6">6 - Obéit</option>
                   <option value="5">5 - Localise</option>
@@ -316,7 +316,7 @@ const MedicalCalculators = ({ onClose }) => {
                 hemoptysis: 'Hémoptysie',
                 cancer: 'Cancer actif'
               }).map(([key, label]) => (
-                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-white/20 dark:border-white/10 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                   <input
                     type="checkbox"
                     checked={wellsData[key]}
@@ -353,7 +353,7 @@ const MedicalCalculators = ({ onClose }) => {
                 vascular: 'Maladie vasculaire',
                 female: 'Sexe féminin'
               }).map(([key, label]) => (
-                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-white/20 dark:border-white/10 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                   <input
                     type="checkbox"
                     checked={chads2Data[key]}
@@ -391,7 +391,7 @@ const MedicalCalculators = ({ onClose }) => {
                 drugs: 'Médicaments antiplaquettaires/NSAID',
                 alcohol: 'Consommation excessive d\'alcool'
               }).map(([key, label]) => (
-                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                <label key={key} className="flex items-center gap-3 p-3 bg-white dark:bg-slate-800 border border-white/20 dark:border-white/10 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                   <input
                     type="checkbox"
                     checked={hasbledData[key]}
@@ -432,7 +432,7 @@ const MedicalCalculators = ({ onClose }) => {
             className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl border text-left transition-all ${
               activeCalculator === calc.id
                 ? 'bg-primary/10 border-primary dark:bg-primary/20 dark:border-primary/50'
-                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-primary/30'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-white/20 dark:border-white/10 hover:border-primary/30'
             }`}
           >
             <Icon name={calc.icon} size={18} className={activeCalculator === calc.id ? 'text-primary dark:text-blue-400' : 'text-slate-400'} />
@@ -442,7 +442,7 @@ const MedicalCalculators = ({ onClose }) => {
       </div>
 
       {/* Contenu du calculateur */}
-      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 p-5 shadow-sm">
+      <div className="glass-panel rounded-xl/50 p-5 shadow-sm">
         {activeLabel && (
           <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
             <Icon name={calculators.find(c => c.id === activeCalculator)?.icon || 'Activity'} size={16} className="text-primary dark:text-blue-400" />

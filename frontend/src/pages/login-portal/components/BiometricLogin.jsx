@@ -28,10 +28,10 @@ const BiometricLogin = ({ onBiometricLogin, isLoading }) => {
       {/* Séparateur */}
       <div className="relative py-2">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
+          <div className="w-full border-t border-white/20 dark:border-white/10"></div>
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-white dark:bg-slate-900 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
+          <span className="backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 text-xs font-bold text-slate-400 uppercase tracking-wider">
             Comptes détectés
           </span>
         </div>
@@ -53,7 +53,7 @@ const BiometricLogin = ({ onBiometricLogin, isLoading }) => {
                 relative w-full group flex items-center p-3 rounded-xl border transition-all duration-300 outline-none overflow-hidden text-left
                 ${isScanning 
                   ? 'border-primary bg-primary/5 dark:bg-primary/10 ring-2 ring-primary/20' 
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-md'
+                  : 'border-white/20 dark:border-white/10 glass-surface hover:border-primary/50 dark:hover:border-primary/50 hover:shadow-md'
                 }
               `}
             >

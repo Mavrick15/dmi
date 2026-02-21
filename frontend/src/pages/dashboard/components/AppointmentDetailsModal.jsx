@@ -104,7 +104,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
       size="lg"
     >
       {loading ? (
-        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-8 flex flex-col items-center justify-center gap-3">
+        <div className="rounded-xl border border-white/20 dark:border-white/10 glass-surface p-8 flex flex-col items-center justify-center gap-3">
           <Icon name="Loader2" size={32} className="animate-spin text-primary" />
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des détails…</p>
         </div>
@@ -123,7 +123,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
           className="space-y-6"
         >
           {/* En-tête avec statut */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-between pb-4 border-b border-white/20 dark:border-white/10">
             <div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 {appointment.patientName || appointment.patient?.name || 'Patient inconnu'}
@@ -141,7 +141,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
           {/* Informations principales */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Patient */}
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700 flex">
+            <div className="glass-surface rounded-xl p-4 flex">
               <div className="w-1 rounded-full self-stretch min-h-[3rem] shrink-0 bg-primary mr-3" />
               <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
@@ -161,7 +161,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
             {/* Médecin */}
             {(appointment.medecinName || appointment.medecin?.name) && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="Stethoscope" size={16} className="text-primary" />
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Médecin</span>
@@ -174,7 +174,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
             {/* Type/Motif */}
             {(appointment.type || appointment.motif) && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="FileText" size={16} className="text-primary" />
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Type</span>
@@ -187,7 +187,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
             {/* Priorité */}
             {(appointment.priority || appointment.priorite) && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="AlertCircle" size={16} className="text-primary" />
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Priorité</span>
@@ -200,7 +200,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
             {/* Durée */}
             {(appointment.duration || appointment.dureeMinutes) && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="Clock" size={16} className="text-primary" />
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Durée</span>
@@ -213,7 +213,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
             {/* Salle */}
             {appointment.room && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+              <div className="glass-surface rounded-xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Icon name="MapPin" size={16} className="text-primary" />
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Salle</span>
@@ -227,7 +227,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
 
           {/* Notes */}
           {appointment.notes && (
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+            <div className="glass-surface rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Icon name="FileText" size={16} className="text-primary" />
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Notes</span>
@@ -239,7 +239,7 @@ const AppointmentDetailsModal = ({ isOpen, onClose, appointment: initialAppointm
           )}
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="flex gap-3 pt-4 border-t border-white/20 dark:border-white/10">
             <Button variant="outline" onClick={onClose} className="flex-1 rounded-xl">
               Fermer
             </Button>

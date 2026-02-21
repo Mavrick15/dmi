@@ -52,7 +52,7 @@ const ResetPassword = () => {
   if (!email || !token) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 transition-colors duration-300">
-        <div className="text-center p-8 max-w-sm bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800">
+        <div className="text-center p-8 max-w-sm backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800">
             <div className="w-16 h-16 bg-rose-50 dark:bg-rose-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500">
                 <Icon name="XCircle" size={32} />
             </div>
@@ -66,7 +66,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 font-sans transition-colors duration-300">
-      <div className="bg-white dark:bg-slate-900 w-full max-w-md p-8 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/20 dark:border-white/10">
         
         <div className="text-center mb-8">
             <div className="w-14 h-14 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">
@@ -84,7 +84,7 @@ const ResetPassword = () => {
             onChange={(e) => setPasswords({...passwords, new: e.target.value})}
             required
             placeholder="••••••••"
-            className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+            className="bg-slate-50 dark:bg-slate-950 border-white/20 dark:border-white/10"
           />
           <Input 
             type="password" 
@@ -93,7 +93,7 @@ const ResetPassword = () => {
             onChange={(e) => setPasswords({...passwords, confirm: e.target.value})}
             required
             placeholder="••••••••"
-            className="bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800"
+            className="bg-slate-50 dark:bg-slate-950 border-white/20 dark:border-white/10"
           />
           
           <div className="pt-2">

@@ -21,12 +21,12 @@ const DocumentStats = ({ stats }) => {
     emerald: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
     green: { bg: 'bg-emerald-50 dark:bg-emerald-900/20', border: 'border-emerald-200 dark:border-emerald-800', icon: 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400' },
     violet: { bg: 'bg-violet-50 dark:bg-violet-900/20', border: 'border-violet-200 dark:border-violet-800', icon: 'bg-violet-500/20 text-violet-600 dark:text-violet-400' },
-    slate: { bg: 'bg-slate-50 dark:bg-slate-800/50', border: 'border-slate-200 dark:border-slate-700', icon: 'bg-slate-500/20 text-slate-600 dark:text-slate-400' }
+    slate: { bg: 'bg-slate-50 dark:bg-slate-800/50', border: 'border-white/20 dark:border-white/10', icon: 'bg-slate-500/20 text-slate-600 dark:text-slate-400' }
   };
 
   const statCards = [
-    { id: 'total', title: 'Total des documents', value: safeStats.totalDocuments, icon: 'FileText', theme: 'primary', change: safeStats.totalDocumentsChange, changeType: safeStats.totalDocumentsChangeType ?? 'neutral' },
-    { id: 'pending', title: 'En attente de signature', value: safeStats.pendingSignatures, icon: 'PenTool', theme: 'amber', change: safeStats.pendingSignaturesChange, changeType: safeStats.pendingSignaturesChangeType ?? 'neutral' },
+    { id: 'total', title: 'Total des doc', value: safeStats.totalDocuments, icon: 'FileText', theme: 'primary', change: safeStats.totalDocumentsChange, changeType: safeStats.totalDocumentsChangeType ?? 'neutral' },
+    { id: 'pending', title: 'En attente sign', value: safeStats.pendingSignatures, icon: 'PenTool', theme: 'amber', change: safeStats.pendingSignaturesChange, changeType: safeStats.pendingSignaturesChangeType ?? 'neutral' },
     { id: 'totalSigned', title: 'Documents signés', value: safeStats.totalSigned, icon: 'CheckCircle', theme: 'emerald', change: safeStats.totalSignedChange, changeType: safeStats.totalSignedChangeType ?? 'positive' },
     { id: 'signed', title: "Signés aujourd'hui", value: safeStats.signedToday, icon: 'FileCheck', theme: 'green', change: safeStats.signedTodayChange, changeType: safeStats.signedTodayChangeType ?? 'positive' },
     { id: 'storage', title: 'Stockage utilisé', value: safeStats.storageUsed, icon: 'HardDrive', theme: 'violet', change: safeStats.storageChange, changeType: safeStats.storageChangeType ?? 'neutral' },
@@ -51,25 +51,27 @@ const DocumentStats = ({ stats }) => {
         return (
           <div
             key={stat.id}
-            className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+            className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
           >
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${style.icon}`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  {stat.title}
+                  {hasChange && (
+                    <span className={`ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold ${getChangeBadgeClass(stat.changeType)}`}>
+                      <Icon name={isPositive ? 'TrendingUp' : isNegative ? 'TrendingDown' : 'Minus'} size={9} />
+                      {stat.change}
+                    </span>
+                  )}
+                </p>
+                <p className={`font-black text-slate-900 dark:text-white tabular-nums ${stat.id === 'storage' ? 'text-base' : 'text-2xl'}`}>
+                  {stat.value}
+                </p>
+              </div>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
                 <Icon name={stat.icon} size={20} />
               </div>
-              {hasChange && (
-                <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${getChangeBadgeClass(stat.changeType)}`}>
-                  <Icon name={isPositive ? 'TrendingUp' : isNegative ? 'TrendingDown' : 'Minus'} size={12} />
-                  {stat.change}
-                </span>
-              )}
             </div>
-            <p className={`font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1 ${stat.id === 'storage' ? 'text-base' : 'text-2xl'}`}>
-              {stat.value}
-            </p>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              {stat.title}
-            </p>
           </div>
         );
       })}

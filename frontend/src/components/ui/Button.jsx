@@ -5,7 +5,7 @@ import { cn } from "../../utils/cn";
 import Icon from '../AppIcon';
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] hover:shadow-md",
+    "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-0 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] hover:shadow-md",
     {
         variants: {
             variant: {
@@ -14,9 +14,9 @@ const buttonVariants = cva(
                 destructive: 
                     "bg-rose-500 text-white hover:bg-rose-600 shadow-sm dark:bg-rose-600 dark:hover:bg-rose-700",
                 outline: 
-                    "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white",
+                    "backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/50 dark:border-white/15 text-slate-700 dark:text-slate-300 hover:bg-white/70 dark:hover:bg-white/15 dark:hover:text-white shadow-[0_2px_12px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.5)]",
                 secondary: 
-                    "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
+                    "backdrop-blur-xl bg-white/40 dark:bg-white/10 border border-white/40 dark:border-white/15 text-slate-900 dark:text-slate-100 hover:bg-white/60 dark:hover:bg-white/15",
                 ghost: 
                     "hover:bg-slate-100 hover:text-slate-900 text-slate-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100",
                 link: 

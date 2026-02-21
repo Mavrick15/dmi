@@ -20,7 +20,7 @@ const EmptyState = ({
         initial={{ scale: 0.8 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-        className="w-20 h-20 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-6 border border-slate-200 dark:border-slate-700"
+        className="w-20 h-20 rounded-2xl backdrop-blur-xl bg-white/50 dark:bg-white/10 flex items-center justify-center mb-6 border border-white/40 dark:border-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]"
       >
         <Icon name={icon} size={32} className="text-slate-400 dark:text-slate-500" />
       </motion.div>

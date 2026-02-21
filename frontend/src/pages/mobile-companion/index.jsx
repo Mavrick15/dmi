@@ -18,6 +18,7 @@ import { useAppointments } from '../../hooks/useAppointments';
 import { useToast } from '../../contexts/ToastContext';
 import { usePermissions } from '../../hooks/usePermissions';
 import { getTodayInBusinessTimezone } from '../../utils/dateTime';
+import { formatNotificationMessage } from '../../utils/notificationMessage';
 
 const MobileCompanion = () => {
   const navigate = useNavigate();
@@ -129,7 +130,7 @@ const MobileCompanion = () => {
               </div>
             </section>
 
-            <section className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm">
+            <section className="backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Notifications</h3>
                 <Button variant="ghost" size="sm" className="text-xs">Voir tout</Button>
@@ -146,7 +147,7 @@ const MobileCompanion = () => {
                              <h4 className="font-bold text-sm text-slate-900 dark:text-white">{n.title}</h4>
                              <span className="text-[10px] text-slate-500 whitespace-nowrap ml-2">{n.time}</span>
                         </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">{n.message}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5 leading-relaxed">{formatNotificationMessage(n.message) || 'Aucun message'}</p>
                       </div>
                     </div>
                   </div>
@@ -188,7 +189,7 @@ const MobileCompanion = () => {
         </motion.div>
 
         {/* Navigation Tabs (Sticky) */}
-        <div className="sticky top-24 z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md py-2 mb-4 -mx-4 px-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="sticky top-24 z-30 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-md py-2 mb-4 -mx-4 px-4 border-b border-white/20 dark:border-white/10">
           <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-1">
             {Array.isArray(tabs) && tabs.map((tab) => {
               if (!tab || typeof tab !== 'object') return null;
@@ -200,7 +201,7 @@ const MobileCompanion = () => {
                   flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
                   ${activeTab === tab.id 
                     ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md' 
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
+                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-white/20 dark:border-white/10'
                   }
                 `}
               >

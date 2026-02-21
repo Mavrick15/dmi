@@ -140,7 +140,7 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
             </Button>
           </div>
           {showTemplates && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl max-h-48 overflow-y-auto">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4 p-3 glass-surface rounded-xl max-h-48 overflow-y-auto">
               {Array.isArray(templates) && templates.length === 0 ? (
                 <div className="col-span-full py-6 text-center text-sm text-slate-500 dark:text-slate-400">
                   Aucun template disponible
@@ -154,7 +154,7 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
                     className={`p-3 text-xs text-left rounded-xl border transition-all ${
                       selectedTemplate?.name === template.name
                         ? 'bg-primary text-white border-primary border-l-4 border-l-primary'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-primary/50'
+                        : 'backdrop-blur-xl bg-white/50 dark:bg-white/10 border-white/20 dark:border-white/10 hover:border-primary/50'
                     }`}
                   >
                     <div className="font-semibold truncate">{template.name}</div>
@@ -170,7 +170,7 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
           )}
 
           {selectedTemplate && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 border-l-4 border-l-primary">
+            <div className="glass-panel rounded-xl p-4 border-l-4 border-l-primary">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Icon name="FileText" size={18} className="text-primary" />
@@ -295,11 +295,11 @@ const PrescribeAnalyseModal = ({ isOpen, onClose, consultationId = null, default
             onChange={(e) => setFormData({ ...formData, notesPrescription: e.target.value })}
             placeholder="Notes additionnelles (optionnel)"
             rows={3}
-            className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+            className="w-full px-4 py-2 rounded-xl glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
           />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/20 dark:border-white/10">
           <Button
             type="button"
             variant="ghost"

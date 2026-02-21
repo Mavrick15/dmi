@@ -50,7 +50,7 @@ const PatientCard = React.memo(({ patient, onViewDetails, onScheduleAppointment 
     <motion.div 
       onClick={handleViewDetails}
       whileHover={{ y: -4, scale: 1.02 }}
-      className={`group relative bg-gradient-to-br ${status === 'active' ? 'from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-emerald-950/20' : 'from-slate-50 via-white to-slate-50/50 dark:from-slate-950/30 dark:via-slate-900 dark:to-slate-950/20'} border ${status === 'active' ? 'border-emerald-100 dark:border-emerald-900/50' : 'border-slate-200 dark:border-slate-800'} rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full overflow-hidden`}
+      className={`group relative bg-gradient-to-br ${status === 'active' ? 'from-emerald-50 via-white to-emerald-50/50 dark:from-emerald-950/30 dark:via-slate-900 dark:to-emerald-950/20' : 'from-slate-50 via-white to-slate-50/50 dark:from-slate-950/30 dark:via-slate-900 dark:to-slate-950/20'} border ${status === 'active' ? 'border-emerald-100 dark:border-emerald-900/50' : 'border-white/20 dark:border-white/10'} rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col h-full overflow-hidden`}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
@@ -64,7 +64,7 @@ const PatientCard = React.memo(({ patient, onViewDetails, onScheduleAppointment 
                 {patient.avatar ? (
                     <Image src={patient.avatar} alt={name} className="w-12 h-12 rounded-xl object-cover shadow-sm border border-slate-100 dark:border-slate-700" />
                 ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-lg border border-slate-200 dark:border-slate-700">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold text-lg border border-white/20 dark:border-white/10">
                         {initials}
                     </div>
                 )}
@@ -73,7 +73,7 @@ const PatientCard = React.memo(({ patient, onViewDetails, onScheduleAppointment 
                 <h3 className="font-bold text-slate-900 dark:text-white text-base leading-tight group-hover:text-primary transition-colors line-clamp-1" title={name}>
                     {name}
                 </h3>
-                <p className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5 bg-slate-50 dark:bg-slate-800 px-1 rounded w-fit">{displayId}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 font-mono mt-0.5 glass-surface px-1 rounded w-fit">{displayId}</p>
             </div>
         </div>
         
@@ -84,7 +84,7 @@ const PatientCard = React.memo(({ patient, onViewDetails, onScheduleAppointment 
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{displayAge}</span>
               )}
               {patient.gender && (
-                <div className="flex items-center gap-1 text-[10px] text-slate-400 uppercase mt-0.5">
+                <div className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400 uppercase mt-0.5">
                     {patient.gender === 'masculin' ? <Icon name="Mars" size={10} className="text-blue-400" /> : patient.gender === 'feminin' ? <Icon name="Venus" size={10} className="text-rose-400" /> : <Icon name="User" size={10} />}
                     <span>{patient.gender === 'masculin' ? 'Hom' : patient.gender === 'feminin' ? 'Fem' : 'Aut'}</span>
                 </div>
@@ -127,16 +127,16 @@ const PatientCard = React.memo(({ patient, onViewDetails, onScheduleAppointment 
                 {conditions.length > 2 && <span className="text-[10px] text-slate-400 self-center font-medium">+{conditions.length - 2}</span>}
             </div>
          ) : (
-            <p className="text-xs text-slate-400 italic pl-1">Aucune note particulière</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 italic pl-1">Aucune note particulière</p>
          )}
       </div>
 
       {/* Footer Actions (Apparition au survol) */}
-      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center opacity-80 group-hover:opacity-100 transition-opacity relative z-10">
+      <div className="px-3 py-1.5 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center opacity-80 group-hover:opacity-100 transition-opacity relative z-10">
          <motion.span 
            initial={{ scale: 0.8 }}
            animate={{ scale: 1 }}
-           className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}
+           className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${status === 'active' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'glass-surface text-slate-400'}`}
          >
             <motion.span 
               animate={status === 'active' ? { scale: [1, 1.2, 1] } : {}}

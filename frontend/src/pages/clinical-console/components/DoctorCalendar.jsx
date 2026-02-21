@@ -224,7 +224,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
       'programme': { label: 'Planifié', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800' },
       'confirme': { label: 'Confirmé', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' },
       'en_cours': { label: 'En cours', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 border-purple-200 dark:border-purple-800' },
-      'termine': { label: 'Terminé', color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700' },
+      'termine': { label: 'Terminé', color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-white/20 dark:border-white/10' },
       'annule': { label: 'Annulé', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800' },
       'absent': { label: 'Absent', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 border-amber-200 dark:border-amber-800' },
     };
@@ -340,35 +340,35 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
 
   if (isLoading && !appointments.length) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-4 border-l-4 border-l-primary">
+      <div className="flex flex-col items-center justify-center h-96 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-4 border-l-4 border-l-primary">
         <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
-        <span className="text-sm text-slate-500 dark:text-slate-400">Chargement…</span>
+        <span className="text-sm text-slate-600 dark:text-slate-300">Chargement…</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[780px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
+    <div className="flex flex-col h-[780px] glass-panel rounded-xl shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
-        <div className="flex items-center justify-between gap-4">
+      <div className="p-4 border-b border-white/20 dark:border-white/10 flex-shrink-0">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-              <Icon name="Calendar" size={20} className="text-primary dark:text-blue-400" />
+            <div className="w-9 h-9 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
+              <Icon name="Calendar" size={18} className="text-primary dark:text-blue-400" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white">Mon Agenda</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{monthName}</p>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Mon Agenda</h2>
+              <p className="text-xs text-slate-600 dark:text-slate-300 capitalize">{monthName}</p>
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="sm" iconName="ChevronLeft" onClick={goToPreviousMonth} className="h-8 w-8 p-0 rounded-lg" />
-            <Button variant="outline" size="sm" onClick={goToToday} className="text-xs font-medium px-3 rounded-lg">Aujourd'hui</Button>
-            <Button variant="ghost" size="sm" iconName="ChevronRight" onClick={goToNextMonth} className="h-8 w-8 p-0 rounded-lg" />
+            <Button variant="ghost" size="sm" iconName="ChevronLeft" onClick={goToPreviousMonth} className="h-7 w-7 p-0 rounded-md" />
+            <Button variant="outline" size="sm" onClick={goToToday} className="text-xs font-normal px-2.5 py-1 rounded-md">Aujourd'hui</Button>
+            <Button variant="ghost" size="sm" iconName="ChevronRight" onClick={goToNextMonth} className="h-7 w-7 p-0 rounded-md" />
           </div>
         </div>
         {/* Légende compacte */}
-        <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex flex-wrap items-center gap-1.5 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
           {[
             { color: 'bg-blue-500', label: 'Planifié' },
             { color: 'bg-emerald-500', label: 'Confirmé' },
@@ -377,7 +377,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
             { color: 'bg-red-400', label: 'Annulé' },
             { color: 'bg-amber-500', label: 'Absent' },
           ].map((item, idx) => (
-            <span key={idx} className="flex items-center gap-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">
+            <span key={idx} className="flex items-center gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
               <span className={`w-2 h-2 rounded-full ${item.color}`} />
               {item.label}
             </span>
@@ -396,11 +396,11 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900/50"
+            className="rounded-2xl border border-white/20 dark:border-white/10 overflow-hidden backdrop-blur-xl bg-white/50 dark:bg-white/10/50"
           >
-            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <div className="grid grid-cols-7 border-b border-white/20 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50">
               {weekDays.map((day, index) => (
-                <div key={index} className="py-2 text-center text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <div key={index} className="py-2 text-center text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                   {day}
                 </div>
               ))}
@@ -421,7 +421,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
                     onDrop={day.isCurrentMonth ? (e) => handleDrop(e, day.date) : undefined}
                     className={`
                       min-h-[100px] p-1.5 border-r border-b border-slate-100 dark:border-slate-800 last:border-r-0
-                      ${day.isCurrentMonth ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-950/50'}
+                      ${day.isCurrentMonth ? 'backdrop-blur-xl bg-white/50 dark:bg-white/10' : 'bg-slate-50/50 dark:bg-slate-950/50'}
                       ${day.isToday ? 'bg-primary/5 dark:bg-primary/10' : ''}
                       ${isSelected ? 'ring-2 ring-inset ring-primary bg-primary/10 dark:bg-primary/20' : ''}
                       ${day.isCurrentMonth ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'cursor-default'}
@@ -476,7 +476,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
                         );
                       })}
                       {dayAppointments.length > 3 && (
-                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium text-center py-0.5">
+                        <div className="text-xs text-slate-600 dark:text-slate-300 font-medium text-center py-0.5">
                           +{dayAppointments.length - 3}
                         </div>
                       )}
@@ -513,7 +513,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
                   setSelectedDate(null);
                 }}
                 className={`
-                  p-4 rounded-xl border border-slate-200 dark:border-slate-700 cursor-pointer
+                  p-4 rounded-xl border border-white/20 dark:border-white/10 cursor-pointer
                   bg-slate-50/50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors
                   ${draggedAppointment?.id === appointment.id ? 'opacity-50' : ''}
                 `}
@@ -543,7 +543,7 @@ const DoctorCalendar = ({ onSelectAppointment }) => {
                   {getStatusBadge(appointment)}
                 </div>
                 {appointment.notes && (
-                  <p className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 italic">
+                  <p className="mt-2 pt-2 border-t border-white/20 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 italic">
                     {appointment.notes}
                   </p>
                 )}

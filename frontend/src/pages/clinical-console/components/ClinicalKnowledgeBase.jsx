@@ -18,9 +18,9 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.96, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700"
+        className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-2xl rounded-xl shadow-xl overflow-hidden border border-white/20 dark:border-white/10"
       >
-        <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4">
+        <div className="p-5 border-b border-white/20 dark:border-white/10 flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
               <Icon name="BookOpen" size={20} className="text-primary dark:text-blue-400" />
@@ -94,7 +94,7 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
                    </div>
                 </div>
                 {(item.steps || []).length > 0 && (
-                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-white/20 dark:border-white/10">
                    <h4 className="text-base font-semibold mb-3 dark:text-white">Étapes</h4>
                    <ol className="list-decimal list-inside space-y-2 text-base text-slate-600 dark:text-slate-400">
                       {item.steps.map((step, idx) => (
@@ -136,7 +136,7 @@ const KnowledgeDetailModal = ({ item, type, onClose }) => {
           )}
         </div>
 
-        <div className="p-4 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+        <div className="p-4 border-t border-white/20 dark:border-white/10 flex justify-end">
           <Button variant="outline" size="sm" onClick={onClose} className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800">Fermer</Button>
         </div>
       </motion.div>
@@ -209,7 +209,7 @@ const ClinicalKnowledgeBase = () => {
   const renderContent = () => {
     if (isLoadingKnowledge) {
       return (
-        <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+        <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2 border-l-4 border-l-primary">
           <Icon name="Loader2" size={28} className="animate-spin text-primary mb-3" />
           <p className="text-base text-slate-500 dark:text-slate-400">Chargement…</p>
         </div>
@@ -259,7 +259,7 @@ const ClinicalKnowledgeBase = () => {
                     tabIndex={0}
                     onClick={() => setSelectedItem(item)}
                     onKeyDown={(e) => e.key === 'Enter' && setSelectedItem(item)}
-                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group"
+                    className="p-4 glass-panel rounded-xl/50 hover:border-primary/30 dark:hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer group"
                   >
             {/* Cas Protocoles */}
             {activeCategory === 'protocols' && (
@@ -319,7 +319,7 @@ const ClinicalKnowledgeBase = () => {
                   <div>
                     <h4 className="text-base font-bold text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors">{item.name}</h4>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">CIM-10</span>
+                        <span className="text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded border border-white/20 dark:border-white/10">CIM-10</span>
                         <span className="text-base font-mono text-primary font-semibold">{item.code}</span>
                     </div>
                   </div>
@@ -392,10 +392,10 @@ const ClinicalKnowledgeBase = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[780px]">
       {/* Sidebar */}
-      <div className="w-full md:w-64 border-r border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col flex-shrink-0">
-        <div className="p-5 border-b border-slate-200 dark:border-slate-700">
+      <div className="w-full md:w-64 border-r border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 flex flex-col flex-shrink-0">
+        <div className="p-5 border-b border-white/20 dark:border-white/10">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
               <Icon name="BookOpen" size={20} className="text-primary dark:text-blue-400" />
@@ -411,7 +411,7 @@ const ClinicalKnowledgeBase = () => {
               placeholder="Rechercher..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-base focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white placeholder-slate-400"
+              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-white/20 dark:border-white/10 rounded-xl text-base focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none dark:text-white placeholder-slate-400"
             />
           </div>
         </div>

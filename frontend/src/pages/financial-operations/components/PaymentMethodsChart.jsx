@@ -11,7 +11,7 @@ const PaymentMethodsChart = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl border-l-4 border-l-primary shadow-sm p-6 h-full flex flex-col items-center justify-center">
+      <div className="glass-panel rounded-xl border-l-4 border-l-primary shadow-sm p-6 h-full flex flex-col items-center justify-center">
         <Icon name="Loader2" size={32} className="animate-spin text-primary mb-2" />
         <p className="text-slate-500 dark:text-slate-400 text-sm">Chargement…</p>
       </div>
@@ -20,7 +20,7 @@ const PaymentMethodsChart = () => {
 
   if (!paymentStats || paymentStats.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-full flex flex-col items-center justify-center">
+      <div className="glass-panel rounded-xl shadow-sm p-6 h-full flex flex-col items-center justify-center">
         <Icon name="PieChart" size={40} className="text-slate-400 mb-2" />
         <p className="text-slate-500 dark:text-slate-400 text-sm">Aucune donnée disponible</p>
       </div>
@@ -28,7 +28,7 @@ const PaymentMethodsChart = () => {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm p-6 h-full flex flex-col overflow-hidden">
+    <div className="glass-panel rounded-xl shadow-sm p-6 h-full flex flex-col overflow-hidden">
       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2 flex-shrink-0">
         <Icon name="PieChart" className="text-primary" /> Répartition
       </h3>
@@ -71,7 +71,7 @@ const PaymentMethodsChart = () => {
         {Array.isArray(paymentStats) && paymentStats.map((item, index) => {
           if (!item || typeof item !== 'object') return null;
           return (
-          <div key={index} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+          <div key={index} className="flex items-center justify-between p-2 rounded-lg glass-surface">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }}></div>
               <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300 truncate">{item.name || ''}</span>

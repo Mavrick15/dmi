@@ -19,7 +19,7 @@ const ComplianceTraining = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-3xl border border-white/20 dark:border-white/10 p-6 shadow-sm">
         
         {/* Header & Tabs */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -27,7 +27,7 @@ const ComplianceTraining = () => {
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">Formation & Certification</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400">Suivi de la conformité du personnel</p>
             </div>
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <div className="flex glass-surface p-1 rounded-xl">
                 <button onClick={() => setSelectedTab('modules')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedTab === 'modules' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}>Modules</button>
                 <button onClick={() => setSelectedTab('staff')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedTab === 'staff' ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400'}`}>Personnel</button>
             </div>

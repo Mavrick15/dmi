@@ -215,7 +215,7 @@ const DocumentsList = ({ patient }) => {
 
   if (loadingDocuments) {
     return (
-      <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-12 flex flex-col items-center justify-center gap-4">
+      <div className="w-full rounded-2xl border border-white/20 dark:border-white/10 glass-surface p-12 flex flex-col items-center justify-center gap-4">
         <Loader2 className="animate-spin text-primary" size={36} />
         <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Chargement des documents...</p>
       </div>
@@ -260,8 +260,8 @@ const DocumentsList = ({ patient }) => {
       {/* Content */}
       <div className="w-full">
         {documents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30">
-            <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center mb-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-14 px-6 text-center rounded-2xl border border-white/20 dark:border-white/10 glass-surface">
+            <div className="w-16 h-16 rounded-2xl glass-surface flex items-center justify-center mb-4 shadow-sm">
               <Icon name="FolderX" size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Aucun document</h3>
@@ -293,7 +293,7 @@ const DocumentsList = ({ patient }) => {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.04, duration: 0.25 }}
-                    className="group relative flex overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all"
+                    className="group relative flex overflow-hidden rounded-xl glass-panel hover:shadow-lg hover:border-primary/30 transition-all"
                   >
                     {/* Barre d'accent par catégorie */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1 shrink-0 ${getCategoryAccent(document.category)}`} />
@@ -364,7 +364,7 @@ const DocumentsList = ({ patient }) => {
 
                     {document.description && (
                       <div className="px-4 pb-4 pt-0">
-                        <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700">
+                        <div className="pl-14 sm:pl-[4.5rem] py-2 px-3 rounded-lg glass-surface">
                           <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{document.description}</p>
                         </div>
                       </div>
@@ -376,7 +376,7 @@ const DocumentsList = ({ patient }) => {
 
             {/* Pagination */}
             {allDocuments.length > documentsPerPage && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 mt-6 border-t border-white/20 dark:border-white/10">
                 <p className="text-sm text-slate-500 dark:text-slate-400 order-2 sm:order-1">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">{startIndex + 1}</span>
                   {' – '}
@@ -404,7 +404,7 @@ const DocumentsList = ({ patient }) => {
                         className={`min-w-[2.25rem] px-2 py-1.5 rounded-xl text-sm font-medium transition-all ${
                           currentPage === page
                             ? 'bg-primary text-white shadow-md'
-                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                            : 'glass-surface text-slate-600 dark:text-slate-400 hover:bg-white/30 dark:hover:bg-white/10'
                         }`}
                       >
                         {page}
@@ -463,7 +463,7 @@ const DocumentsList = ({ patient }) => {
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="relative border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-2xl p-8 text-center hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all cursor-pointer group overflow-hidden bg-white dark:bg-slate-900"
+              className="relative border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-2xl p-8 text-center hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all cursor-pointer group overflow-hidden backdrop-blur-xl bg-white/50 dark:bg-white/10"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 transition-all duration-300 rounded-2xl" />
               <input
@@ -518,7 +518,7 @@ const DocumentsList = ({ patient }) => {
                   onChange={(e) => setSelectedDoctorId(e.target.value)}
                   required={isInfirmier}
                   disabled={isLoadingDoctors}
-                  className="w-full pl-10 pr-10 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
+                  className="w-full pl-10 pr-10 py-2.5 glass-panel rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-slate-900 dark:text-white text-sm appearance-none cursor-pointer"
                 >
                   <option value="">Choisir un médecin</option>
                   {doctors.map((d) => (
@@ -548,7 +548,7 @@ const DocumentsList = ({ patient }) => {
                 value={uploadData.title}
                 onChange={(e) => setUploadData({ ...uploadData, title: e.target.value })}
                 placeholder="Nom du document"
-                className="bg-white dark:bg-slate-900"
+                className="backdrop-blur-xl bg-white/50 dark:bg-white/10"
               />
               <div className="w-full">
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-2">
@@ -557,7 +557,7 @@ const DocumentsList = ({ patient }) => {
                 <select
                   value={uploadData.category}
                   onChange={(e) => setUploadData({ ...uploadData, category: e.target.value })}
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                  className="w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                 >
                   <option value="medical">Médical</option>
                   <option value="prescription">Prescription</option>
@@ -574,7 +574,7 @@ const DocumentsList = ({ patient }) => {
                   value={uploadData.description}
                   onChange={(e) => setUploadData({ ...uploadData, description: e.target.value })}
                   placeholder="Description optionnelle..."
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none shadow-sm"
+                  className="w-full rounded-xl border border-white/20 dark:border-white/10 backdrop-blur-xl bg-white/50 dark:bg-white/10 px-4 py-3 text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none shadow-sm"
                   rows={3}
                 />
               </div>

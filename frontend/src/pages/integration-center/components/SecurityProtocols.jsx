@@ -10,12 +10,12 @@ const SecurityProtocols = ({ protocols }) => {
     switch (level) {
       case 'high': return { badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-900/50' };
       case 'medium': return { badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400', border: 'border-amber-200 dark:border-amber-900/50' };
-      default: return { badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300', border: 'border-slate-200 dark:border-slate-800' };
+      default: return { badge: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300', border: 'border-white/20 dark:border-white/10' };
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm p-6">
+    <div className="glass-panel rounded-3xl shadow-sm p-6">
       <div className="flex justify-between items-center mb-6">
          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Icon name="ShieldCheck" className="text-emerald-500" /> Protocoles de Sécurité
@@ -33,7 +33,7 @@ const SecurityProtocols = ({ protocols }) => {
                 <div key={protocol.id} className={`p-5 rounded-2xl border bg-slate-50/50 dark:bg-slate-950/50 ${style.border} transition-shadow hover:shadow-md`}>
                     <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white dark:bg-slate-900 rounded-lg shadow-sm text-slate-700 dark:text-slate-300">
+                            <div className="p-2 backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-lg shadow-sm text-slate-700 dark:text-slate-300">
                                 <Icon name={protocol.icon} size={20} />
                             </div>
                             <h4 className="font-bold text-slate-900 dark:text-white">{protocol.name}</h4>
@@ -60,10 +60,10 @@ const SecurityProtocols = ({ protocols }) => {
                     
                     <div className="mt-4 flex gap-2">
                       <PermissionGuard requiredPermission="settings_manage">
-                        <Button variant="ghost" size="xs" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800" disabled={!hasPermission('settings_manage')}>Configurer</Button>
+                        <Button variant="ghost" size="xs" className="w-full backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10" disabled={!hasPermission('settings_manage')}>Configurer</Button>
                       </PermissionGuard>
                       <PermissionGuard requiredPermission="audit_view">
-                        <Button variant="ghost" size="xs" className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800" disabled={!hasPermission('audit_view')}>Logs</Button>
+                        <Button variant="ghost" size="xs" className="w-full backdrop-blur-xl bg-white/50 dark:bg-white/10 border border-white/20 dark:border-white/10" disabled={!hasPermission('audit_view')}>Logs</Button>
                       </PermissionGuard>
                     </div>
                 </div>

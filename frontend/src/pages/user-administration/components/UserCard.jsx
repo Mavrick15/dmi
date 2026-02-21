@@ -71,14 +71,14 @@ if (role.includes('gestionnaire')) {
     if (role.includes('infirmiere') || role.includes('nurse')) return 'border-emerald-100 dark:border-emerald-900/50';
     if (role.includes('pharmacien') || role.includes('pharma')) return 'border-teal-100 dark:border-teal-900/50';
     if (role.includes('gestionnaire')) return 'border-amber-100 dark:border-amber-900/50';
-    return 'border-slate-200 dark:border-slate-800';
+    return 'border-white/30 dark:border-white/10';
   };
 
   return (
     <motion.div
       whileHover={{ y: -2, scale: 1.01 }}
       className={`
-        group relative bg-white dark:bg-slate-900 border ${getBorderColor()} rounded-xl
+        group relative glass-panel border ${getBorderColor()} rounded-xl
         shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full overflow-hidden
         ${theme.borderTop} border-t-4
         ${!isActive ? 'opacity-75' : ''}
@@ -86,7 +86,7 @@ if (role.includes('gestionnaire')) {
     >
 
       {!isActive && (
-        <div className="absolute top-3 right-3 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide border border-slate-200 dark:border-slate-700">
+        <div className="absolute top-3 right-3 glass-surface text-slate-500 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
           Inactif
         </div>
       )}
@@ -98,10 +98,10 @@ if (role.includes('gestionnaire')) {
               <Image
                 src={user.avatar}
                 alt={user.name}
-                className="w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-200 dark:border-slate-700"
+                className="w-14 h-14 rounded-xl object-cover shadow-sm glass-surface"
               />
             ) : (
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold ${theme.bg} ${theme.color} border border-slate-200 dark:border-slate-700`}>
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center text-xl font-bold ${theme.bg} ${theme.color} glass-surface`}>
                 {initials}
               </div>
             )}
@@ -153,7 +153,7 @@ if (role.includes('gestionnaire')) {
         </div>
       </div>
 
-      <div className="relative px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center z-10">
+      <div className="relative px-4 py-3 glass-surface border-t border-white/20 dark:border-white/10 flex justify-between items-center z-10">
         <div className="text-[10px] font-medium text-slate-400 dark:text-slate-500 flex flex-col">
           <span>Dernière connexion</span>
           <span className="text-slate-600 dark:text-slate-300 font-semibold">{user.lastLogin || 'Jamais'}</span>

@@ -250,11 +250,11 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
   const hasChanges = JSON.stringify((Array.isArray(permissions) ? permissions : []).sort()) !== JSON.stringify((Array.isArray(initialPermissions) ? initialPermissions : []).sort());
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[880px] animate-fade-in">
+    <div className="glass-panel rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row h-[880px] animate-fade-in">
 
       {/* Sidebar Roles */}
-      <div className="w-full md:w-72 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 flex flex-col">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800">
+      <div className="w-full md:w-72 bg-slate-50 dark:bg-slate-950 border-r border-white/20 dark:border-white/10 flex flex-col">
+        <div className="p-6 border-b border-white/20 dark:border-white/10">
           <h3 className="font-bold text-slate-900 dark:text-white text-lg flex items-center gap-2">
             <Icon name="Shield" size={20} className="text-primary" />
             Gestion des Permissions
@@ -284,7 +284,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
                   }
                 }}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all duration-200 border ${selectedRole === role.id
-                    ? 'bg-white dark:bg-slate-800 border-primary/30 shadow-md ring-1 ring-primary/20'
+                    ? 'glass-surface border-primary/30 shadow-md ring-1 ring-primary/20'
                     : 'bg-transparent border-transparent hover:bg-slate-200/50 dark:hover:bg-slate-800/50'
                   }`}
               >
@@ -293,7 +293,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
                 </div>
                 <div>
                   <div className={`text-sm font-bold ${selectedRole === role.id ? 'text-primary' : 'text-slate-700 dark:text-slate-300'}`}>{role.label}</div>
-                  <div className="text-[10px] text-slate-500">{role.desc}</div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">{role.desc}</div>
                 </div>
               </button>
             );
@@ -302,12 +302,12 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-white dark:bg-slate-900">
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-10">
+      <div className="flex-1 flex flex-col backdrop-blur-xl bg-white/50 dark:bg-white/10">
+        <div className="p-6 border-b border-white/20 dark:border-white/10 flex justify-between items-center backdrop-blur-xl bg-white/50 dark:bg-white/10 sticky top-0 z-10">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="text-slate-500 text-sm">Configuration pour :</span>
-              <span className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-lg text-sm font-bold text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 capitalize">
+              <span className="px-3 py-1 glass-surface rounded-lg text-sm font-bold text-slate-900 dark:text-white capitalize">
                 {Array.isArray(roles) ? roles.find(r => r && r.id === selectedRole)?.label : ''}
               </span>
             </div>
@@ -336,7 +336,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
 
         <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 custom-scrollbar">
           {loadingPermissions ? (
-            <div className="flex flex-col items-center justify-center h-64 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 mx-2 border-l-4 border-l-primary">
+            <div className="flex flex-col items-center justify-center h-64 rounded-xl border border-white/20 dark:border-white/10 glass-surface mx-2 border-l-4 border-l-primary">
               <Icon name="Loader2" size={32} className="animate-spin text-primary mb-4" />
               <p className="text-sm text-slate-500 dark:text-slate-400">Chargement des permissions…</p>
             </div>
@@ -365,7 +365,7 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
                                         flex items-start gap-3 p-4 rounded-xl border transition-all duration-200 cursor-pointer select-none
                                         ${isChecked
                               ? 'bg-primary/5 border-primary/30 dark:bg-primary/10 dark:border-primary/30 shadow-sm'
-                              : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600'
+                              : 'glass-surface hover:border-primary/30'
                             }
                                     `}
                           onClick={() => handlePermissionChange(perm.id)}
@@ -381,8 +381,8 @@ const RolePermissionMatrix = ({ onSave, onCancel }) => {
                             <div className={`text-sm font-bold ${isChecked ? 'text-primary' : 'text-slate-700 dark:text-slate-300'}`}>
                               {getPermissionDisplayName(perm.name)}
                             </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{perm.description}</div>
-                            <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 font-mono">
+                            <div className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">{perm.description}</div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
                               {perm.name}
                             </div>
                           </div>

@@ -18,27 +18,29 @@ const MetricCard = ({ title, value, change, changeType, icon, color = 'primary' 
     ? 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-900/30 dark:border-emerald-800'
     : isNegative
       ? 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-900/30 dark:border-rose-800'
-      : 'text-slate-600 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-800 dark:border-slate-700';
+      : 'text-slate-600 bg-slate-50/80 dark:text-slate-400 dark:bg-slate-800/50 border-white/30 dark:border-white/10';
 
   return (
-    <div className={`rounded-xl border p-5 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full`}>
-      <div className="flex items-center justify-between gap-3 mb-3">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${style.icon}`}>
-          <Icon name={icon} size={22} />
+    <div className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+            {title}
+            {change && (
+              <span className={`ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold border ${changeBadgeClass}`}>
+                <Icon name={isPositive ? 'TrendingUp' : isNegative ? 'TrendingDown' : 'Minus'} size={9} />
+                {change}
+              </span>
+            )}
+          </p>
+          <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+            {value}
+          </p>
         </div>
-        {change && (
-          <span className={`flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-bold border ${changeBadgeClass}`}>
-            <Icon name={isPositive ? 'TrendingUp' : isNegative ? 'TrendingDown' : 'Minus'} size={12} />
-            {change}
-          </span>
-        )}
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
+          <Icon name={icon} size={20} />
+        </div>
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-        {value}
-      </p>
-      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-        {title}
-      </p>
     </div>
   );
 };

@@ -55,7 +55,7 @@ const Modal = ({
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           />
 
-          {/* Modal Content */}
+          {/* Modal Content - Liquid Glass */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -63,8 +63,12 @@ const Modal = ({
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
             className={cn(
-              'relative bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700',
-              'w-full flex flex-col max-h-[90vh] overflow-hidden',
+              'relative w-full flex flex-col max-h-[90vh] overflow-hidden',
+              'backdrop-blur-2xl rounded-2xl',
+              'bg-white/80 dark:bg-slate-900/90',
+              'border border-white/40 dark:border-white/15',
+              'shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)]',
+              'dark:shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.1)]',
               sizes[size],
               className
             )}
@@ -73,8 +77,8 @@ const Modal = ({
             {(title || icon || showCloseButton) && (
               <div
                 className={cn(
-                  'flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700',
-                  'bg-slate-50 dark:bg-slate-800/50',
+                  'flex items-center justify-between p-6 border-b border-white/20 dark:border-white/5',
+                  'bg-white/40 dark:bg-white/5 backdrop-blur-sm',
                   headerClassName
                 )}
               >
@@ -113,7 +117,7 @@ const Modal = ({
 
             {/* Footer */}
             {footer && (
-              <div className="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <div className="px-3 py-1.5 border-t border-white/20 dark:border-white/5 bg-white/40 dark:bg-white/5 backdrop-blur-sm">
                 {footer}
               </div>
             )}

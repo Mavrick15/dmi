@@ -31,9 +31,9 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
   const count = Array.isArray(comments) ? comments.length : 0;
 
   return (
-    <div className="fixed inset-y-0 right-0 w-full max-w-md bg-white dark:bg-slate-900/95 border-l border-slate-200 dark:border-slate-700 shadow-xl z-[100] flex flex-col backdrop-blur-sm">
+    <div className="fixed inset-y-0 right-0 w-full max-w-md glass-strong border-l border-white/20 dark:border-white/10 shadow-xl z-[100] flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 shrink-0">
+      <div className="flex items-center justify-between p-4 border-b border-white/20 dark:border-white/10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
             <Icon name="MessageSquare" size={20} className="text-primary" />
@@ -58,7 +58,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
       {/* Comments List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 border-l-4 border-l-primary">
+          <div className="flex flex-col items-center justify-center py-16 rounded-xl glass-panel border-l-4 border-l-primary">
             <Icon name="Loader2" size={28} className="animate-spin text-primary mb-2" />
             <p className="text-sm text-slate-500 dark:text-slate-400">Chargement…</p>
           </div>
@@ -70,7 +70,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
             return (
               <div
                 key={comment.id}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 shadow-sm p-4"
+                className="rounded-xl glass-panel shadow-sm p-4"
               >
                 <div className="flex items-start gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
@@ -93,7 +93,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
           }).filter(Boolean)
         ) : (
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+            <div className="w-14 h-14 rounded-xl glass-surface flex items-center justify-center mb-4">
               <Icon name="MessageSquare" size={28} className="text-slate-400 dark:text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Aucun commentaire</p>
@@ -103,7 +103,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
       </div>
 
       {/* Add Comment */}
-      <div className="p-4 border-t border-slate-200 dark:border-slate-700 shrink-0 bg-slate-50/50 dark:bg-slate-900/30">
+      <div className="p-4 border-t border-white/20 dark:border-white/10 shrink-0 glass-surface">
         <div className="flex gap-2">
           <textarea
             value={newComment}
@@ -115,7 +115,7 @@ const DocumentCommentsPanel = ({ documentId, isOpen, onClose }) => {
               }
             }}
             placeholder="Ajouter un commentaire..."
-            className="flex-1 px-4 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-white text-sm resize-none placeholder:text-slate-400"
+            className="flex-1 px-4 py-3 glass-panel rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-slate-900 dark:text-white text-sm resize-none placeholder:text-slate-400"
             rows={3}
           />
           <PermissionGuard requiredPermission="document_comment">

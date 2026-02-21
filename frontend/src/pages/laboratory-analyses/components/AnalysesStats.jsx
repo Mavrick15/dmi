@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import Icon from '../../../components/AppIcon';
 
 const numberFormatterFr = new Intl.NumberFormat('fr-FR');
@@ -21,26 +22,31 @@ const AnalysesStats = ({ stats }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-      {statCards.map((card) => {
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+      {statCards.map((card, index) => {
         const style = themeStyles[card.theme] || themeStyles.blue;
         return (
-          <div
+          <motion.div
             key={card.id}
-            className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05, duration: 0.25 }}
+            className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
           >
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.icon}`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  {card.title}
+                </p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+                  {numberFormatterFr.format(card.value)}
+                </p>
+              </div>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
                 <Icon name={card.icon} size={20} />
               </div>
             </div>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-              {numberFormatterFr.format(card.value)}
-            </p>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              {card.title}
-            </p>
-          </div>
+          </motion.div>
         );
       })}
     </div>

@@ -18,30 +18,32 @@ const InventoryOverview = ({ data, loading }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {overviewStats.map((stat) => {
         if (!stat || typeof stat !== 'object') return null;
         const style = themeStyles[stat.theme] || themeStyles.blue;
         return (
           <div
             key={stat.id}
-            className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+            className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
           >
-            <div className="flex items-center justify-between gap-3 mb-2">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${style.icon}`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+                  {stat.title}
+                </p>
+                {loading ? (
+                  <div className="h-8 w-20 rounded bg-slate-200 dark:bg-slate-600 animate-pulse" />
+                ) : (
+                  <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+                    {stat.isCurrency ? formatCurrency(stat.value) : stat.value}
+                  </p>
+                )}
+              </div>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
                 <Icon name={stat.icon} size={20} />
               </div>
             </div>
-            {loading ? (
-              <div className="h-7 w-20 rounded bg-slate-200 dark:bg-slate-600 animate-pulse mb-2" />
-            ) : (
-              <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-                {stat.isCurrency ? formatCurrency(stat.value) : stat.value}
-              </p>
-            )}
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              {stat.title}
-            </p>
           </div>
         );
       })}

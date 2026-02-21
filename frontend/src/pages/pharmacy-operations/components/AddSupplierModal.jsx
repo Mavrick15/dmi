@@ -98,11 +98,11 @@ const AddSupplierModal = ({ isOpen, onClose, onSuccess, supplierToEdit = null })
     }
   };
 
-  const inputStyle = "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
+  const inputStyle = "glass-surface text-slate-900 dark:text-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all";
 
   return (
     <AnimatedModal isOpen={isOpen} onClose={onClose} usePortal={true}>
-      <div className="bg-white dark:bg-slate-900 w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="backdrop-blur-xl bg-white/50 dark:bg-white/10 w-full max-w-4xl rounded-3xl shadow-2xl border border-white/20 dark:border-white/10 flex flex-col max-h-[90vh] overflow-hidden">
         
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-between items-center">
@@ -174,7 +174,7 @@ const AddSupplierModal = ({ isOpen, onClose, onSuccess, supplierToEdit = null })
               className={inputStyle} 
            />
            
-           <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700">
+           <div className="p-4 glass-surface rounded-xl">
               <Input 
                 label="Délai de livraison moyen (jours)" 
                 type="number" 
@@ -191,7 +191,7 @@ const AddSupplierModal = ({ isOpen, onClose, onSuccess, supplierToEdit = null })
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3">
+        <div className="px-3 py-1.5 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-end gap-3">
            <Button variant="ghost" onClick={onClose} disabled={isLoading}>Annuler</Button>
            <Button 
                variant="default" 

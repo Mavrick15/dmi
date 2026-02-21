@@ -50,7 +50,7 @@ const ConnectionStatus = ({ connections }) => {
         if (!item || typeof item !== 'object') return null;
         const style = getThemeStyles(item.theme);
         return (
-          <div key={index} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-all duration-300">
+          <div key={index} className="backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-2xl border border-white/20 dark:border-white/10 p-6 shadow-sm hover:shadow-md transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{item.label}</p>

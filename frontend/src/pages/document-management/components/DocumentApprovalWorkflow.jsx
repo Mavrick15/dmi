@@ -109,10 +109,10 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.96 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
+        className="glass-panel rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
       >
         {/* En-tête */}
-        <div className="flex items-center justify-between gap-4 p-5 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <div className="flex items-center justify-between gap-4 p-5 border-b border-white/20 dark:border-white/10 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
               <Icon name="CheckCircle" size={20} className="text-primary dark:text-blue-400" />
@@ -136,7 +136,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
         <div className="flex-1 overflow-y-auto p-5 space-y-5 min-h-0">
           {/* Statut actuel */}
           {document.status && (
-            <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 p-4">
+            <div className="rounded-xl glass-surface p-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Statut actuel</p>
@@ -167,7 +167,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
                 {Array.isArray(approvers) && approvers.map((approver, index) => {
                   if (!approver || typeof approver !== 'object') return null;
                   return (
-                    <div key={index} className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50">
+                    <div key={index} className="flex items-center gap-3 p-3 rounded-xl glass-surface">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center shrink-0">
                         <span className="text-sm font-bold text-primary dark:text-blue-400">{index + 1}</span>
                       </div>
@@ -238,7 +238,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
                   return (
                     <div
                       key={approval.id}
-                      className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50"
+                      className="p-4 rounded-xl glass-surface"
                     >
                       <div className="flex items-center justify-between gap-3 mb-2">
                         <div className="flex items-center gap-3 min-w-0">
@@ -255,7 +255,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
                         {getStatusBadge(approval.status)}
                       </div>
                       {approval.comment && (
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 pl-4 ml-2 border-l-2 border-slate-200 dark:border-slate-700 italic">
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 pl-4 ml-2 border-l-2 border-white/20 dark:border-white/10 italic">
                           {approval.comment}
                         </p>
                       )}
@@ -294,7 +294,7 @@ const DocumentApprovalWorkflow = ({ document, isOpen, onClose }) => {
         </div>
 
         {/* Pied de page */}
-        <div className="flex justify-end gap-2 p-4 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
+        <div className="flex justify-end gap-2 p-4 border-t border-white/20 dark:border-white/10 flex-shrink-0">
           <Button variant="outline" size="sm" onClick={onClose} className="dark:border-slate-600 dark:text-slate-300">
             Fermer
           </Button>

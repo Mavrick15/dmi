@@ -59,7 +59,7 @@ const DashboardLoader = ({ onFinished }) => {
       exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)", transition: { duration: 0.5, ease: "easeInOut" } }}
     >
       <div className="relative mb-8">
-        <div className="relative w-20 h-20 bg-white dark:bg-slate-900 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 dark:border-slate-800 z-10">
+        <div className="relative w-20 h-20 backdrop-blur-2xl bg-white/70 dark:bg-slate-900/80 rounded-2xl shadow-xl flex items-center justify-center border border-white/40 dark:border-white/15 z-10">
           <Icon name="LayoutDashboard" size={32} className="text-primary animate-pulse" />
         </div>
         <span className="absolute inset-0 rounded-2xl bg-primary/20 animate-ping duration-1000 delay-500"></span>
@@ -182,14 +182,14 @@ const Dashboard = () => {
   // 3. Si tout est prêt -> Afficher le contenu
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/20 to-indigo-50/10 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 font-sans text-slate-900 dark:text-slate-50 transition-colors duration-300">
       <Header />
       
       <main className="pt-24 w-full max-w-[1600px] mx-auto px-6 lg:px-8 pb-12">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary border border-primary/20">
+            <div className="w-11 h-11 rounded-2xl glass-surface flex items-center justify-center text-primary">
               <Icon name="LayoutDashboard" size={22} />
             </div>
             <div>
@@ -242,7 +242,7 @@ const Dashboard = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden flex"
+              className="rounded-2xl border border-white/40 dark:border-white/10 backdrop-blur-xl bg-white/60 dark:bg-white/10 overflow-hidden flex shadow-[0_4px_16px_rgba(0,0,0,0.06)]"
             >
               <div className="w-1.5 shrink-0 bg-primary self-stretch" />
               <div className="flex-1 p-12 flex flex-col items-center justify-center gap-4">
@@ -268,7 +268,7 @@ const Dashboard = () => {
                   <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
                     Patients & consultations
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <motion.div variants={itemVariants}>
                       <MetricCard 
                         title="Total Patients" 
@@ -317,7 +317,7 @@ const Dashboard = () => {
                   <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
                     Analyses médicales
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <motion.div variants={itemVariants}>
                       <MetricCard 
                         title="Analyses en attente" 
@@ -356,7 +356,7 @@ const Dashboard = () => {
                   <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3 ml-1">
                     Finance & alertes
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-3">
                     <motion.div variants={itemVariants}>
                       <MetricCard 
                         title="Revenus (Mois)" 
@@ -392,7 +392,7 @@ const Dashboard = () => {
                         key={idx}
                         type="button"
                         onClick={() => navigate(action.route)}
-                        className="group flex flex-col items-start p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left"
+                        className="group flex flex-col items-start p-4 glass-panel hover:shadow-lg hover:border-primary/30 transition-all text-left"
                       >
                         <div className={`p-2.5 rounded-xl mb-2 ${action.color}`}>
                           <Icon name={action.icon} size={22} />
@@ -410,7 +410,7 @@ const Dashboard = () => {
                 <div className="xl:col-span-2 space-y-8">
                   {/* Graphique de revenus */}
                   <motion.div variants={itemVariants}>
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
+                    <div className="glass-panel p-6 transition-colors">
                       <div className="flex justify-between items-center mb-4">
                         <div>
                           <h3 className="text-base font-bold text-slate-900 dark:text-white">Activité financière</h3>
@@ -437,7 +437,7 @@ const Dashboard = () => {
                 {/* Droite */}
                 <motion.div variants={itemVariants} className="space-y-6">
                   {/* Agenda */}
-                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors" style={{ height: '350px' }}>
+                  <div className="glass-panel p-6 flex flex-col transition-colors" style={{ height: '350px' }}>
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-base font-bold text-slate-900 dark:text-white">Agenda</h3>
                       <Button variant="ghost" size="sm" iconName="ArrowRight" className="rounded-xl dark:text-slate-400 dark:hover:bg-slate-800">Voir tout</Button>
@@ -448,7 +448,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Alertes système */}
-                  <div className="bg-white dark:bg-slate-900 p-6 flex flex-col rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 transition-colors" style={{ height: '350px' }}>
+                  <div className="glass-panel p-6 flex flex-col transition-colors" style={{ height: '350px' }}>
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -472,7 +472,7 @@ const Dashboard = () => {
                           return (
                             <div
                               key={alert.id || idx}
-                              className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                              className="flex items-start gap-3 p-3 rounded-xl backdrop-blur-md bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-800/60"
                             >
                               <div className="w-1 rounded-full self-stretch min-h-[2rem] shrink-0 bg-amber-500" />
                               <div className="p-2 rounded-lg bg-white/80 dark:bg-slate-800/80 flex-shrink-0">
@@ -491,7 +491,7 @@ const Dashboard = () => {
                         }).filter(Boolean)
                       ) : (
                         <div className="flex flex-col items-center justify-center text-center py-10">
-                          <div className="w-14 h-14 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 border border-slate-200 dark:border-slate-700">
+                          <div className="w-14 h-14 rounded-2xl glass-surface flex items-center justify-center mb-3">
                             <Icon name="CheckCircle" size={24} className="text-slate-400 dark:text-slate-500" />
                           </div>
                           <p className="text-sm font-semibold text-slate-900 dark:text-white">Aucune alerte</p>

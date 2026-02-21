@@ -195,7 +195,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
             onDrop={(e) => handleDrop(e, column.id)}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-3 md:mb-4 pb-2 md:pb-3 border-b border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-3 md:mb-4 pb-2 md:pb-3 border-b border-white/20 dark:border-white/10">
               <div className="flex items-center gap-2">
                 <Icon 
                   name={column.icon} 
@@ -240,7 +240,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
                       draggable
                       onDragStart={(e) => handleDragStart(e, analyse)}
                       onDragEnd={handleDragEnd}
-                      className={`bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm hover:shadow-md cursor-move border relative overflow-hidden group transition-all ${
+                      className={`backdrop-blur-xl bg-white/50 dark:bg-white/10 rounded-xl p-4 shadow-sm hover:shadow-md cursor-move border relative overflow-hidden group transition-all ${
                         draggedItem?.id === analyse.id 
                           ? 'border-primary/50' 
                           : 'border-slate-200/60 dark:border-slate-700/60'
@@ -347,7 +347,7 @@ const AnalysesKanban = ({ analyses, onViewDetails, onCancel, onDelete }) => {
               </AnimatePresence>
 
               {columnAnalyses.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/30">
+                <div className="flex flex-col items-center justify-center py-8 rounded-xl border border-dashed border-white/20 dark:border-white/10 bg-white/50 dark:bg-slate-800/30">
                   <Icon name="Inbox" size={24} className="text-slate-400 dark:text-slate-500 mb-2" />
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Aucune analyse</p>
                 </div>

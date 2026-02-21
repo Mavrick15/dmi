@@ -27,10 +27,10 @@ const UserListTable = ({ users, onEdit, onDelete, onToggleStatus }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm animate-fade-in">
+        <div className="glass-panel overflow-hidden shadow-sm animate-fade-in">
             <div className="overflow-x-auto">
                 <table className="w-full">
-                    <thead className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-left">
+                    <thead className="bg-slate-50/80 dark:bg-slate-800/80 border-b border-white/20 dark:border-white/10 text-left">
                         <tr>
                             <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Utilisateur</th>
                             <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider">Rôle</th>
@@ -39,14 +39,14 @@ const UserListTable = ({ users, onEdit, onDelete, onToggleStatus }) => {
                             <th className="py-4 px-6 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-white/10 dark:divide-white/5">
                         {Array.isArray(users) && users.map((user) => {
                             if (!user || typeof user !== 'object') return null;
                             return (
                                 <tr key={user.id} className={`group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors ${user.status !== 'Active' ? 'opacity-75 grayscale-[0.5]' : ''}`}>
                                     <td className="py-4 px-6">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 font-bold overflow-hidden border border-slate-200 dark:border-slate-700">
+                                            <div className="w-10 h-10 rounded-full glass-surface flex items-center justify-center text-slate-500 font-bold overflow-hidden">
                                                 {user.avatar ? <Image src={user.avatar} className="w-full h-full object-cover" /> : (typeof user.name === 'string' && user.name) ? user.name.charAt(0).toUpperCase() : '?'}
                                             </div>
                                             <div>

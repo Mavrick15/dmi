@@ -43,27 +43,29 @@ const RevenueOverviewCard = ({ title, amount, change, changeType, icon, color = 
 
   return (
     <div
-      className={`rounded-xl border p-4 ${style.bg} ${style.border} shadow-sm hover:shadow-md transition-shadow`}
+      className={`rounded-xl border p-4 ${style.bg} ${style.border} hover:shadow-md transition-shadow`}
     >
-      <div className="flex items-center justify-between gap-3 mb-2">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${style.icon}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
+            {title}
+            {change != null && change !== '' && (
+              <span className={`ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold ${changeBadgeClass}`}>
+                {changeType === 'increase' ? '+' : ''}{change}
+              </span>
+            )}
+          </p>
+          <p className="text-2xl font-black text-slate-900 dark:text-white tabular-nums">
+            {isCount
+              ? (typeof amount === 'number' ? numberFormatterFr.format(amount) : amount)
+              : formatCurrency(typeof amount === 'number' ? amount : parseFloat(amount) || 0, { maximumFractionDigits: 0 })
+            }
+          </p>
+        </div>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${style.icon}`}>
           <Icon name={icon} size={20} />
         </div>
-        {change != null && change !== '' && (
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${changeBadgeClass}`}>
-            {changeType === 'increase' ? '+' : ''}{change}
-          </span>
-        )}
       </div>
-      <p className="text-2xl font-bold text-slate-900 dark:text-white tabular-nums tracking-tight mb-1">
-        {isCount
-          ? (typeof amount === 'number' ? numberFormatterFr.format(amount) : amount)
-          : formatCurrency(typeof amount === 'number' ? amount : parseFloat(amount) || 0, { maximumFractionDigits: 0 })
-        }
-      </p>
-      <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-        {title}
-      </p>
     </div>
   );
 };

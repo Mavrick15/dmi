@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import ReactDOM from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,6 +16,7 @@ import { usePatientModal } from '../../contexts/PatientModalContext';
 import MedicationDetailsModal from '../../pages/pharmacy-operations/components/MedicationDetailsModal';
 import InvoiceDetailsModal from '../modals/InvoiceDetailsModal';
 import AnalyseDetailsModal from '../../pages/laboratory-analyses/components/AnalyseDetailsModal';
+import { formatNotificationMessage } from '../../utils/notificationMessage';
 
 const Header = () => {
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -176,6 +177,9 @@ const Header = () => {
   const clinicalMenuRef = useRef(null);
   const notificationsRef = useRef(null);
   const profileMenuRef = useRef(null);
+  const primaryNavContainerRef = useRef(null);
+  const activeNavButtonRef = useRef(null);
+  const [pillLayout, setPillLayout] = useState({ left: 0, width: 0, visible: false });
 
   // Définition des données utilisateur (dépend de user)
   const userName = user?.nomComplet || 'Utilisateur';
@@ -488,6 +492,31 @@ const Header = () => {
     setIsMoreMenuOpen(false);
     setIsClinicalMenuOpen(false);
   };
+
+  // Mesure de la position du pill glissant (effet login Email/Passkey)
+  // Dépend uniquement de pathname : primaryNavItems/clinicalMenuItems changent de référence
+  // à chaque render (useMemo) et provoquent une boucle infinie (React error #185)
+  useLayoutEffect(() => {
+    const container = primaryNavContainerRef.current;
+    const activeBtn = activeNavButtonRef.current;
+    if (!container || !activeBtn) {
+      setPillLayout((prev) => (prev.visible ? { ...prev, visible: false } : prev));
+      return;
+    }
+    const containerRect = container.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    if (containerRect.width === 0) return;
+    const left = btnRect.left - containerRect.left;
+    const width = btnRect.width;
+    if (typeof left !== 'number' || typeof width !== 'number' || width <= 0) return;
+    setPillLayout((prev) => {
+      if (!prev.visible || prev.left !== left || prev.width !== width) {
+        return { left, width, visible: true };
+      }
+      return prev;
+    });
+  }, [location.pathname]);
+
   const handleLogout = () => { signOut(); };
   const handleSearchSubmit = (e) => { e?.preventDefault(); /* La recherche est gérée par le debounce */ };
 
@@ -684,16 +713,16 @@ const Header = () => {
       }}
       className={`backdrop-blur-2xl transition-all duration-500 ease-out
         ${isScrolled
-          ? 'bg-white/50 dark:bg-slate-950/50 border-b border-white/25 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-b-2xl'
-          : 'bg-white/30 dark:bg-slate-950/30 border-b border-white/20 dark:border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.25)] rounded-b-2xl'
+          ? 'bg-white/50 dark:bg-slate-950/50 shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] rounded-b-2xl'
+          : 'bg-white/30 dark:bg-slate-950/30 shadow-[0_4px_24px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.25)] rounded-b-2xl'
         }`}
     >
-      <div className="w-full flex items-center justify-between h-16 px-4 lg:px-6">
+      <div className="w-full flex items-center justify-between h-14 px-4 lg:px-6">
         {/* Section Gauche (Logo & Nav) */}
         <div className="flex items-center space-x-6">
           {/* ... (Logo) ... */}
           <motion.div className="flex items-center space-x-3 cursor-pointer" whileHover={{ scale: 1.02 }} onClick={() => navigate('/tableau-de-bord')}>
-            <div className="relative flex items-center justify-center w-11 h-11 bg-primary rounded-2xl shadow-lg shadow-primary/25 overflow-hidden ring-1 ring-white/20">
+            <div className="relative flex items-center justify-center w-9 h-9 bg-primary rounded-xl shadow-lg shadow-primary/25 overflow-hidden">
               {/* Icône croix médicale avec serpent */}
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white relative z-10">
                 {/* Cercle de fond */}
@@ -725,7 +754,7 @@ const Header = () => {
               </svg>
             </div>
             <div className="hidden md:flex flex-col">
-              <span className="text-lg font-bold text-primary dark:text-blue-400 tracking-tight leading-none">
+              <span className="text-base font-semibold text-primary dark:text-blue-400 tracking-tight leading-none">
                 MediCore
               </span>
               <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">
@@ -733,8 +762,18 @@ const Header = () => {
               </span>
             </div>
           </motion.div>
-          {/* Navigation Principale */}
-          <nav className="hidden lg:flex items-center space-x-1">
+          {/* Navigation Principale - Style segmented control (Email/Passkey du login) */}
+          <nav className="hidden lg:flex items-center">
+            <div ref={primaryNavContainerRef} className="flex items-center gap-1 p-1 relative">
+            {/* Pill glissante - même effet que login Email/Passkey */}
+            {pillLayout.visible && (
+              <motion.div
+                className="absolute top-1 bottom-1 rounded-xl backdrop-blur-xl bg-white/80 dark:bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                initial={false}
+                animate={{ left: pillLayout.left, width: pillLayout.width }}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              />
+            )}
             {Array.isArray(primaryNavItems) && primaryNavItems.map((item, index) => {
               if (!item || typeof item !== 'object') return null;
 
@@ -745,9 +784,10 @@ const Header = () => {
                 <React.Fragment key={item.path}>
                   <motion.button
                     key={item.path}
+                    ref={isActivePath(item.path) ? (el) => { activeNavButtonRef.current = el; } : undefined}
                     onClick={() => handleNavigation(item.path)}
                     className={`
-                      nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 overflow-visible
+                      nav-item relative flex items-center px-3 py-2 rounded-xl text-sm font-normal transition-all duration-300 overflow-visible z-10
                       ${isActivePath(item.path)
                         ? 'text-primary dark:text-blue-400'
                         : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/30 dark:hover:bg-white/5'}
@@ -755,18 +795,9 @@ const Header = () => {
                     whileHover={{ scale: 1.03, y: -1 }}
                     whileTap={{ scale: 0.97 }}
                   >
-                    {isActivePath(item.path) && (
-                      <motion.div
-                        layoutId="activeNavIndicator"
-                        className="absolute inset-0 rounded-2xl
-                          border-2 border-slate-300/60 dark:border-slate-500/50"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 360, damping: 30 }}
-                      />
-                    )}
                     <Icon
                       name={item.icon}
-                      size={18}
+                      size={16}
                       className={`mr-2 relative z-10 ${isActivePath(item.path) ? 'text-primary dark:text-blue-400' : ''}`}
                     />
                     <span className="relative z-10">{item.label}</span>
@@ -774,24 +805,16 @@ const Header = () => {
                   {shouldShowClinicalMenu && (
                     <div className="relative" ref={clinicalMenuRef}>
                       <motion.button
+                        ref={(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire')) ? (el) => { activeNavButtonRef.current = el; } : undefined}
                         onClick={() => setIsClinicalMenuOpen(!isClinicalMenuOpen)}
-                        className={`nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 overflow-visible ${(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire'))
+                        className={`nav-item relative flex items-center px-3 py-2 rounded-xl text-sm font-normal transition-all duration-300 overflow-visible z-10 ${(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire'))
                             ? 'text-primary dark:text-blue-400'
                             : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/30 dark:hover:bg-white/5'
                           } ${isClinicalMenuOpen ? 'bg-white/25 dark:bg-white/5' : ''}`}
                         whileHover={{ scale: 1.03, y: -1 }}
                         whileTap={{ scale: 0.97 }}
                       >
-                        {(isActivePath('/console-clinique') || isActivePath('/analyses-laboratoire')) && (
-                          <motion.div
-                            layoutId="activeClinicalIndicator"
-                            className="absolute inset-0 rounded-2xl
-                              border-2 border-slate-300/60 dark:border-slate-500/50"
-                            initial={false}
-                            transition={{ type: "spring", stiffness: 360, damping: 30 }}
-                          />
-                        )}
-                        <Icon name="HeartPulse" size={18} className="mr-2 relative z-10" />
+                        <Icon name="HeartPulse" size={16} className="mr-2 relative z-10" />
                         <span className="relative z-10">Clinique</span>
                         <motion.div
                           animate={{ rotate: isClinicalMenuOpen ? 180 : 0 }}
@@ -859,14 +882,14 @@ const Header = () => {
               );
             }).filter(Boolean)}
             {Array.isArray(secondaryNavItems) && secondaryNavItems.length > 0 && (
-              <div className="relative" ref={moreMenuRef}>
+              <div className="relative z-10" ref={moreMenuRef}>
                 <motion.button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className={`nav-item relative flex items-center px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white border border-transparent hover:border-white/20 dark:hover:border-white/5 ${isMoreMenuOpen ? 'bg-white/50 dark:bg-white/10 shadow-sm border-white/20' : ''}`}
+                  className={`nav-item relative flex items-center px-3 py-2 rounded-xl text-sm font-normal transition-all duration-300 text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white ${isMoreMenuOpen ? 'bg-white/50 dark:bg-white/10 shadow-sm' : ''}`}
                   whileHover={{ scale: 1.03, y: -1 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  <Icon name="MoreHorizontal" size={18} className="mr-2" />
+                  <Icon name="MoreHorizontal" size={16} className="mr-2" />
                   <span>Plus</span>
                   <motion.div
                     animate={{ rotate: isMoreMenuOpen ? 180 : 0 }}
@@ -929,6 +952,7 @@ const Header = () => {
                 </AnimatePresence>
               </div>
             )}
+            </div>
           </nav>
         </div>
 
@@ -1529,7 +1553,7 @@ const Header = () => {
                                         ? 'text-rose-800 dark:text-rose-200'
                                         : 'text-slate-600 dark:text-slate-400'
                                       }`}>
-                                      {n.message || 'Aucun message'}
+                                      {formatNotificationMessage(n.message) || 'Aucun message'}
                                     </p>
                                     <div className="flex items-center gap-2">
                                       <Icon name="Clock" size={10} className={isCritical ? 'text-rose-500' : 'text-slate-400'} />
